@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Lista de Cursos</h1>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nombre del Curso</th>
+                <th>Descripción</th>
+                <th>Supervisor</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for curso in cursos %}
+            <tr>
+                <td>{{ curso.nombre }}</td>
+                <td>{{ curso.descripcion }}</td>
+                <td>{{ curso.supervisor.username }}</td>
+                <td>
+                    <a href="{% url 'detalle_curso' curso.id %}" class="btn btn-info">Ingresar</a>
+                    {% if user.is_supervisor %}
+                    <a href="{% url 'agregar_modulo' curso.id %}" class="btn btn-primary">Agregar Módulo</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<header class="header">
+    <div class="header__container">
+        {% if user.foto_perfil %}
+                <img src="{{ user.foto_perfil.url }}" alt="mdo" width="42" height="42" class="header__img">
+            {% else %}
+                <img src="{% static 'img/default_profile.png' %}" alt="mdo" width="42" height="42" class="header__img">
+            {% endif %}
+
+        <a href="{% url 'home' %}" class="header__logo">WorkForce</a>
+
+        <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search" action="{% url 'buscar' %}">
+            <input type="search" class="form-control" placeholder="Buscar" aria-label="Search" name="q">
+        </form>
+    </div>
+</header>
+<div class="container mt-5">
+    <h1>Cambiar Contraseña</h1>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Cambiar Contraseña</button>
+    </form>
+    <a href="{% url 'profile' %}" class="btn btn-secondary mt-3">Cancelar</a>
+</div>
+{% endblock %}

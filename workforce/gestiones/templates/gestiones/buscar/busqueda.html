@@ -1,0 +1,507 @@
+{% extends "base.html" %}
+{% load static %}
+{% load custom_filters %}
+{% block content %}
+<header class="header">
+  <div class="header__container">
+      {% if user.foto_perfil %}
+              <img src="{{ user.foto_perfil.url }}" alt="mdo" width="42" height="42" class="header__img">
+          {% else %}
+              <img src="{% static 'img/default_profile.png' %}" alt="mdo" width="42" height="42" class="header__img">
+          {% endif %}
+
+      <a href="{% url 'home' %}" class="header__logo">WorkForce</a>
+
+      <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search" action="{% url 'buscar' %}">
+          <input type="search" class="form-control" placeholder="Buscar" aria-label="Search" name="q">
+      </form>
+  </div>
+</header>
+<div class="nav" id="navbar">
+  <nav class="nav__container">
+      <div>
+          <a href="{% url 'home' %}" class="nav__link nav__logo">
+              <i class='bx bxs-disc nav__icon' ></i>
+              <span class="nav__logo-name">WorkForce</span>
+          </a>
+          <div class="nav__list">
+              <div class="nav__items">
+                  <h3 class="nav__subtitle">Profile</h3>
+                  <a href="{% url 'home' %}" class="nav__link active">
+                      <i class='bx bx-home nav__icon' ></i>
+                      <span class="nav__name">Home</span>
+                  </a>
+                  <!-- Perfil -->
+                  <div class="nav__dropdown">
+                      <a href="{% url 'profile' %}" class="nav__link">
+                          <i class='bx bx-user-circle nav__icon'></i>
+
+                          <span class="nav__name">Mi Perfil</span>
+                      </a>
+                  </div>
+              </div>
+
+              <div class="nav__items">
+                  <h3 class="nav__subtitle">Menu</h3>
+                  {% if user|is_supervisor %}
+                  <!-- Usuarios -->
+                  <div class="nav__dropdown">
+                      <a href="#" class="nav__link">
+                          <i class='bx bx-user nav__icon' ></i>
+                          <span class="nav__name">Usuarios</span>
+                          <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                      </a>
+                      <div class="nav__dropdown-collapse">
+                          <div class="nav__dropdown-content">
+                              <a href="{% url 'registrar_usuario' %}" class="nav__dropdown-item">Registrar Usuario</a>
+                              <a href="{% url 'lista_colaboradores' %}" class="nav__dropdown-item">Nomina de Usuarios</a>
+                          </div>
+                      </div>
+                  </div>
+                  <!-- Liquidaciones -->
+                  <div class="nav__dropdown">
+                      <a href="#" class="nav__link">
+                          <i class='bx bx-money nav__icon'></i>
+                          <span class="nav__name">Liquidaciones</span>
+                          <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                      </a>
+                      <div class="nav__dropdown-collapse">
+                          <div class="nav__dropdown-content">
+                              <a href="{% url 'crear_liquidacion' %}" class="nav__dropdown-item">Crear Liquidación</a>
+                              <a href="{% url 'visualizacion_liquidaciones' %}" class="nav__dropdown-item">Ver Liquidaciones</a>
+                          </div>
+                      </div>
+                  </div>
+                  <!-- Cargas Familiares -->
+                  <div class="nav__dropdown">
+                      <a href="#" class="nav__link">
+                          <i class='bx bx-group nav__icon'></i>
+                          <span class="nav__name">Cargas Familiares</span>
+                          <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                      </a>
+                      <div class="nav__dropdown-collapse">
+                          <div class="nav__dropdown-content">
+                              <a href="{% url 'registrar_carga' %}" class="nav__dropdown-item">Registrar Carga</a>
+                              <a href="{% url 'listar_cargas' %}" class="nav__dropdown-item">Ver Cargas</a>
+                          </div>
+                      </div>
+                  </div>
+                  <!-- Asistencia -->
+                  <div class="nav__dropdown">
+                      <a href="#" class="nav__link">
+                          <i class='bx bx-calendar-check nav__icon'></i>
+                          <span class="nav__name">Asistencia</span>
+                          <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                      </a>
+                      <div class="nav__dropdown-collapse">
+                          <div class="nav__dropdown-content">
+                              <a href="{% url 'registro_asistencia' %}" class="nav__dropdown-item">Registrar Asistencia</a>
+                              <a href="{% url 'visualizacion_asistencia' %}" class="nav__dropdown-item">Ver Asistencia</a>
+                          </div>
+                      </div>
+                  </div>
+                  <!-- Solicitudes -->
+                  <div class="nav__dropdown">
+                      <a href="#" class="nav__link">
+                          <i class='bx bx-file nav__icon'></i>
+                          <span class="nav__name">Solicitudes</span>
+                          <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                      </a>
+                      <div class="nav__dropdown-collapse">
+                          <div class="nav__dropdown-content">
+                              <a href="{% url 'crear_solicitud' %}" class="nav__dropdown-item">Crear Solicitud</a>
+                              <a href="{% url 'lista_solicitudes' %}" class="nav__dropdown-item">Ver Solicitud</a>
+                          </div>
+                      </div>
+                  </div>
+                  <!-- Cursos -->
+                  <div class="nav__dropdown">
+                      <a href="#" class="nav__link">
+                          <i class='bx bx-book nav__icon'></i>
+                          <span class="nav__name">Cursos</span>
+                          <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                      </a>
+                      <div class="nav__dropdown-collapse">
+                          <div class="nav__dropdown-content">
+                              <a href="{% url 'crear_curso' %}" class="nav__dropdown-item">Crear Curso</a>
+                              <a href="{% url 'lista_cursos_colaborador' %}" class="nav__dropdown-item">Ver Cursos</a>
+                          </div>
+                      </div>
+                  </div>
+                  <!-- Beneficios -->
+                  <div class="nav__dropdown">
+                      <a href="#" class="nav__link">
+                          <i class='bx bx-gift nav__icon'></i>
+
+                          <span class="nav__name">Beneficios</span>
+                          <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                      </a>
+                      <div class="nav__dropdown-collapse">
+                          <div class="nav__dropdown-content">
+                              <a href="{% url 'crear_beneficio' %}" class="nav__dropdown-item">Crear Beneficio</a>
+                              <a href="{% url 'lista_beneficios' %}" class="nav__dropdown-item">Ver Beneficios</a>
+                          </div>
+                      </div>
+                  </div>
+                  <!-- Publicaciones -->
+                  <div class="nav__dropdown">
+                      <a href="#" class="nav__link">
+                          <i class='bx bx-alarm nav__icon'></i>
+
+                          <span class="nav__name">Novedades</span>
+                          <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                      </a>
+                      <div class="nav__dropdown-collapse">
+                          <div class="nav__dropdown-content">
+                              <a href="{% url 'crear_publicacion' %}" class="nav__dropdown-item">Crear Publicacion</a>
+                          </div>
+                      </div>
+                  </div>
+                  <!-- Denuncias -->
+                  <div class="nav__dropdown">
+                      <a href="#" class="nav__link">
+                          <i class='bx bx-alarm nav__icon'></i>
+
+                          <span class="nav__name">Denuncias</span>
+                          <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                      </a>
+                      <div class="nav__dropdown-collapse">
+                          <div class="nav__dropdown-content">
+                              <a href="{% url 'crear_denuncia' %}" class="nav__dropdown-item">Crear Denuncia</a>
+                              <a href="{% url 'lista_denuncias' %}" class="nav__dropdown-item">Ver Denuncias</a>
+                          </div>
+                      </div>
+                  </div>
+                  {% else %}
+                  <!-- Liquidaciones -->
+                  <div class="nav__dropdown">
+                      <a href="#" class="nav__link">
+                          <i class='bx bx-money nav__icon'></i>
+                          <span class="nav__name">Liquidaciones</span>
+                          <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                      </a>
+                      <div class="nav__dropdown-collapse">
+                          <div class="nav__dropdown-content">
+                              <a href="{% url 'visualizacion_liquidaciones' %}" class="nav__dropdown-item">Ver Liquidaciones</a>
+                          </div>
+                      </div>
+                  </div>
+                  <!-- Cargas Familiares -->
+                  <div class="nav__dropdown">
+                      <a href="#" class="nav__link">
+                          <i class='bx bx-user nav__icon'></i>
+                          <span class="nav__name">Cargas Familiares</span>
+                          <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                      </a>
+                      <div class="nav__dropdown-collapse">
+                          <div class="nav__dropdown-content">
+                              <a href="{% url 'listar_cargas' %}" class="nav__dropdown-item">Ver Cargas</a>
+                          </div>
+                      </div>
+                  </div>
+                  <!-- Asistencia -->
+                  <div class="nav__dropdown">
+                      <a href="#" class="nav__link">
+                          <i class='bx bx-calendar-check nav__icon'></i>
+                          <span class="nav__name">Asistencia</span>
+                          <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                      </a>
+                      <div class="nav__dropdown-collapse">
+                          <div class="nav__dropdown-content">
+                              <a href="{% url 'registro_asistencia' %}" class="nav__dropdown-item">Registrar Asistencia</a>
+                              <a href="{% url 'visualizacion_asistencia' %}" class="nav__dropdown-item">Ver Asistencia</a>
+                          </div>
+                      </div>
+                  </div>
+                  <!-- Solicitudes -->
+                  <div class="nav__dropdown">
+                      <a href="#" class="nav__link">
+                          <i class='bx bx-file nav__icon'></i>
+                          <span class="nav__name">Solicitudes</span>
+                          <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                      </a>
+                      <div class="nav__dropdown-collapse">
+                          <div class="nav__dropdown-content">
+                              <a href="{% url 'crear_solicitud' %}" class="nav__dropdown-item">Crear Solicitud</a>
+                              <a href="{% url 'lista_solicitudes' %}" class="nav__dropdown-item">Ver Solicitud</a>
+                          </div>
+                      </div>
+                  </div>
+                  <!-- Cursos -->
+                  <div class="nav__dropdown">
+                      <a href="#" class="nav__link">
+                          <i class='bx bx-book nav__icon'></i>
+                          <span class="nav__name">Cursos</span>
+                          <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                      </a>
+                      <div class="nav__dropdown-collapse">
+                          <div class="nav__dropdown-content">
+                              <a href="{% url 'lista_cursos_colaborador' %}" class="nav__dropdown-item">Ver Cursos</a>
+                          </div>
+                      </div>
+                  </div>
+                  <!-- Denuncias -->
+                  <div class="nav__dropdown">
+                      <a href="#" class="nav__link">
+                          <i class='bx bx-error nav__icon'></i>
+
+                          <span class="nav__name">Denuncias</span>
+                          <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                      </a>
+                      <div class="nav__dropdown-collapse">
+                          <div class="nav__dropdown-content">
+                              <a href="{% url 'crear_denuncia' %}" class="nav__dropdown-item">Crear Denuncia</a>
+                              <a href="{% url 'lista_denuncias' %}" class="nav__dropdown-item">Mis Denuncias</a>
+                          </div>
+                      </div>
+                  </div>
+                  {% endif %}
+              </div>
+          </div>
+      </div>
+
+      <a href="#" class="nav__link nav__logout" id="logout-link">
+          <i class='bx bx-log-out nav__icon'></i>
+          <span class="nav__name">Cierre Sesión</span>
+      </a>
+      
+      <form id="logout-form" method="post" action="{% url 'logout' %}" style="display:none;">
+          {% csrf_token %}
+          <button type="submit" class="dropdown-item">Salir</button>
+      </form>
+      
+      <script>
+          document.getElementById('logout-link').addEventListener('click', function(event) {
+              event.preventDefault();
+              document.getElementById('logout-form').submit();
+          });
+      </script>
+      
+  </nav>
+</div>
+<div class="container-fluid">
+  <div class="row">
+      <style>
+          body {
+              background-image: url("{% static 'img/fondo.jpg' %}");
+              background-size: cover;
+              background-position: center;
+              background-repeat: no-repeat;
+              background-attachment: fixed;
+          }
+      </style>
+      <div class="col-md-10">
+          <br>
+          {% if user|is_supervisor %}
+          <h1 style="text-align: center">Estadísticas</h1>
+          <div class="container mt-5">
+              <div class="row justify-content-center">
+                  <!-- Cada tarjeta ocupa col-md-2 para hacerlas más pequeñas -->
+                  <div class="col-md-2 d-flex justify-content-center">
+                      <div class="card shadow-sm mb-4" style="width: 100%;">
+                          <div class="card-body text-center">
+                              <h6 class="card-title">Usuarios Registrados</h6>
+                              <p class="card-text h3">{{ cantidad_usuarios }}</p>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="col-md-2 d-flex justify-content-center">
+                      <div class="card shadow-sm mb-4" style="width: 100%;">
+                          <div class="card-body text-center">
+                              <h6 class="card-title">Liquidaciones</h6>
+                              <p class="card-text h3">{{ cantidad_liquidaciones }}</p>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="col-md-2 d-flex justify-content-center">
+                      <div class="card shadow-sm mb-4" style="width: 100%;">
+                          <div class="card-body text-center">
+                              <h6 class="card-title">Cargas Familiares</h6>
+                              <p class="card-text h3">{{ cantidad_cargas_familiares }}</p>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="col-md-2 d-flex justify-content-center">
+                      <div class="card shadow-sm mb-4" style="width: 100%;">
+                          <div class="card-body text-center">
+                              <h6 class="card-title">Solicitudes Creadas</h6>
+                              <p class="card-text h3">{{ cantidad_solicitudes }}</p>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="col-md-2 d-flex justify-content-center">
+                      <div class="card shadow-sm mb-4" style="width: 100%;">
+                          <div class="card-body text-center">
+                              <h6 class="card-title">Solicitudes Pendientes</h6>
+                              <p class="card-text h3">{{ solicitudes_pendientes }}</p>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="col-md-2 d-flex justify-content-center">
+                      <div class="card shadow-sm mb-4" style="width: 100%;">
+                          <div class="card-body text-center">
+                              <h6 class="card-title">Solicitudes Aprobadas</h6>
+                              <p class="card-text h3">{{ solicitudes_aprobadas }}</p>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="col-md-2 d-flex justify-content-center">
+                      <div class="card shadow-sm mb-4" style="width: 100%;">
+                          <div class="card-body text-center">
+                              <h6 class="card-title">Solicitudes Rechazadas</h6>
+                              <p class="card-text h3">{{ solicitudes_rechazadas }}</p>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          {% endif %}
+          <!-- Publicaciones -->
+          <div class="container mt-4">
+              <h4 class="text-center">Novedades</h4>
+              <br>
+              <div class="publicacion-container">
+                  {% for publicacion in publicaciones %}
+                      <div class="publicacion-card card mb-4 shadow-sm">  
+                          <div class="d-flex align-items-center p-3">
+                              {% if publicacion.autor.foto_perfil %}
+                                  <img src="{{ publicacion.autor.foto_perfil.url }}" alt="{{ publicacion.autor.username }}" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+                              {% else %}
+                                  <img src="{% static 'img/default_profile.png' %}" alt="{{ publicacion.autor.username }}" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+                              {% endif %}
+                              <div class="ms-3">
+                                  <h6 class="mb-0">{{ publicacion.autor.username }}</h6>
+                                  <small class="text-muted">{{ publicacion.fecha_creacion }}</small>
+                              </div>
+                          </div>
+
+                          {% if publicacion.imagen %}
+                              <img src="{{ publicacion.imagen.url }}" class="publicacion-img card-img-top" alt="Imagen de la publicación">
+                          {% endif %}
+                          <div class="card-body text-start">
+                              <h5 class="card-title">{{ publicacion.titulo }}</h5>
+                              <p class="card-text">{{ publicacion.contenido }}</p>
+                          </div>
+                      </div>
+                  {% empty %}
+                      <p class="text-center">No hay publicaciones disponibles.</p>
+                  {% endfor %}
+              </div>
+          </div>
+
+          <div class="container mt-4">
+              <h4 class="text-center">Beneficios</h4>
+              <br>
+              <div id="beneficiosCarousel" class="carousel slide" data-bs-ride="carousel">
+                  <div class="carousel-inner">
+                      {% for beneficio in beneficios %}
+                      {% if forloop.counter0|divisibleby:3 %}
+                      <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                          <div class="row">
+                      {% endif %}
+                              <div class="col-md-4">
+                                  <div class="card shadow-sm mb-4 beneficio-card">
+                                      <img src="{{ beneficio.imagen.url }}" class="card-img-top" alt="Imagen del beneficio">
+                                      <div class="card-body text-center">
+                                          <h5 class="card-title">{{ beneficio.titulo }}</h5>
+                                          <p class="card-text">{{ beneficio.descripcion }}</p>
+                                          <p class="card-text"><small class="text-muted">{{ beneficio.detalle }}</small></p>
+                                      </div>
+                                  </div>
+                              </div>
+                      {% if forloop.counter|divisibleby:3 or forloop.last %}
+                          </div>
+                      </div>
+                      {% endif %}
+                      {% endfor %}
+                  </div>
+                  <button class="carousel-control-prev" type="button" data-bs-target="#beneficiosCarousel" data-bs-slide="prev">
+                      <span class="carousel-control-prev-icon" aria-hidden="true" style="background-color: black;"></span>
+                      <span class="visually-hidden">Previous</span>
+                  </button>
+                  <button class="carousel-control-next" type="button" data-bs-target="#beneficiosCarousel" data-bs-slide="next">
+                      <span class="carousel-control-next-icon" aria-hidden="true" style="background-color: black;"></span>
+                      <span class="visually-hidden">Next</span>
+                  </button>
+              </div>
+          </div>
+          <br>
+          <style>
+              .beneficio-card {
+                  height: 320px; /* Altura fija para todas las tarjetas */
+                  display: flex;
+                  flex-direction: column;
+              }
+          
+              .beneficio-card img {
+                  width: 100%;
+                  height: 200px; /* Altura fija para la imagen */
+                  object-fit: cover; /* Asegura que la imagen se ajuste al tamaño del contenedor */
+              }
+          
+              .beneficio-card .card-body {
+                  flex-grow: 1;
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: center;
+                  align-items: center;
+                  text-align: center;
+              }
+          
+              .carousel-control-prev,.carousel-control-next {
+                  width: 3%; /* Reduce el ancho del área de control */
+              }
+              .carousel-control-prev {
+                  left: -4%; /* Mueve la flecha hacia la izquierda, fuera del contenedor */
+              }
+
+              .carousel-control-next {
+                  right: -4%; /* Mueve la flecha hacia la derecha, fuera del contenedor */
+              }
+
+              .carousel-control-prev-icon,
+              .carousel-control-next-icon {
+                  background-color: black; /* Color de fondo para las flechas de navegación */
+                  width: 40px; /* Tamaño de la flecha */
+                  height: 40px;
+              }
+          </style>
+      </div>
+  </div>
+</div>
+<div class="container mt-5">
+    <h1>Resultados de la búsqueda para "{{ request.GET.q }}"</h1>
+    
+    <h2>Solicitudes</h2>
+    <ul>
+        {% for solicitud in resultados_solicitudes %}
+        <li><a href="{% url 'gestionar_solicitud' solicitud.id %}">{{ solicitud.tipo }} - {{ solicitud.estado }}</a></li>
+        {% empty %}
+        <li>No se encontraron solicitudes.</li>
+        {% endfor %}
+    </ul>
+    
+    <h2>Cursos</h2>
+    <ul>
+        {% for curso in resultados_cursos %}
+        <li><a href="{% url 'detalle_curso' curso.id %}">{{ curso.nombre }}</a></li>
+        {% empty %}
+        <li>No se encontraron cursos.</li>
+        {% endfor %}
+    </ul>
+    
+    <h2>Liquidaciones</h2>
+    <ul>
+        {% if resultados_liquidaciones %}
+            {% for liquidacion in resultados_liquidaciones %}
+            <li><a href="{% url 'descargar_liquidacion_pdf' liquidacion.id %}" target="_blank">
+                Liquidación de {{ liquidacion.empleado.username }} - {{ liquidacion.fecha|date:"j \d\e F \d\e Y" }}
+            </a></li>
+            {% endfor %}
+        {% else %}
+            <li>No se encontraron liquidaciones.</li>
+        {% endif %}
+    </ul>
+    <a href="{% url 'home' %}" class="btn btn-secondary mt-3">Home</a>
+</div>
+{% endblock %}

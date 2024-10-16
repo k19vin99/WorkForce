@@ -1,0 +1,17 @@
+<!--{% extends "base_apps.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>{{ beneficio.titulo }}</h1>
+    <img src="{{ beneficio.imagen.url }}" class="img-fluid" alt="Imagen del beneficio">
+    <p>{{ beneficio.descripcion }}</p>
+    
+    <a href="{% url 'editar_beneficio' beneficio.id %}" class="btn btn-primary">Editar</a>
+    <form method="post" action="{% url 'eliminar_beneficio' beneficio.id %}" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Eliminar</button>
+    </form>
+    
+    <a href="{% url 'lista_beneficios' %}" class="btn btn-secondary mt-3">Volver a la lista</a>
+</div>
+{% endblock %}

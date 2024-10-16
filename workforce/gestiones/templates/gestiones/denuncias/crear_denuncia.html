@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Crear Denuncia</h2>
+    <!-- Importante: enctype="multipart/form-data" permite la subida de archivos -->
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <!-- Mostrar los campos del formulario de denuncia -->
+        {{ form.as_p }}
+        
+        <h3>Cargar Evidencias</h3>
+        <!-- Mostrar los campos del Formset para evidencias -->
+        {{ formset.management_form }}
+        {% for evidencia_form in formset %}
+            {{ evidencia_form.as_p }}
+        {% endfor %}
+        
+        <button type="submit" class="btn btn-primary">Crear Denuncia</button>
+    </form>
+</div>
+{% endblock %}

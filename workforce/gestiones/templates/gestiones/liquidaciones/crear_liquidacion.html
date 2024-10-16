@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Crear Liquidación{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h2>Crear Liquidación</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Crear</button>
+        </form>
+    </div>
+{% endblock %}

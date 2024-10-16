@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 style="text-align: center">Visualización de Asistencia</h1>
+    <br />
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Hora de Entrada</th>
+                <th>Hora de Salida</th>
+                <th>Colaborador</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for asistencia in asistencias %}
+            <tr>
+                <td>{{ asistencia.fecha }}</td>
+                <td>{{ asistencia.hora_entrada|default_if_none:"-" }}</td>
+                <td>{{ asistencia.hora_salida|default_if_none:"-" }}</td>
+                <td>{{ asistencia.colaborador.username }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% url 'registro_asistencia' %}" class="btn btn-primary mt-3">Registrar Asistencias</a>
+    <a href="{% url 'home' %}" class="btn btn-secondary mt-3">Home</a>
+</div>
+{% endblock %}

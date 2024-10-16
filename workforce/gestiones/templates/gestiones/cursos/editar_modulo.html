@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Editar Módulo: {{ modulo.titulo }}</h1>
+    
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="titulo" class="form-label">Título:</label>
+            {{ form.titulo }}
+        </div>
+        
+        <div class="mb-3">
+            <label for="descripcion" class="form-label">Descripción:</label>
+            {{ form.descripcion }}
+        </div>
+
+        <div class="mb-3">
+            <label for="archivo" class="form-label">Agregar Archivo:</label>
+            {{ form.archivo }}
+        </div>
+
+        <div class="mb-3">
+            <label for="evaluacion" class="form-label">Agregar Evaluación:</label>
+            {{ form.evaluacion }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        <a href="{% url 'detalle_curso' modulo.curso.id %}" class="btn btn-secondary">Volver al Curso</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load humanize %} <!-- Cargar el módulo humanize -->
+
+{% block content %}
+<h2>Visualización de Liquidaciones</h2>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Empleado</th>
+            <th>Sueldo Base</th>
+            <th>Gratificación</th>
+            <th>Colación</th>
+            <th>Movilización</th>
+            <th>AFP</th>
+            <th>Sueldo Líquido</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for liquidacion in liquidaciones %}
+        <tr>
+            <td>{{ liquidacion.fecha }}</td>
+            <td>{{ liquidacion.usuario.username }}</td> <!-- Ajustado a 'usuario' en lugar de 'empleado' -->
+            <td>${{ liquidacion.sueldo_base|intcomma }}</td>
+            <td>${{ liquidacion.gratificacion|intcomma }}</td>
+            <td>${{ liquidacion.colacion|intcomma }}</td>
+            <td>${{ liquidacion.movilizacion|intcomma }}</td>
+            <td>${{ liquidacion.total_descuentos|intcomma }}</td>
+            <td>${{ liquidacion.sueldo_liquido|intcomma }}</td>
+            <td>
+                <a href="{% url 'descargar_liquidacion' liquidacion.pk %}" class="btn btn-info" target="_blank">Descargar</a>
+                <a href="{% url 'editar_liquidacion' liquidacion.pk %}" class="btn btn-warning">Editar</a>
+                <a href="{% url 'eliminar_liquidacion' liquidacion.pk %}" class="btn btn-danger">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

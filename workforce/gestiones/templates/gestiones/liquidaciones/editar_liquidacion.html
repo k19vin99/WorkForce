@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Liquidación{% endblock %}
+
+{% block content %}
+    <h2>Editar Liquidación</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+    </form>
+{% endblock %}

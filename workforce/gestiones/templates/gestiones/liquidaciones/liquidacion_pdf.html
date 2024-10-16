@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liquidación de Sueldo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 10px;
+        }
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: #ffffff;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .section h3 {
+            background-color: #6ef6ff;
+            color: #060606;
+            padding: 5px;
+            margin: 0 -10px 10px -10px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .section-content {
+            padding: 5px 0;
+            margin: 0 -10px;
+        }
+        .company-details, .employee-info, .payment-details {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 10px;
+            background-color: #e0f7fa;
+            margin-bottom: 5px;
+            border: 1px solid #060606;
+        }
+        .company-details div, .employee-info div, .payment-details div {
+            width: 45%;
+        }
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        .details-table th, .details-table td {
+            padding: 5px;
+            border: 1px solid #ccc;
+            text-align: left;
+            font-size: 12px;
+        }
+        .details-table th {
+            background-color: #2eeff5;
+            color: #060606;
+        }
+        .details-table td.text-right {
+            text-align: right;
+        }
+        .summary {
+            text-align: right;
+            margin-top: 10px;
+        }
+        .summary h3 {
+            color: #060606;
+            font-size: 16px;
+        }
+        .signatures {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding: 0 20px;
+        }
+        .signature-box {
+            width: 45%;
+            text-align: center;
+            position: relative;
+        }
+        .signature-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background-color: #060606;
+            width: 100%;
+            transform: translateY(-10px); /* Alinea la línea con la firma */
+        }
+        .signature-box p {
+            margin-top: 10px; /* Ajuste para colocar el texto justo debajo de la línea */
+            font-size: 12px;
+            color: #060606;
+            font-weight: bold;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Liquidación de Sueldo</h1>
+
+        <!-- Company Section -->
+        <div class="section">
+            <h3>Datos de la Empresa</h3>
+            <div class="company-details section-content">
+                <div>
+                    <strong>Nombre:</strong> {{ liquidacion.empresa.nombre }}<br>
+                    <strong>RUT:</strong> {{ liquidacion.empresa.rut }}<br>
+                    <strong>Dirección:</strong> {{ liquidacion.empresa.direccion }}<br>
+                    
+                </div>
+                <div style="text-align:right;">
+                    <img src="logo.png" alt="Logo de la Empresa" style="max-width: 100px;">
+                </div>
+            </div>
+        </div>
+
+        <!-- Employee Section -->
+        <div class="section">
+            <h3>Datos del Empleado</h3>
+            <div class="employee-info section-content">
+                <div>
+                    <strong>Nombre:</strong> {{ liquidacion.usuario.first_name }} {{ liquidacion.usuario.last_name }}<br>
+                    <strong>Cargo:</strong> {{ liquidacion.usuario.cargo }}<br>
+                    <strong>RUT:</strong> {{ liquidacion.usuario.rut }}<br>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Section -->
+        <div class="section">
+            <h3>Datos de la Liquidación</h3>
+            <table class="details-table section-content">
+                <tr>
+                    <th>Concepto</th>
+                    <th class="text-right">Monto</th>
+                </tr>
+                <tr>
+                    <td>Sueldo Base</td>
+                    <td class="text-right">${{ liquidacion.sueldo_base|floatformat:0 }}</td>
+                </tr>
+                <tr>
+                    <td>Gratificación</td>
+                    <td class="text-right">${{ liquidacion.gratificacion|floatformat:0 }}</td>
+                </tr>
+                <tr>
+                    <td>Colación</td>
+                    <td class="text-right">${{ liquidacion.colacion|floatformat:0 }}</td>
+                </tr>
+                <tr>
+                    <td>Movilización</td>
+                    <td class="text-right">${{ liquidacion.movilizacion|floatformat:0 }}</td>
+                </tr>
+                <tr>
+                    <th>Total Haberes</th>
+                    <th class="text-right">${{ total_haberes|floatformat:0 }}</th>
+                </tr>
+                <tr>
+                    <td>AFP</td>
+                    <td class="text-right">${{ liquidacion.afp|floatformat:0 }}</td>
+                </tr>
+                <tr>
+                    <td>Salud</td>
+                    <td class="text-right">${{ liquidacion.salud|floatformat:0 }}</td>
+                </tr>
+                <tr>
+                    <td>Seguro Mutual</td>
+                    <td class="text-right">${{ liquidacion.seguro_mutual|floatformat:0 }}</td>
+                </tr>
+                <tr>
+                    <th>Total Descuentos</th>
+                    <th class="text-right">${{ total_descuentos|floatformat:0 }}</th>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Summary -->
+         
+        <div class="summary">
+            <h3>Sueldo Líquido: ${{ liquidacion.sueldo_liquido|floatformat:0 }}</h3>
+        </div>
+        <table>
+            <tr>
+                <td class="signature-box">Firma trabajador</td>
+                <td class="signature-box">Firma Colaborador</td>
+            </tr>
+            <tr>
+                <td><br></td>
+                <td><br></td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

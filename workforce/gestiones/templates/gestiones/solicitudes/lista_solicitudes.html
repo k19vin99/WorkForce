@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Lista de Solicitudes</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Colaborador</th>
+                <th>Tipo</th>
+                <th>Descripción</th>
+                <th>Fecha Inicio</th>
+                <th>Fecha Fin</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for solicitud in solicitudes %}
+            <tr>
+                <td>{{ solicitud.colaborador.username }}</td>
+                <td>{{ solicitud.get_tipo_display }}</td>
+                <td>{{ solicitud.descripcion }}</td>
+                <td>{{ solicitud.fecha_inicio }}</td>
+                <td>{{ solicitud.fecha_fin }}</td>
+                <td>{{ solicitud.get_estado_display }}</td>
+                {% if is_supervisor %}
+                <td>
+                    <a href="{% url 'gestionar_solicitud' solicitud.id %}" class="btn btn-secondary">Gestionar</a>
+                    <a href="{% url 'descargar_comprobante' solicitud.id %}" class="btn btn-primary">Descargar PDF</a>
+                </td>
+                {% else %}
+                <td>
+                    <a href="{% url 'descargar_comprobante' solicitud.id %}" class="btn btn-primary">Descargar PDF</a>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% url 'home' %}" class="btn btn-secondary mt-3">Home</a>
+</div>
+{% endblock %}

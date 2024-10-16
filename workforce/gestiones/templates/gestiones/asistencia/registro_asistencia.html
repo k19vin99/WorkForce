@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div style="text-align: center">
+    <h1>Registro de Asistencia</h1>
+    <br>
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" name="action" value="entrada" class="btn btn-primary">Registrar Entrada</button>
+        <button type="submit" name="action" value="salida" class="btn btn-secondary">Registrar Salida</button>
+    </form>
+    
+
+    {% if asistencia %}
+        <div>
+            <h2>Hora de Entrada:</h2>
+            <p>{{ asistencia.hora_entrada }}</p>
+        </div>
+        <div>
+            <h2>Hora de Salida:</h2>
+            <p>{{ asistencia.hora_salida }}</p>
+        </div>
+        {% if tiempo_trabajado %}
+            <div>
+                <h2>Tiempo trabajado hoy:</h2>
+                <p>{{ tiempo_trabajado }}</p>
+            </div>
+        {% endif %}
+    {% endif %}
+    <a href="{% url 'visualizacion_asistencia' %}" class="btn btn-secondary mt-3">Ir a mis Asistencias</a>
+    <a href="{% url 'index' %}" class="btn btn-secondary mt-3">Home</a>
+</div>
+{% endblock %}

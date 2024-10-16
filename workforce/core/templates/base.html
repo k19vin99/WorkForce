@@ -1,0 +1,306 @@
+{% load static %}
+{% load custom_tags %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <script defer src="{% static 'js/scripts.js' %}"></script>
+        <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}WorkForce{% endblock %}</title>
+        <link rel="shortcut icon" href="{% static 'img/favicon.icon'%}">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <!--========== BOX ICONS ==========-->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+        <!--========== CSS ==========-->
+        <link rel="stylesheet" type="text/css" href="{% static 'css/styles_home.css' %}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    </head>
+    <body>
+        <header class="header">
+            <div class="header__container">
+                {% if user.foto_perfil %}
+                        <img src="{{ user.foto_perfil.url }}" alt="mdo" width="42" height="42" class="header__img">
+                    {% else %}
+                        <img src="{% static 'img/default_profile.png' %}" alt="mdo" width="42" height="42" class="header__img">
+                    {% endif %}
+        
+                <a href="{% url 'home' %}" class="header__logo">WorkForce</a>
+        
+                <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search" action="{% url 'buscar' %}">
+                    <input type="search" class="form-control" placeholder="Buscar" aria-label="Search" name="q">
+                </form>
+            </div>
+        </header>
+        <div class="nav" id="navbar">
+            <nav class="nav__container">
+                <div>
+                    <a href="{% url 'home' %}" class="nav__link nav__logo">
+                        <i class='bx bxs-disc nav__icon' ></i>
+                        <span class="nav__logo-name">WorkForce</span>
+                    </a>
+                    <div class="nav__list">
+                        <div class="nav__items">
+                            <h3 class="nav__subtitle">Profile</h3>
+                            <!-- Home -->
+                            <div class="nav__dropdown">
+                                <a href="{% url 'home' %}" class="nav__link">
+                                    <i class='bx bx-home nav__icon'></i>
+        
+                                    <span class="nav__name">Home</span>
+                                </a>
+                            </div>
+                            <!-- Perfil -->
+                            <div class="nav__dropdown">
+                                <a href="{% url 'profile' %}" class="nav__link">
+                                    <i class='bx bx-user-circle nav__icon'></i>
+        
+                                    <span class="nav__name">Mi Perfil</span>
+                                </a>
+                            </div>
+                        </div>
+        
+                        <div class="nav__items">
+                            <h3 class="nav__subtitle">Menu</h3>
+                            {% if user|is_supervisor %}
+                            <!-- Usuarios -->
+                            <div class="nav__dropdown">
+                                <a href="#" class="nav__link">
+                                    <i class='bx bx-user nav__icon' ></i>
+                                    <span class="nav__name">Usuarios</span>
+                                    <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                                </a>
+                                <div class="nav__dropdown-collapse">
+                                    <div class="nav__dropdown-content">
+                                        <a href="{% url 'registrar_usuario' %}" class="nav__dropdown-item">Registrar Usuario</a>
+                                        <a href="{% url 'lista_colaboradores' %}" class="nav__dropdown-item">Nomina de Usuarios</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Liquidaciones -->
+                            <div class="nav__dropdown">
+                                <a href="#" class="nav__link">
+                                    <i class='bx bx-money nav__icon'></i>
+                                    <span class="nav__name">Liquidaciones</span>
+                                    <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                                </a>
+                                <div class="nav__dropdown-collapse">
+                                    <div class="nav__dropdown-content">
+                                        <a href="{% url 'crear_liquidacion' %}" class="nav__dropdown-item">Crear Liquidación</a>
+                                        <a href="{% url 'visualizacion_liquidaciones' %}" class="nav__dropdown-item">Ver Liquidaciones</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Cargas Familiares -->
+                            <div class="nav__dropdown">
+                                <a href="#" class="nav__link">
+                                    <i class='bx bx-group nav__icon'></i>
+                                    <span class="nav__name">Cargas Familiares</span>
+                                    <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                                </a>
+                                <div class="nav__dropdown-collapse">
+                                    <div class="nav__dropdown-content">
+                                        <a href="{% url 'registrar_carga' %}" class="nav__dropdown-item">Registrar Carga</a>
+                                        <a href="{% url 'listar_cargas' %}" class="nav__dropdown-item">Ver Cargas</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Asistencia -->
+                            <div class="nav__dropdown">
+                                <a href="#" class="nav__link">
+                                    <i class='bx bx-calendar-check nav__icon'></i>
+                                    <span class="nav__name">Asistencia</span>
+                                    <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                                </a>
+                                <div class="nav__dropdown-collapse">
+                                    <div class="nav__dropdown-content">
+                                        <a href="{% url 'registro_asistencia' %}" class="nav__dropdown-item">Registrar Asistencia</a>
+                                        <a href="{% url 'visualizacion_asistencia' %}" class="nav__dropdown-item">Ver Asistencia</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Solicitudes -->
+                            <div class="nav__dropdown">
+                                <a href="#" class="nav__link">
+                                    <i class='bx bx-file nav__icon'></i>
+                                    <span class="nav__name">Solicitudes</span>
+                                    <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                                </a>
+                                <div class="nav__dropdown-collapse">
+                                    <div class="nav__dropdown-content">
+                                        <a href="{% url 'crear_solicitud' %}" class="nav__dropdown-item">Crear Solicitud</a>
+                                        <a href="{% url 'lista_solicitudes' %}" class="nav__dropdown-item">Ver Solicitud</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Cursos -->
+                            <div class="nav__dropdown">
+                                <a href="#" class="nav__link">
+                                    <i class='bx bx-book nav__icon'></i>
+                                    <span class="nav__name">Cursos</span>
+                                    <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                                </a>
+                                <div class="nav__dropdown-collapse">
+                                    <div class="nav__dropdown-content">
+                                        <a href="{% url 'crear_curso' %}" class="nav__dropdown-item">Crear Curso</a>
+                                        <a href="{% url 'lista_cursos_colaborador' %}" class="nav__dropdown-item">Ver Cursos</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Beneficios -->
+                            <div class="nav__dropdown">
+                                <a href="#" class="nav__link">
+                                    <i class='bx bx-gift nav__icon'></i>
+        
+                                    <span class="nav__name">Beneficios</span>
+                                    <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                                </a>
+                                <div class="nav__dropdown-collapse">
+                                    <div class="nav__dropdown-content">
+                                        <a href="{% url 'crear_beneficio' %}" class="nav__dropdown-item">Crear Beneficio</a>
+                                        <a href="{% url 'lista_beneficios' %}" class="nav__dropdown-item">Ver Beneficios</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Publicaciones -->
+                            <div class="nav__dropdown">
+                                <a href="#" class="nav__link">
+                                    <i class='bx bx-news nav__icon'></i>
+        
+                                    <span class="nav__name">Novedades</span>
+                                    <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                                </a>
+                                <div class="nav__dropdown-collapse">
+                                    <div class="nav__dropdown-content">
+                                        <a href="{% url 'crear_publicacion' %}" class="nav__dropdown-item">Crear Publicacion</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Denuncias -->
+                            <div class="nav__dropdown">
+                                <a href="#" class="nav__link">
+                                    <i class='bx bx-error nav__icon'></i>
+        
+                                    <span class="nav__name">Denuncias</span>
+                                    <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                                </a>
+                                <div class="nav__dropdown-collapse">
+                                    <div class="nav__dropdown-content">
+                                        <a href="{% url 'crear_denuncia' %}" class="nav__dropdown-item">Crear Denuncia</a>
+                                        <a href="{% url 'lista_denuncias' %}" class="nav__dropdown-item">Ver Denuncias</a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% else %}
+                            <!-- Liquidaciones -->
+                            <div class="nav__dropdown">
+                                <a href="#" class="nav__link">
+                                    <i class='bx bx-money nav__icon'></i>
+                                    <span class="nav__name">Liquidaciones</span>
+                                    <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                                </a>
+                                <div class="nav__dropdown-collapse">
+                                    <div class="nav__dropdown-content">
+                                        <a href="{% url 'visualizacion_liquidaciones' %}" class="nav__dropdown-item">Ver Liquidaciones</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Cargas Familiares -->
+                            <div class="nav__dropdown">
+                                <a href="#" class="nav__link">
+                                    <i class='bx bx-user nav__icon'></i>
+                                    <span class="nav__name">Cargas Familiares</span>
+                                    <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                                </a>
+                                <div class="nav__dropdown-collapse">
+                                    <div class="nav__dropdown-content">
+                                        <a href="{% url 'listar_cargas' %}" class="nav__dropdown-item">Ver Cargas</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Asistencia -->
+                            <div class="nav__dropdown">
+                                <a href="#" class="nav__link">
+                                    <i class='bx bx-calendar-check nav__icon'></i>
+                                    <span class="nav__name">Asistencia</span>
+                                    <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                                </a>
+                                <div class="nav__dropdown-collapse">
+                                    <div class="nav__dropdown-content">
+                                        <a href="{% url 'registro_asistencia' %}" class="nav__dropdown-item">Registrar Asistencia</a>
+                                        <a href="{% url 'visualizacion_asistencia' %}" class="nav__dropdown-item">Ver Asistencia</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Solicitudes -->
+                            <div class="nav__dropdown">
+                                <a href="#" class="nav__link">
+                                    <i class='bx bx-file nav__icon'></i>
+                                    <span class="nav__name">Solicitudes</span>
+                                    <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                                </a>
+                                <div class="nav__dropdown-collapse">
+                                    <div class="nav__dropdown-content">
+                                        <a href="{% url 'crear_solicitud' %}" class="nav__dropdown-item">Crear Solicitud</a>
+                                        <a href="{% url 'lista_solicitudes' %}" class="nav__dropdown-item">Ver Solicitud</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Cursos -->
+                            <div class="nav__dropdown">
+                                <a href="#" class="nav__link">
+                                    <i class='bx bx-book nav__icon'></i>
+                                    <span class="nav__name">Cursos</span>
+                                    <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                                </a>
+                                <div class="nav__dropdown-collapse">
+                                    <div class="nav__dropdown-content">
+                                        <a href="{% url 'lista_cursos_colaborador' %}" class="nav__dropdown-item">Ver Cursos</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Denuncias -->
+                            <div class="nav__dropdown">
+                                <a href="#" class="nav__link">
+                                    <i class='bx bx-error nav__icon'></i>
+        
+                                    <span class="nav__name">Denuncias</span>
+                                    <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                                </a>
+                                <div class="nav__dropdown-collapse">
+                                    <div class="nav__dropdown-content">
+                                        <a href="{% url 'crear_denuncia' %}" class="nav__dropdown-item">Crear Denuncia</a>
+                                        <a href="{% url 'lista_denuncias' %}" class="nav__dropdown-item">Mis Denuncias</a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+        
+                <a href="#" class="nav__link nav__logout" id="logout-link">
+                    <i class='bx bx-log-out nav__icon'></i>
+                    <span class="nav__name">Cierre Sesión</span>
+                </a>
+                
+                <form id="logout-form" method="post" action="{% url 'logout' %}" style="display:none;">
+                    {% csrf_token %}
+                    <button type="submit" class="dropdown-item">Salir</button>
+                </form>
+                
+                <script>
+                    document.getElementById('logout-link').addEventListener('click', function(event) {
+                        event.preventDefault();
+                        document.getElementById('logout-form').submit();
+                    });
+                </script>
+                
+            </nav>
+        </div>
+        {% block content %}
+        {% endblock %}
+    </body>
+    
+</html>

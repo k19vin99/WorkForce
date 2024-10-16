@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Detalle del Módulo: {{ modulo.titulo }}</h1>
+    <p>{{ modulo.descripcion }}</p>
+    <p><a href="{{ modulo.archivo.url }}">Descargar Archivo</a></p>
+
+    <h2>Comentarios</h2>
+    <ul>
+        {% for comentario in comentarios %}
+        <li><strong>{{ comentario.usuario.username }}</strong>: {{ comentario.comentario }}</li>
+        {% endfor %}
+    </ul>
+
+    <h3>Agregar Comentario</h3>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Agregar Comentario</button>
+    </form>
+</div>
+{% endblock %}

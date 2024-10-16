@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5 d-flex justify-content-center">
+    <div class="text-center">
+        <h1 class="text-center">Mi Perfil</h1>
+        <div class="row justify-content-center">
+            <div class="col-md-4 d-flex justify-content-center">
+                {% if user.foto_perfil %}
+                    <img src="{{ user.foto_perfil.url }}" class="img-thumbnail shadow" alt="Foto de Perfil" style="border-radius: 20px;">
+                {% else %}
+                    <img src="{% static 'img/default_profile.png' %}" class="img-thumbnail shadow" alt="Foto de Perfil por Defecto" style="border-radius: 20px;">
+                {% endif %}
+            </div>
+            <div class="col-md-6">
+                <table class="table table-sm shadow-sm" style="background-color: #ffffff; border-radius: 5px; overflow: hidden;">
+                    <tr>
+                        <th style="background-color: #f0f0f0;">Nombre de Usuario</th>
+                        <td>{{ user.username }}</td>
+                    </tr>
+                    <tr>
+                        <th style="background-color: #f0f0f0;">Email</th>
+                        <td>{{ user.email }}</td>
+                    </tr>
+                    <tr>
+                        <th style="background-color: #f0f0f0;">Nombre</th>
+                        <td>{{ user.first_name }}</td>
+                    </tr>
+                    <tr>
+                        <th style="background-color: #f0f0f0;">Apellido</th>
+                        <td>{{ user.last_name }}</td>
+                    </tr>
+                    <tr>
+                        <th style="background-color: #f0f0f0;">Fecha de Registro</th>
+                        <td>{{ user.date_joined }}</td>
+                    </tr>
+                </table>
+                <div class="btn-group mt-3">
+                    <a href="{% url 'edit_profile' %}" class="btn btn-outline-primary btn-hover" style="border-color: #2eeff5; color: black;">Editar Perfil</a>
+                    <a href="{% url 'edit_profile_photo' %}" class="btn btn-outline-primary btn-hover" style="border-color: #2eeff5; color: black;">Cambiar Foto de Perfil</a>
+                    <a href="{% url 'cambiar_contrasena' %}" class="btn btn-outline-warning btn-hover" style="border-color: #2eeff5; color: black;">Cambiar Contraseña</a>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .btn-hover:hover {
+        background-color: #2eeff5;
+        color: #000;
+        border-color: #2eeff5;
+    }
+    .table th {
+        text-align: left;
+        font-weight: bold;
+    }
+    .btn-group .btn {
+        margin-right: 5px;
+    }
+    .btn-group .btn:last-child {
+        margin-right: 0;
+    }
+</style>
+
+{% endblock %}

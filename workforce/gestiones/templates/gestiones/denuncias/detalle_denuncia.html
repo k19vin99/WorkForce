@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{%load static %}
+{% block content %}
+<div class="container">
+    <h2>Detalles de la Denuncia</h2>
+    <p><strong>Denunciante:</strong> {{ denuncia.denunciante }}</p>
+    <p><strong>Denunciado:</strong> {{ denuncia.denunciado }}</p>
+    <p><strong>Motivo:</strong> {{ denuncia.motivo }}</p>
+    <p><strong>Descripción:</strong> {{ denuncia.descripcion }}</p>
+    <p><strong>Estado:</strong> {{ denuncia.estado }}</p>  <!-- Mostrar el estado de la denuncia -->
+    <p><strong>Fecha de Creación:</strong> {{ denuncia.fecha_creacion }}</p>
+    <p><strong>Contacto de Urgencia:</strong> {{ denuncia.contacto_urgencia }}</p>
+
+    {% if denuncia.evidencias %}
+        <p><strong>Evidencias:</strong> <a href="{{ denuncia.evidencias.url }}">Descargar</a></p>
+    {% endif %}
+
+    <h3>Notas</h3>
+    <ul class="list-group mb-4">
+        {% for nota in notas %}
+            <li class="list-group-item">
+                <p>{{ nota.nota }}</p>
+                <small>Agregado por {{ nota.usuario }} el {{ nota.fecha_creacion }}</small>
+            </li>
+        {% empty %}
+            <li class="list-group-item">No hay notas para esta denuncia.</li>
+        {% endfor %}
+    </ul>
+
+    <h3>Agregar una Nota</h3>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Agregar Nota</button>
+    </form>
+</div>
+{% endblock %}

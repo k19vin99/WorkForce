@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-header">Usuarios Registrados</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ cantidad_usuarios }}</h5>
+                    <p class="card-text">Total de usuarios registrados en la empresa.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-header">Liquidaciones</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ cantidad_liquidaciones }}</h5>
+                    <p class="card-text">Total de liquidaciones registradas.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-info mb-3">
+                <div class="card-header">Cargas Familiares</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ cantidad_cargas_familiares }}</h5>
+                    <p class="card-text">Total de cargas familiares registradas.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-header">Solicitudes Creadas</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ cantidad_solicitudes }}</h5>
+                    <p class="card-text">Total de solicitudes creadas.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-danger mb-3">
+                <div class="card-header">Solicitudes Pendientes</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ solicitudes_pendientes }}</h5>
+                    <p class="card-text">Total de solicitudes pendientes.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-secondary mb-3">
+                <div class="card-header">Solicitudes Aprobadas</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ solicitudes_aprobadas }}</h5>
+                    <p class="card-text">Total de solicitudes aprobadas.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-dark mb-3">
+                <div class="card-header">Solicitudes Rechazadas</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ solicitudes_rechazadas }}</h5>
+                    <p class="card-text">Total de solicitudes rechazadas.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
