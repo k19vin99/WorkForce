@@ -331,3 +331,43 @@ img {
     opacity: 1;
   }
 }
+
+.card-usuarios {
+  background-color: #e0f7fa; /* Color claro para usuarios registrados */
+}
+.card-liquidaciones {
+  background-color: #ffe0b2; /* Color claro para liquidaciones */
+}
+.card-cargas {
+  background-color: #ffe4e1; /* Color claro para cargas familiares */
+}
+.card-solicitudes-creadas {
+  background-color: #c8e6c9; /* Color claro para solicitudes creadas */
+}
+.card-solicitudes-pendientes {
+  background-color: #fff9c4; /* Color claro para solicitudes pendientes */
+}
+.card-solicitudes-aprobadas {
+  background-color: #c5cae9; /* Color claro para solicitudes aprobadas */
+}
+.card-solicitudes-rechazadas {
+  background-color: #ffccbc; /* Color claro para solicitudes rechazadas */
+}
+.card-cursos {
+  background-color: #f1f8e9; /* Color claro para cursos */
+}
+.card-beneficios {
+  background-color: #d1c4e9; /* Color claro para beneficios */
+}
+.card-publicaciones {
+  background-color: #ffe0f2; /* Color claro para publicaciones */
+}
+.card-denuncias-pendientes {
+  background-color: #f8bbd0; /* Color claro para denuncias pendientes */
+}
+.card-denuncias-revision {
+  background-color: #e1bee7; /* Color claro para denuncias en revisión */
+}
+.card-denuncias-resueltas {
+  background-color: #c8e6c9; /* Color claro para denuncias resueltas */
+}

@@ -1,91 +1,151 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Editar Usuario{% endblock %}
+{% block title %}Editar Colaborador{% endblock %}
 {% block content %}
 <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
-    <div class="col-md-8">
-        <div class="card p-4" style="border-radius: 15px; background-color: #ffffff; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);">
-            <h2 class="text-center">Editar Usuario</h2>
+    <div class="col-lg-10 col-md-12">
+        <div class="card p-5" style="border-radius: 20px; background-color: #ffffff; box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);">
+            <h2 class="text-center mb-4">Editar Colaborador</h2>
+            
+            <!-- Mostrar mensajes de éxito o error -->
+            {% if messages %}
+                <div class="container mb-3">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
             <form method="post">
                 {% csrf_token %}
-                
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group mb-3">
-                            {{ form.username.label_tag }}
-                            {{ form.username }}
+
+                <!-- Personal Information Section -->
+                <div class="card mb-4 p-4" style="border-radius: 15px; background-color: #f8f9fa;">
+                    <h5 class="mb-3"><i class="fas fa-user"></i> Información Personal</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.username.label_tag }}
+                                {{ form.username }}
+                                {{ form.username.errors }}
+                            </div>
                         </div>
-                        <div class="form-group mb-3">
-                            {{ form.first_name.label_tag }}
-                            {{ form.first_name }}
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.rut.label_tag }}
+                                {{ form.rut }}
+                                {{ form.rut.errors }}
+                            </div>
                         </div>
-                        <div class="form-group mb-3">
-                            {{ form.cargo.label_tag }}
-                            {{ form.cargo }}
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.first_name.label_tag }}
+                                {{ form.first_name }}
+                                {{ form.first_name.errors }}
+                            </div>
                         </div>
-                        <div class="form-group mb-3">
-                            {{ form.fecha_nacimiento.label_tag }}
-                            {{ form.fecha_nacimiento }}
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.last_name.label_tag }}
+                                {{ form.last_name }}
+                                {{ form.last_name.errors }}
+                            </div>
                         </div>
-                        <div class="form-group mb-3">
-                            {{ form.password1.label_tag }}
-                            {{ form.password1 }}
+                        <div class="col-md-12">
+                            <div class="form-group mb-3">
+                                {{ form.email.label_tag }}
+                                {{ form.email }}
+                                {{ form.email.errors }}
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group mb-3">
+                                {{ form.area.label_tag }}
+                                {{ form.area }}
+                                {{ form.area.errors }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.fecha_nacimiento.label_tag }}
+                                {{ form.fecha_nacimiento }}
+                                {{ form.fecha_nacimiento.errors }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.telefono.label_tag }}
+                                {{ form.telefono }}
+                                {{ form.telefono.errors }}
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group mb-3">
+                                {{ form.direccion.label_tag }}
+                                {{ form.direccion }}
+                                {{ form.direccion.errors }}
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="form-group mb-3">
-                            {{ form.rut.label_tag }}
-                            {{ form.rut }}
+                </div>
+
+                <!-- Job Information Section -->
+                <div class="card mb-4 p-4" style="border-radius: 15px; background-color: #f8f9fa;">
+                    <h5 class="mb-3"><i class="fas fa-briefcase"></i> Información del Trabajo</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.cargo.label_tag }}
+                                {{ form.cargo }}
+                                {{ form.cargo.errors }}
+                            </div>
                         </div>
-                        <div class="form-group mb-3">
-                            {{ form.last_name.label_tag }}
-                            {{ form.last_name }}
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.fecha_contratacion.label_tag }}
+                                {{ form.fecha_contratacion }}
+                                {{ form.fecha_contratacion.errors }}
+                            </div>
                         </div>
-                        <div class="form-group mb-3">
-                            {{ form.fecha_contratacion.label_tag }}
-                            {{ form.fecha_contratacion }}
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.grupo.label_tag }}
+                                {{ form.grupo }}
+                                {{ form.grupo.errors }}
+                            </div>
                         </div>
-                        <div class="form-group mb-3">
-                            {{ form.direccion.label_tag }}
-                            {{ form.direccion }}
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.salud.label_tag }}
+                                {{ form.salud }}
+                                {{ form.salud.errors }}
+                            </div>
                         </div>
-                        <div class="form-group mb-3">
-                            {{ form.password2.label_tag }}
-                            {{ form.password2 }}
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.afp.label_tag }}
+                                {{ form.afp }}
+                                {{ form.afp.errors }}
+                            </div>
                         </div>
-                        <div class="form-group mb-3">
-                            {{ form.area.label_tag }}
-                            {{ form.area }}
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.horario_asignado.label_tag }}
+                                {{ form.horario_asignado }}
+                                {{ form.horario_asignado.errors }}
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="form-group mb-3">
-                    {{ form.grupo.label_tag }}
-                    {{ form.grupo }}
+                <!-- Buttons -->
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary me-3"><i class="fas fa-save"></i> Guardar Cambios</button>
+                    <a href="{% url 'lista_colaboradores' %}" class="btn btn-outline-dark"><i class="fas fa-times"></i> Cancelar</a>
                 </div>
-
-                <div class="form-group mb-3">
-                    {{ form.telefono.label_tag }}
-                    {{ form.telefono }}
-                </div>
-
-                <div class="form-group mb-3">
-                    {{ form.salud.label_tag }}
-                    {{ form.salud }}
-                </div>
-
-                <div class="form-group mb-3">
-                    {{ form.afp.label_tag }}
-                    {{ form.afp }}
-                </div>
-
-                <div class="form-group mb-3">
-                    {{ form.horario_asignado.label_tag }}
-                    {{ form.horario_asignado }}
-                </div>
-
-                <button type="submit" class="btn btn-primary w-100 mt-3">Guardar Cambios</button>
             </form>
         </div>
     </div>

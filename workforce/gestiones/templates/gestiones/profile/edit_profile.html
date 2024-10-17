@@ -1,28 +1,60 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-<header class="header">
-    <div class="header__container">
-        {% if user.foto_perfil %}
-                <img src="{{ user.foto_perfil.url }}" alt="mdo" width="42" height="42" class="header__img">
-            {% else %}
-                <img src="{% static 'img/default_profile.png' %}" alt="mdo" width="42" height="42" class="header__img">
-            {% endif %}
-
-        <a href="{% url 'home' %}" class="header__logo">WorkForce</a>
-
-        <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search" action="{% url 'buscar' %}">
-            <input type="search" class="form-control" placeholder="Buscar" aria-label="Search" name="q">
+<div class="container mt-5">
+    <div class="card p-4 shadow-lg" style="border-radius: 20px; background-color: #ffffff;">
+        <h1 class="text-center mb-4">Editar Perfil</h1>
+        <form method="POST" enctype="multipart/form-data" class="mb-3">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="form-group">
+                        {{ form.username.label_tag }}
+                        {{ form.username }}
+                        {{ form.username.errors }}
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="form-group">
+                        {{ form.email.label_tag }}
+                        {{ form.email }}
+                        {{ form.email.errors }}
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="form-group">
+                        {{ form.first_name.label_tag }}
+                        {{ form.first_name }}
+                        {{ form.first_name.errors }}
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="form-group">
+                        {{ form.last_name.label_tag }}
+                        {{ form.last_name }}
+                        {{ form.last_name.errors }}
+                    </div>
+                </div>
+                <div class="col-md-12 mb-3">
+                    <div class="form-group">
+                        {{ form.foto_perfil.label_tag }}
+                        {{ form.foto_perfil }}
+                        {{ form.foto_perfil.errors }}
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-center mt-4">
+                <button type="submit" class="btn btn-primary px-4 d-flex align-items-center me-2" style="border-radius: 10px;">
+                    <i class="fas fa-user-edit me-1"></i> Guardar 
+                </button>
+                <a href="{% url 'profile' %}" class="btn btn-secondary px-4" style="border-radius: 10px;">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
+            </div>
+            <div class="d-flex justify-content-center mt-4">
+                <a href="{% url 'home' %}" class="btn btn-secondary px-4" style="border-radius: 10px;"><i class="fas fa-home"></i> Volver al Inicio</a>
+            </div>
         </form>
     </div>
-</header>
-<div class="container mt-5">
-    <h1>Editar Perfil</h1>
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-    </form>
-    <a href="{% url 'profile' %}" class="btn btn-secondary mt-3">Cancelar</a>
 </div>
 {% endblock %}

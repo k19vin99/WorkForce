@@ -4,6 +4,8 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+from django.core.validators import MaxValueValidator, MinValueValidator
+import datetime
 
 class Empresa(models.Model):
     nombre = models.CharField(max_length=255)
@@ -63,6 +65,21 @@ class CustomUser(AbstractUser):
         return self.username
 
 class Liquidacion(models.Model):
+    MESES_CHOICES = [
+        (1, "Enero"),
+        (2, "Febrero"),
+        (3, "Marzo"),
+        (4, "Abril"),
+        (5, "Mayo"),
+        (6, "Junio"),
+        (7, "Julio"),
+        (8, "Agosto"),
+        (9, "Septiembre"),
+        (10, "Octubre"),
+        (11, "Noviembre"),
+        (12, "Diciembre"),
+    ]
+
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE)
     usuario = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     sueldo_base = models.DecimalField(max_digits=10, decimal_places=2)
@@ -74,6 +91,13 @@ class Liquidacion(models.Model):
     seguro_mutual = models.DecimalField(max_digits=10, decimal_places=2)
     sueldo_liquido = models.DecimalField(max_digits=10, decimal_places=2, editable=False)
     fecha = models.DateField(auto_now_add=True)
+    
+    # Nuevos campos para el mes y año de la liquidación
+    mes = models.PositiveSmallIntegerField(choices=MESES_CHOICES)
+    año = models.PositiveIntegerField(validators=[
+        MinValueValidator(2000), 
+        MaxValueValidator(datetime.datetime.now().year + 1)
+    ])
 
     def save(self, *args, **kwargs):
         haberes = self.sueldo_base + self.gratificacion + self.colacion + self.movilizacion
@@ -82,7 +106,7 @@ class Liquidacion(models.Model):
         super(Liquidacion, self).save(*args, **kwargs)
 
     def __str__(self):
-        return f"Liquidación de {self.usuario.username} - {self.fecha}"
+        return f"Liquidación de {self.usuario.username} - {self.get_mes_display()} {self.año}"
 
 
 class CargaFamiliar(models.Model):

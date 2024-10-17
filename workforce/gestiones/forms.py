@@ -1,14 +1,28 @@
 from django import forms
+import re
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.contrib.auth.models import Group
 from .models import Liquidacion, CargaFamiliar, CustomUser, Solicitud, Curso, Modulo, Comentario, Beneficio, Area, Denuncia, NotaDenuncia, EvidenciaDenuncia, Publicacion
 from django.contrib.auth import get_user_model
 from django.forms import modelformset_factory
+import datetime
 
+#Formulario de Registro de Usuario
 class CustomUserCreationForm(UserCreationForm):
     grupo = forms.ModelChoiceField(queryset=Group.objects.all(), required=True, label="Grupo")
     first_name = forms.CharField(max_length=30, required=True, label="Nombre")
     last_name = forms.CharField(max_length=30, required=True, label="Apellido")
+    email = forms.EmailField(required=True, label="Correo Electrónico")
+    rut = forms.CharField(
+        max_length=12,
+        required=True,
+        label="RUT",
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Ej: 12345678-9',
+            'class': 'form-control'
+        })
+    )
+    area = forms.ModelChoiceField(queryset=Area.objects.all(), required=True, label="Área")
     fecha_contratacion = forms.DateField(
         widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}), 
         required=True, 
@@ -46,32 +60,127 @@ class CustomUserCreationForm(UserCreationForm):
         ('21:00-8:00', '21:00 a 8:00'),
         ('otro', 'Otro'),
     ], required=True, label="Horario Asignado")
+    cargo = forms.CharField(max_length=255, required=True, label="Cargo")
 
     class Meta:
         model = CustomUser
         fields = [
-            'username', 'first_name', 'last_name', 'rut', 'cargo', 
+            'username', 'first_name', 'last_name', 'email', 'rut', 'area', 'cargo', 
             'telefono', 'fecha_nacimiento', 'direccion', 'salud', 'afp', 'horario_asignado', 
             'fecha_contratacion', 'grupo', 'password1', 'password2'
         ]
 
     def clean_rut(self):
         rut = self.cleaned_data.get('rut')
+        # Verificar que el RUT ya esté registrado
         if CustomUser.objects.filter(rut=rut).exists():
             raise forms.ValidationError("El RUT ya está registrado.")
+        # Verificar formato correcto (Ej: 12345678-9)
+        rut_pattern = r'^\d{1,8}-[\dkK]$'
+        if not re.match(rut_pattern, rut):
+            raise forms.ValidationError("El formato del RUT no es válido. Debe ser en formato 12345678-9.")
+        # Verificar dígito verificador
+        if not self.validar_digito_verificador(rut):
+            raise forms.ValidationError("El RUT ingresado no es válido.")
         return rut
+    def validar_digito_verificador(self, rut):
+        """Función para validar el dígito verificador de un RUT chileno."""
+        try:
+            rut_sin_dv, dv = rut.split('-')
+            rut_sin_dv = int(rut_sin_dv)
+            dv = dv.upper()
+            suma = 0
+            factor = 2
+            for digit in reversed(str(rut_sin_dv)):
+                suma += int(digit) * factor
+                factor += 1
+                if factor > 7:
+                    factor = 2
+            mod = 11 - (suma % 11)
+            if mod == 11:
+                dv_calculado = '0'
+            elif mod == 10:
+                dv_calculado = 'K'
+            else:
+                dv_calculado = str(mod)
+            return dv == dv_calculado
+        except:
+            return False
 
-
+class CustomUserChangeForm(forms.ModelForm):
+    grupo = forms.ModelChoiceField(queryset=Group.objects.all(), required=True, label="Grupo")
+    area = forms.ModelChoiceField(queryset=Area.objects.all(), required=True, label="Área")
+    fecha_nacimiento = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}), 
+        required=True, 
+        label="Fecha de Nacimiento"
+    )
+    fecha_contratacion = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}), 
+        required=True, 
+        label="Fecha de Contratación"
+    )
+    rut = forms.CharField(
+        max_length=12,
+        required=True,
+        label="RUT",
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Ej: 12345678-9',
+            'class': 'form-control'
+        })
+    )
+    class Meta:
+        model = CustomUser
+        fields = [
+            'username', 'first_name', 'last_name', 'email', 'rut', 'area', 'cargo', 
+            'telefono', 'fecha_nacimiento', 'direccion', 'salud', 'afp', 'horario_asignado', 
+            'fecha_contratacion', 'grupo'
+        ]
+    def clean_rut(self):
+        rut = self.cleaned_data.get('rut')
+        # Verificar que el RUT ya esté registrado para otro usuario (pero no el actual)
+        if CustomUser.objects.filter(rut=rut).exclude(pk=self.instance.pk).exists():
+            raise forms.ValidationError("El RUT ya está registrado por otro usuario.")
+        # Verificar formato correcto (Ej: 12345678-9)
+        rut_pattern = r'^\d{1,8}-[\dkK]$'
+        if not re.match(rut_pattern, rut):
+            raise forms.ValidationError("El formato del RUT no es válido. Debe ser en formato 12345678-9.")
+        # Verificar dígito verificador
+        if not self.validar_digito_verificador(rut):
+            raise forms.ValidationError("El RUT ingresado no es válido.")
+        return rut
+    def validar_digito_verificador(self, rut):
+        """ Función para validar el dígito verificador de un RUT chileno."""
+        try:
+            rut_sin_dv, dv = rut.split('-')
+            rut_sin_dv = int(rut_sin_dv)
+            dv = dv.upper()
+            suma = 0
+            factor = 2
+            for digit in reversed(str(rut_sin_dv)):
+                suma += int(digit) * factor
+                factor += 1
+                if factor > 7:
+                    factor = 2
+            mod = 11 - (suma % 11)
+            if mod == 11:
+                dv_calculado = '0'
+            elif mod == 10:
+                dv_calculado = 'K'
+            else:
+                dv_calculado = str(mod)
+            return dv == dv_calculado
+        except:
+            return False
+        
 class LiquidacionSueldoForm(forms.ModelForm):
     class Meta:
         model = Liquidacion
-        fields = ['usuario', 'sueldo_base', 'gratificacion', 'colacion', 'movilizacion', 'afp', 'salud', 'seguro_mutual']
-
-    def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None)
-        super(LiquidacionSueldoForm, self).__init__(*args, **kwargs)
-        if user and user.empresa:
-            self.fields['usuario'].queryset = CustomUser.objects.filter(empresa=user.empresa)
+        fields = ['usuario', 'sueldo_base', 'gratificacion', 'colacion', 'movilizacion', 'afp', 'salud', 'seguro_mutual', 'mes', 'año']
+        widgets = {
+            'mes': forms.Select(attrs={'class': 'form-control'}),
+            'año': forms.NumberInput(attrs={'class': 'form-control', 'min': 2000, 'max': datetime.datetime.now().year + 1}),
+        }
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)  # Obtiene el usuario desde kwargs
@@ -120,8 +229,10 @@ class SolicitudForm(forms.ModelForm):
         model = Solicitud
         fields = ['tipo', 'descripcion', 'fecha_inicio', 'fecha_fin']
         widgets = {
-            'fecha_inicio': forms.DateInput(attrs={'type': 'date'}),
-            'fecha_fin': forms.DateInput(attrs={'type': 'date'}),
+            'tipo': forms.Select(attrs={'class': 'form-control'}),
+            'descripcion': forms.Textarea(attrs={'class': 'form-control'}),
+            'fecha_inicio': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'fecha_fin': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
         }
 
 class ContactForm(forms.Form):
@@ -147,7 +258,12 @@ class ContactForm(forms.Form):
 class EditProfileForm(forms.ModelForm):
     class Meta:
         model = CustomUser
-        fields = ['first_name', 'last_name', 'email']
+        fields = ['username', 'email', 'first_name', 'last_name', 'telefono', 'direccion', 'fecha_nacimiento', 'foto_perfil']
+
+    def __init__(self, *args, **kwargs):
+        super(EditProfileForm, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'form-control shadow-sm'
 
 class EditProfilePhotoForm(forms.ModelForm):
     class Meta:

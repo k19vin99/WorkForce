@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
-from .forms import CustomUserCreationForm, LiquidacionSueldoForm, EditarUsuarioForm, CargaFamiliarForm, SolicitudForm, ContactForm, EditProfileForm, EditProfilePhotoForm, PasswordChangeForm, CursoForm, ModuloForm, ComentarioForm, EditarParticipantesForm, BeneficioForm, DenunciaForm, EvidenciaFormset, NotaDenunciaForm, PublicacionForm
+from .forms import CustomUserCreationForm, LiquidacionSueldoForm, EditarUsuarioForm, CargaFamiliarForm, SolicitudForm, ContactForm, EditProfileForm, EditProfilePhotoForm, PasswordChangeForm, CursoForm, ModuloForm, ComentarioForm, EditarParticipantesForm, BeneficioForm, DenunciaForm, EvidenciaFormset, NotaDenunciaForm, PublicacionForm, CustomUserChangeForm
+
 import os
 from django.conf import settings
 from .models import Liquidacion, CustomUser, CargaFamiliar, Asistencia, Solicitud, Curso, Modulo, Comentario, Beneficio, Area, Denuncia, EvidenciaDenuncia
@@ -14,6 +15,7 @@ from django.core.mail import send_mail
 from django.db.models import Q
 from django.contrib.auth.models import Group
 from django.contrib.auth import update_session_auth_hash
+from django.contrib import messages
 
 def is_hr_analyst(user):
     return user.area and user.area.nombre == 'Recursos Humanos' and user.cargo == 'Analista de Personas'
@@ -60,7 +62,6 @@ def buscar(request):
 
     return render(request, 'gestiones/buscar/busqueda.html', context)
 
-#Vista usuarios
 @login_required
 def registrar_usuario(request):
     if not is_supervisor(request.user):
@@ -78,10 +79,18 @@ def registrar_usuario(request):
             group = Group.objects.get(name=grupo)
             new_user.groups.add(group)
 
-            return redirect('home')
+            # Añadir mensaje de éxito
+            messages.success(request, 'Usuario registrado correctamente.')
+
+            # Limpiar el formulario volviendo a renderizar la vista con un formulario vacío
+            form = CustomUserCreationForm()  # Crear un formulario nuevo vacío
+        else:
+            # Si hay errores de validación, muestra el formulario con los errores
+            messages.error(request, 'Hubo un error en el registro. Verifique los datos ingresados.')
+
     else:
         form = CustomUserCreationForm()
-    
+
     return render(request, 'gestiones/usuarios/registrar_usuario.html', {'form': form})
 
 @login_required
@@ -96,12 +105,15 @@ def editar_colaborador(request, pk):
     colaborador = get_object_or_404(CustomUser, pk=pk)
     
     if request.method == 'POST':
-        form = EditarUsuarioForm(request.POST, instance=colaborador)
+        form = CustomUserChangeForm(request.POST, instance=colaborador)
         if form.is_valid():
             form.save()
+            messages.success(request, 'El colaborador ha sido actualizado correctamente.')
             return redirect('lista_colaboradores')  # Redirige a la lista de colaboradores después de guardar
+        else:
+            messages.error(request, 'Por favor, corrige los errores a continuación.')
     else:
-        form = EditarUsuarioForm(instance=colaborador)
+        form = CustomUserChangeForm(instance=colaborador)
     
     return render(request, 'gestiones/usuarios/editar_colaborador.html', {'form': form, 'colaborador': colaborador})
 
