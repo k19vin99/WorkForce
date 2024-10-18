@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Detalle del Curso: {{ curso.nombre }}</h1>
+    <p>{{ curso.descripcion }}</p>
+
+    <h2>Módulos</h2>
+    <ul>
+        {% for modulo in modulos %}
+        <li>{{ modulo.titulo }} - <a href="{{ modulo.archivo.url }}" target="_blank">Descargar Archivo</a></li>
+        <h4>Comentarios:</h4>
+        <ul>
+            {% for comentario in modulo.comentarios.all %}
+            <li>{{ comentario.usuario.username }}: {{ comentario.comentario }} ({{ comentario.fecha }})</li>
+            {% endfor %}
+        </ul>
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Agregar Comentario</button>
+        </form>
+        <hr>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

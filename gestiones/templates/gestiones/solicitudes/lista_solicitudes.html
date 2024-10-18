@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4" style="font-weight: bold;">Lista de Solicitudes</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Colaborador</th>
+                    <th scope="col">Tipo</th>
+                    <th scope="col">Descripción</th>
+                    <th scope="col">Fecha Inicio</th>
+                    <th scope="col">Fecha Fin</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for solicitud in solicitudes %}
+                <tr>
+                    <td>{{ solicitud.colaborador.get_full_name }}</td>
+                    <td>{{ solicitud.get_tipo_display }}</td>
+                    <td>{{ solicitud.descripcion|truncatewords:10 }}</td>
+                    <td>{{ solicitud.fecha_inicio }}</td>
+                    <td>{{ solicitud.fecha_fin }}</td>
+                    <td>
+                        <span class="badge 
+                        {% if solicitud.estado == 'pendiente' %}bg-warning text-dark{% elif solicitud.estado == 'aprobada' %}bg-success{% elif solicitud.estado == 'rechazada' %}bg-danger{% endif %}">
+                            {{ solicitud.get_estado_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            {% if request.user.area.nombre == 'Recursos Humanos' and request.user.cargo == 'Analista de Personas' %}
+                            <!-- Ícono para Gestionar Solicitud (Solo visible para supervisores) -->
+                            <a href="{% url 'gestionar_solicitud' solicitud.id %}" class="text-secondary me-3" title="Gestionar Solicitud">
+                                <i class="fas fa-tasks fa-lg"></i>
+                            </a>
+                            {% endif %}
+                            <!-- Ícono para Descargar PDF -->
+                            <a href="{% url 'descargar_comprobante' solicitud.id %}" class="text-primary" title="Descargar PDF">
+                                <i class="fas fa-file-download fa-lg"></i>
+                            </a>
+                        </div>
+                        
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="d-flex justify-content-center mt-4">
+            <a href="{% url 'home' %}" class="btn btn-secondary px-4" style="border-radius: 10px;"><i class="fas fa-home"></i> Volver al Inicio</a>
+        </div>
+</div>
+{% endblock %}

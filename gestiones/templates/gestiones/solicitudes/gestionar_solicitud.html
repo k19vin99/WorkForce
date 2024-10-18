@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Gestionar Solicitud</h1>
+    <p>Colaborador: {{ solicitud.colaborador.username }}</p>
+    <p>Tipo: {{ solicitud.get_tipo_display }}</p>
+    <p>Descripción: {{ solicitud.descripcion }}</p>
+    <p>Fecha Inicio: {{ solicitud.fecha_inicio }}</p>
+    <p>Fecha Fin: {{ solicitud.fecha_fin }}</p>
+    <p>Estado: {{ solicitud.get_estado_display }}</p>
+    <form method="POST">
+        {% csrf_token %}
+        <button name="aprobar" type="submit" class="btn btn-success">Aprobar</button>
+        <button name="rechazar" type="submit" class="btn btn-danger">Rechazar</button>
+    </form>
+</div>
+{% endblock %}

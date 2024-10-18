@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Mis Cursos</h1>
+    <ul>
+        {% for curso in cursos %}
+        <li><a href="{% url 'detalle_curso_colaborador' curso.id %}">{{ curso.nombre }}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

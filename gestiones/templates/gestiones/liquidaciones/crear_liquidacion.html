@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Crear Liquidación de Sueldo{% endblock %}
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="col-lg-10 col-md-12">
+        <div class="card p-5" style="border-radius: 20px; background-color: #ffffff; box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);">
+            <h2 class="text-center mb-4">Crear Liquidación de Sueldo</h2>
+
+            <!-- Mostrar mensajes de error o éxito -->
+            {% if messages %}
+                <div class="container mb-3">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+
+                <!-- Información del Colaborador y Período de Liquidación -->
+                <div class="card mb-4 p-4" style="border-radius: 15px; background-color: #f8f9fa;">
+                    <h5 class="mb-3"><i class="fas fa-user"></i> Información del Colaborador y Período de Liquidación</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.usuario.label_tag }}
+                                {{ form.usuario }}
+                                {{ form.usuario.errors }}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group mb-3">
+                                {{ form.mes.label_tag }}
+                                {{ form.mes }}
+                                {{ form.mes.errors }}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group mb-3">
+                                {{ form.año.label_tag }}
+                                {{ form.año }}
+                                {{ form.año.errors }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Haberes -->
+                <div class="card mb-4 p-4" style="border-radius: 15px; background-color: #f8f9fa;">
+                    <h5 class="mb-3"><i class="fas fa-coins"></i> Haberes</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.sueldo_base.label_tag }}
+                                {{ form.sueldo_base }}
+                                {{ form.sueldo_base.errors }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.gratificacion.label_tag }}
+                                {{ form.gratificacion }}
+                                {{ form.gratificacion.errors }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.colacion.label_tag }}
+                                {{ form.colacion }}
+                                {{ form.colacion.errors }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.movilizacion.label_tag }}
+                                {{ form.movilizacion }}
+                                {{ form.movilizacion.errors }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Descuentos -->
+                <div class="card mb-4 p-4" style="border-radius: 15px; background-color: #f8f9fa;">
+                    <h5 class="mb-3"><i class="fas fa-minus-circle"></i> Descuentos</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.afp.label_tag }}
+                                {{ form.afp }}
+                                {{ form.afp.errors }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.salud.label_tag }}
+                                {{ form.salud }}
+                                {{ form.salud.errors }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.seguro_mutual.label_tag }}
+                                {{ form.seguro_mutual }}
+                                {{ form.seguro_mutual.errors }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Botones de Acción -->
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary me-3"><i class="fas fa-save"></i> Guardar Liquidación</button>
+                    <a href="{% url 'visualizacion_liquidaciones' %}" class="btn btn-secondary px-4" style="border-radius: 10px;">
+                        <i class="fas fa-times"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+            <div class="d-flex justify-content-center mt-4">
+                <a href="{% url 'home' %}" class="btn btn-secondary px-4" style="border-radius: 10px;"><i class="fas fa-home"></i> Volver al Inicio</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,177 @@
+.beneficio-card {
+  width: 100%;
+  height: 300px; /* Altura fija para todas las tarjetas */
+  object-fit: cover; /* Para que las imágenes se ajusten bien al tamaño del contenedor */
+}
+
+.beneficio-card img {
+  width: 100%;
+  height: 200px; /* Altura fija para la imagen */
+  object-fit: cover; /* Para que la imagen cubra todo el área disponible */
+}
+
+.beneficio-card .card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 1000px; /* Altura fija para el cuerpo de la tarjeta */
+}
+
+body {
+    background-color: #fff; /* Fondo blanco */
+    color: #000; /* Texto negro por defecto */
+    font-family: 'Roboto', sans-serif;
+  }
+  
+  .header {
+    background-color: #6c807b; /* Fondo amarillo */
+    padding: 20px 0;
+  }
+  
+  .header .logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #000;
+  }
+  
+  .header .nav ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+  }
+  
+  .header .nav li {
+    margin: 0 10px;
+  }
+  
+  .header .nav a {
+    font-size: 18px;
+    color: #000; /* Texto negro */
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 7px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .header .nav a:hover {
+    background-color: #000; /* Fondo negro al pasar el ratón */
+    color: #FFD700; /* Texto amarillo al pasar el ratón */
+  }
+  
+.text-bg-dark {
+    background-color: #3098ff !important;
+}
+  
+  .btn-dark {
+    background-color: #000;
+    border-radius: 25px;
+    color: #FFD700;
+    border: 2px solid #000;
+  }
+  
+  .btn-dark:hover {
+    background-color: #FFD700;
+    color: #000;
+  }
+  
+  .carousel-item img {
+    object-fit: cover;
+  }
+  
+  .carousel-item img {
+    height: 840px; /* Ajusta este valor para hacer el carrusel más largo */
+    object-fit: cover; /* Asegura que la imagen cubra todo el área del carrusel */
+    width: 100%; /* Mantiene la imagen a la anchura completa del contenedor */
+}
+  .section-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .service-title {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+  }
+
+  /* Quitar subrayado en los links de las cards */
+  .card a {
+    text-decoration: none;
+    color: inherit; /* Heredar el color del contenedor */
+  }
+  
+  /* Estilo de las cards */
+  .card {
+    background: linear-gradient(135deg, #FFFFFF 40%, #6c807b 100%); /* Degradado diagonal de amarillo a blanco menos intenso */
+    border: none; /* Sin borde */
+    border-radius: 15px; /* Bordes redondeados */
+    color: #000; /* Texto negro */
+    margin-bottom: 20px; /* Espacio entre las tarjetas */
+    box-shadow: 10px 4px 8px rgba(0, 0, 0, 0.1); /* Sombra ligera para dar profundidad */
+    min-height: 200px; /* Altura mínima para asegurar tamaño uniforme */
+    height: 250px; /* Altura fija para todas las tarjetas */
+    display: flex;
+    align-items: center; /* Centrar verticalmente el contenido */
+    justify-content: center; /* Centrar horizontalmente el contenido */
+  }
+  
+  .card-body {
+    padding: 20px;
+  }
+  
+  .card-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .card-text {
+    font-size: 1rem;
+    margin-bottom: 0; /* Eliminar margen inferior en textos */
+  }
+  
+  /* Asegurar que todas las tarjetas tengan el mismo tamaño */s
+  .card {
+    flex: 1 1 0px;
+  }
+
+  .table-striped {
+    background-color: #ffffff; /* Fondo blanco de la tabla */
+    color: #000000; /* Texto negro */
+    border: 2px solid #000000; /* Borde negro */
+    border-radius: 10px; /* Esquinas redondeadas */
+    overflow: hidden; /* Para que las esquinas redondeadas funcionen bien */
+}
+
+.table-striped thead th {
+    background-color: #2eeff5; /* Fondo del encabezado */
+    color: #123456; /* Color del texto en el encabezado */
+    border-bottom: 2px solid #000000; /* Bordes inferiores negros */
+}
+
+.table-striped tbody tr {
+    background-color: #f8f9fa; /* Fondo claro para las filas */
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #e9ecef; /* Fondo alterno para las filas impares */
+}
+
+.table-striped tbody tr:hover {
+    background-color: #2eeff5; /* Color de fondo al pasar el ratón por las filas */
+    color: #123456; /* Color del texto al pasar el ratón por las filas */
+}
+
+.table-striped td, .table-striped th {
+    border: 1px solid #000000; /* Borde de las celdas */
+}
+
+
+  footer {
+    background-color: #6c807b;
+    text-align: center;
+    color: black; /* Texto negro */
+    padding: 50px 0;
+  }
+

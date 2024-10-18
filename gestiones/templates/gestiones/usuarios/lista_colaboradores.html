@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<h2>Lista de Colaboradores</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Rut</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Email</th>
+            <th>Teléfono</th>
+            <th>Dirección</th>
+            <th>Fecha de Nacimiento</th>
+            <th>Empresa</th>
+            <th>Cargo</th>
+            <th>Area</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for colaborador in colaboradores %}
+        <tr>
+            <td>{{ colaborador.username }}</td>
+            <td>{{colaborador.rut}}</td>
+            <td>{{ colaborador.first_name }}</td>
+            <td>{{ colaborador.last_name }}</td>
+            <td>{{ colaborador.email }}</td>
+            <td>{{ colaborador.telefono }}</td>
+            <td>{{ colaborador.direccion }}</td>
+            <td>{{ colaborador.fecha_nacimiento }}</td>
+            <td>{{ colaborador.empresa }}</td>
+            <td>{{ colaborador.cargo }}</td>
+            <td>{{ colaborador.area }}</td>
+            <td>
+                <a href="{% url 'editar_colaborador' colaborador.pk %}" class="btn btn-link text-warning" title="Editar colaborador">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <a href="{% url 'eliminar_colaborador' colaborador.pk %}" class="btn btn-link text-danger" title="Eliminar colaborador">
+                    <i class="fas fa-trash-alt"></i>
+                </a>
+            </td>
+            
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="d-flex justify-content-end">
+    <a href="{% url 'exportar_colaboradores_excel' %}" class="btn btn-success px-4 d-flex align-items-center me-2" style="border-radius: 10px; font-weight: 600;">
+        <i class="fas fa-file-excel"></i>   Exportar a Excel
+    </a>
+    <a href="{% url 'registrar_usuario' %}" class="btn btn-primary px-4 py-2" style="border-radius: 10px; font-weight: 600;">
+        <i class="fas fa-user-plus"></i> Nuevo Usuario
+    </a>
+    
+</div>
+<div class="d-flex justify-content-center mt-4">
+    <a href="{% url 'home' %}" class="btn btn-secondary px-4" style="border-radius: 10px;"><i class="fas fa-home"></i> Volver al Inicio</a>
+</div>
+{% endblock %}

@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="col-lg-10 col-md-12">
+        <div class="card p-5" style="border-radius: 20px; background-color: #ffffff; box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);">
+            <h2>Detalle de Denuncia</h2>
+            <div>
+                <table class="table table striped">
+                    <tbody>
+                        <tr>
+                            <th class="bg-light">Denunciante: </th>
+                            <td>{{ denuncia.denunciante.username }}</td>
+                        </tr>
+                        <tr>
+                            <th class="bg-light">Denunciado:</th>
+                            <td>{{ denuncia.denunciado }}</td>
+                        </tr>
+                        <tr>
+                            <th class="bg-light">Motivo:</th>
+                            <td>{{ denuncia.motivo }}</td>
+                        </tr>
+                        <tr>
+                            <th class="bg-light">Descripción:</th>
+                            <td>{{ denuncia.descripcion }}</td>
+                        </tr>
+                        <tr>
+                            <th class="bg-light">Estado</th>
+                            <td>{{ denuncia.estado }}</td>
+                        </tr>
+                        <tr>
+                            <th class="bg-light">Fecha de Denuncia</th>
+                            <td>{{ denuncia.fecha_creacion }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <br>
+            {% if es_analista_rrhh %}
+            <h3>Gestionar Denuncia</h3>
+            <form method="post" style="text-align: center;">
+                {% csrf_token %}
+                <button type="submit" name="revision" class="btn btn-warning">En Revisión</button>
+                <button type="submit" name="resuelta" class="btn btn-success">Resuelta</button>
+                <button type="submit" name="rechazar" class="btn btn-danger">Rechazar</button>
+            </form>
+            {% endif %}
+            <br>
+            <h3>Notas de la Denuncia</h3>
+            <br>
+            <table class="table table striped">
+                <tbody>
+                    {% for nota in notas %}
+                    <tr>
+                        <th class="bg-light">{{ nota.fecha_creacion }} - {{ nota.usuario.username }}: {{ nota.nota }}</th>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <h3 style="text-align: center;">Agregar Nota</h3>
+            <br>    
+            <form method="post" style="max-width: 600px; margin: auto;">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-success">Agregar Nota</button>
+            </form>
+            <br>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<a href="{% url 'lista_denuncias' %}">Volver a la lista de denuncias</a>
+
+{% endblock %}
