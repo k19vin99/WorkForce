@@ -1,30 +1,40 @@
 {% extends "base.html" %}
 {% load static %}
-
 {% block content %}
-<div class="container mt-5 d-flex justify-content-center">
-    <div class="card p-5 shadow-lg" style="border-radius: 20px; max-width: 600px; width: 100%;">
-        <h1 class="text-center mb-4" style="font-weight: bold;">Cambiar Foto de Perfil</h1>
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="form-group mb-4">
-                {{ form.foto_perfil.label_tag }}
-                {{ form.foto_perfil }}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="col-lg-10 col-md-12">
+        <div class="card p-5" style="border-radius: 20px; background-color: #ffffff; box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);">
+            <h1 class="text-center mb-4">Cambiar Foto de Perfil</h1>
+            <div class="row justify-content-center">
+                <div class="col-md-4 d-flex justify-content-center mb-4">
+                    {% if user.foto_perfil %}
+                        <img src="{{ user.foto_perfil.url }}" class="img-thumbnail shadow-lg" alt="Foto de Perfil" style="border-radius: 50%; width: 200px; height: 200px; object-fit: cover;">
+                    {% else %}
+                        <img src="{% static 'img/default_profile.png' %}" class="img-thumbnail shadow-lg" alt="Foto de Perfil por Defecto" style="border-radius: 50%; width: 200px; height: 200px; object-fit: cover;">
+                    {% endif %}
+                </div>
+                <div class="col-md-8">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group mb-4">
+                            {{ form.foto_perfil.label_tag }}
+                            {{ form.foto_perfil }}
+                        </div>
+                        <div class="d-flex justify-content-center mt-4">
+                            <button type="submit" class="btn btn-primary px-4 d-flex align-items-center me-2" style="border-radius: 10px;">
+                                <i class="fas fa-user-edit me-1"></i> Guardar 
+                            </button>
+                            <a href="{% url 'profile' %}" class="btn btn-secondary px-4" style="border-radius: 10px;">
+                                <i class="fas fa-times"></i> Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
             </div>
             <div class="d-flex justify-content-center mt-4">
-                <button type="submit" class="btn btn-primary px-4 d-flex align-items-center me-2" style="border-radius: 10px;">
-                    <i class="fas fa-user-edit me-1"></i> Guardar 
-                </button>
-                <a href="{% url 'profile' %}" class="btn btn-secondary px-4" style="border-radius: 10px;">
-                    <i class="fas fa-times"></i> Cancelar
-                </a>
+                <a href="{% url 'home' %}" class="btn btn-secondary px-4" style="border-radius: 10px;"><i class="fas fa-home"></i> Volver al Inicio</a>
             </div>
-        </form>
-        
-        <div class="d-flex justify-content-center mt-4">
-            <a href="{% url 'home' %}" class="btn btn-secondary px-4" style="border-radius: 10px;"><i class="fas fa-home"></i> Volver al Inicio</a>
         </div>
     </div>
 </div>
-
 {% endblock %}

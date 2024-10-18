@@ -21,10 +21,10 @@
             padding: 50px;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start; /* Alinea el contenido al inicio, más arriba */
+            justify-content: flex-start;
             align-items: center;
             background-color: #ffffff;
-            padding-top: 100px; /* Añade espacio desde arriba */
+            padding-top: 100px;
         }
         .form-control {
             border-radius: 5px;
@@ -60,6 +60,11 @@
         .card-body img {
             margin-bottom: 20px;
         }
+        .forgot-password-link {
+            display: block;
+            margin-top: 10px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -78,10 +83,12 @@
                     {{ form.password.errors }}
                     <button type="submit" class="btn btn-primary">Iniciar sesión</button>
                 </form>
+
+                <!-- Enlace para recuperar la contraseña -->
+                <a href="{% url 'password_reset' %}" class="forgot-password-link">¿Olvidaste tu contraseña?</a>
             </div>
         </div>
-        <div class="image-container">
-        </div>
+        <div class="image-container"></div>
     </div>
 </body>
 <footer>

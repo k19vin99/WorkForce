@@ -2,38 +2,32 @@
 {% load static %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="card p-5 shadow-lg" style="border-radius: 15px;">
-        <h1 class="text-center mb-4" style="font-weight: bold;">Visualización de Asistencia</h1>
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th scope="col" class="text-center">Fecha</th>
-                        <th scope="col" class="text-center">Hora de Entrada</th>
-                        <th scope="col" class="text-center">Hora de Salida</th>
-                        <th scope="col" class="text-center">Colaborador</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for asistencia in asistencias %}
-                    <tr>
-                        <td class="text-center">{{ asistencia.fecha }}</td>
-                        <td class="text-center">{{ asistencia.hora_entrada|default_if_none:"-" }}</td>
-                        <td class="text-center">{{ asistencia.hora_salida|default_if_none:"-" }}</td>
-                        <td class="text-center">{{ asistencia.colaborador.username }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        <div class="d-flex justify-content-center mt-4">
-            <a href="{% url 'registro_asistencia' %}" class="btn btn-secondary px-4" style="border-radius: 10px;"><i class="fas fa-clock"></i> Registrar Asistencia</a>
-        </div>
-        <div class="d-flex justify-content-center mt-4">
-            <a href="{% url 'home' %}" class="btn btn-secondary px-4" style="border-radius: 10px;"><i class="fas fa-home"></i> Volver al Inicio</a>
-        </div>
-    </div>
+<h1 class="text-center mb-4" style="font-weight: bold;">Visualización de Asistencia</h1>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col" class="text-center">Fecha</th>
+            <th scope="col" class="text-center">Hora de Entrada</th>
+            <th scope="col" class="text-center">Hora de Salida</th>
+            <th scope="col" class="text-center">Colaborador</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for asistencia in asistencias %}
+        <tr>
+            <td class="text-center">{{ asistencia.fecha }}</td>
+            <td class="text-center">{{ asistencia.hora_entrada|default_if_none:"-" }}</td>
+            <td class="text-center">{{ asistencia.hora_salida|default_if_none:"-" }}</td>
+            <td class="text-center">{{ asistencia.colaborador.username }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<div class="d-flex justify-content-end">
+    <a href="{% url 'registro_asistencia' %}" class="btn btn-secondary px-4" style="border-radius: 10px;"><i class="fas fa-clock"></i> Registrar Asistencia</a>
+    
 </div>
-
+<div class="d-flex justify-content-center mt-4">
+    <a href="{% url 'home' %}" class="btn btn-secondary px-4" style="border-radius: 10px;"><i class="fas fa-home"></i> Volver al Inicio</a>
+</div>
 {% endblock %}

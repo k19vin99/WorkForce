@@ -1,12 +1,16 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-<div class="container mt-5">
-    <h1>{% if form.instance.pk %}Editar{% else %}Crear{% endif %} Beneficio</h1>
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="col-lg-10 col-md-12">
+        <div class="card p-5" style="border-radius: 20px; background-color: #ffffff; box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);">
+            <h1 class="text-center mb-4">{% if form.instance.pk %}Editar{% else %}Crear{% endif %} Beneficio</h1>
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Guardar</button>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i>Guardar</button>
     </form>
+        </div>
+    </div>
 </div>
 {% endblock %}

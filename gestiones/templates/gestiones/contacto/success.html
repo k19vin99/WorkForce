@@ -1,11 +1,16 @@
-{% extends "base.html" %}
+{% extends "base_clean.html" %}
 
 {% block content %}
-<div class="container mt-5 d-flex justify-content-center align-items-center" style="min-height: 80vh;">
-    <div class="text-center bg-light p-5 rounded shadow" style="max-width: 600px;">
-        <h1 class="mb-4" style="color: #4e4b7a;">¡Gracias por contactarnos!</h1>
-        <p class="mb-4" style="font-size: 1.2rem; color: #6c757d;">Nos pondremos en contacto contigo pronto.</p>
-        <a href="{% url 'home' %}" class="btn btn-primary btn-lg" style="background-color: #4e4b7a; border-color: #4e4b7a;">Volver al Inicio</a>
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="col-lg-10">
+        <div class="card p-5" style="border-radius: 20px; background-color: #ffffff; box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);">
+            <h1 class="mb-4" style="color: #4e4b7a;">¡Gracias por contactarnos!</h1>
+            <p class="mb-4" style="font-size: 1.2rem; color: #6c757d;">Nos pondremos en contacto contigo pronto.</p>
+            <div class="d-flex justify-content-center mt-4">
+                <a href="{% url 'index' %}" class="btn btn-primary btn-lg">Volver al Inicio</a>
+            </div>
+            
+        </div>
     </div>
 </div>
 {% endblock %}
