@@ -1,0 +1,165 @@
+{% extends "base_index.html" %}
+{% load static %}
+{% block content %}
+<header class="header">
+  <div class="header__container">
+    <a href="{% url 'home' %}" class="header__logo">WorkForce</a>
+    <img src="{% static 'img/banner.png' %}" style="width: 150px; height: 40px; padding-left: 20px" >
+    <div  class="text-end" style="padding-right: 20px">
+      <a class="btn btn-outline-light me-2" href="{% url 'contacto' %}" style="padding-right: 20px">Contacto</a>
+      <a class="btn btn-outline-light me-2" href="{% url 'login' %}">Ingresa</a>
+    </div>
+  </div>
+</header>
+<style>
+  header {
+    background-color: red;
+
+
+  }
+  body {
+      background-image: url("{% static 'img/fondo.jpg' %}");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+  }
+  .btn-outline-light {
+    color: black; /* Texto blanco */
+    border-color: white; /* Borde blanco */
+    background-color: transparent; /* Fondo transparente */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Suavizar la transición de colores */
+  }
+  
+  .btn-outline-light:hover {
+    color: white; /* Mantener el texto blanco */
+    background-color: #00c8c8; /* Calipso */
+    border-color: #00c8c8; /* Borde calipso */
+  }
+</style>
+<div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
+  <div class="carousel-indicators">
+    <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+    <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
+    <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Slide 3"></button>
+  </div>
+  <div class="collapse" id="home-collapse">
+    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+      <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Overview</a></li>
+      <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Updates</a></li>
+      <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Reports</a></li>
+    </ul>
+  </div>
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <a href="{% url 'contacto' %}">
+        <img src="{% static 'img/slide1.jpg' %}" class="d-block w-100" alt="Contacto">
+        <div class="carousel-caption d-none d-md-block">
+          <h5>Contacto</h5>
+          <p>Conoce nuestros servicios</p>
+        </div>
+      </a>
+    </div>
+    <div class="carousel-item">
+      <a href="#services">
+        <img src="{% static 'img/slide2.jpg' %}" class="d-block w-100" alt="Servicios">
+        <div class="carousel-caption d-none d-md-block">
+          <h5>Servicios</h5>
+          <p>Conoce más sobre nosotros</p>
+        </div>
+      </a>
+    </div>
+    <div class="carousel-item">
+      <a href="#about">
+        <img src="{% static 'img/slide3.jpg' %}" class="d-block w-100" alt="Nosotros">
+        <div class="carousel-caption d-none d-md-block">
+          <h5>Nosotros</h5>
+          <p>Ponte en contacto con nosotros</p>
+        </div>
+      </a>
+    </div>
+  </div>
+  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</div>
+<br>
+<section id="leykarin" class="leykarin">
+  <div class="container text-center">
+    <h2 class="section-title">Módulo de Denuncias - Ley Karin</h2>
+    <p class="hero-subtitle">
+      En Workforce estamos comprometidos con brindar soluciones integrales que se ajusten a las necesidades de nuestros clientes. Con la reciente implementación de la <strong>Ley Karin</strong>, hemos desarrollado un <strong>módulo de denuncias</strong> que es confiable, seguro y automatizado. Este sistema permite a los colaboradores denunciar cualquier irregularidad o abuso en el entorno laboral de manera <strong>anónima</strong> y <strong>confidencial</strong>, asegurando que todas las denuncias sean tratadas de manera rápida y efectiva.
+    </p>
+    <p class="hero-subtitle">
+      Nuestro objetivo es ofrecer una plataforma que impulse la transparencia y garantice la seguridad y bienestar de todos los colaboradores. El módulo cumple con los más altos estándares de seguridad y está respaldado por nuestra experiencia en la gestión de recursos humanos.
+    </p>
+    <div class="text-center">
+      <img src="{% static 'img/ley-karin-logo-.png' %}" alt="Módulo Ley Karin - Denuncias" class="img-fluid" style="max-width: 600px; margin-top: 20px;">
+    </div>
+  </div>
+</section>
+
+<section id="services" class="services py-5">
+  <div class="container text-center">
+      <h2 class="section-title mb-4">Nuestros Servicios</h2>
+      <div class="row justify-content-center">
+        <div class="col-md-8 mb-4" data-aos="fade-up" data-aos-duration="1000">
+          <div class="service-card p-4 shadow-sm">
+            <h3 class="service-title">Personas</h3>
+            <p class="service-description">Gestionamos la información de tus colaboradores</p>
+          </div>
+        </div>
+        <div class="col-md-8 mb-4" data-aos="fade-up" data-aos-duration="1000">
+          <div class="service-card p-4 shadow-sm">
+            <h3 class="service-title">Liquidaciones de Sueldo</h3>
+            <p class="service-description">Gestiona las liquidaciones de sueldo de tus colaboradores</p>
+          </div>
+        </div>
+        <div class="col-md-8 mb-4" data-aos="fade-up" data-aos-duration="1000">
+          <div class="service-card p-4 shadow-sm">
+            <h3 class="service-title">Solicitudes</h3>
+            <p class="service-description">Gestionamos las solicitudes de tus colaboradores. (Vacaciones, permisos, etc)</p>
+          </div>
+        </div>
+        <div class="col-md-8 mb-4" data-aos="fade-up" data-aos-duration="1000">
+          <div class="service-card p-4 shadow-sm">
+            <h3 class="service-title">Desarrollo Laboral</h3>
+            <p class="service-description">Gestionamos diferentes cursos para tus colaboradores</p>
+          </div>
+        </div>
+        <div class="col-md-8 mb-4" data-aos="fade-up" data-aos-duration="1000">
+          <div class="service-card p-4 shadow-sm">
+            <h3 class="service-title">Perfil Administrador y Colaborador</h3>
+            <p class="service-description">Cada colaborador tendrá sus vistas y los administradores las suyas.</p>
+          </div>
+        </div>
+        <div class="col-md-8 mb-4" data-aos="fade-up" data-aos-duration="1000">
+          <div class="service-card p-4 shadow-sm">
+            <h3 class="service-title">Beneficios</h3>
+            <p class="service-description">Visualización de Beneficios para tus colaboradors</p>
+          </div>
+        </div>
+      </div>
+  </div>
+</section>
+<section id="about" class="about">
+  <div class="container text-center">
+        <h2 class="section-title">¿Quienes Somos?</h2>
+        <p class="hero-subtitle">Somos una empresa comprometida con el crecimiento y éxito de nuestros clientes. Nuestra misión es entregar soluciones itegrales de recursos humanos que ayuden a impulsar la eficiencia y el rendimiento de nuestros clientes.</p>
+  </div>
+  
+</section>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+<script defer src="{% static 'js/scripts.js' %}"></script>
+<footer>
+    <div class="container">
+        <p>&copy; 2024 WorkForce. Todos los derechos reservados.</p>
+    </div>
+</footer>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5 d-flex justify-content-center">
+    <div class="card shadow-lg p-5" style="border-radius: 20px; max-width: 600px; width: 100%;">
+        <h1 class="text-center mb-4" style="font-weight: bold;">Registro de Asistencia</h1>
+        <form method="POST" class="d-flex justify-content-center mb-4">
+            {% csrf_token %}
+            <button type="submit" name="action" value="entrada" class="btn btn-success me-3 rounded-pill shadow-sm">
+                <i class="fas fa-sign-in-alt"></i> Registrar Entrada
+            </button>
+            <button type="submit" name="action" value="salida" class="btn btn-danger rounded-pill shadow-sm">
+                <i class="fas fa-sign-out-alt"></i> Registrar Salida
+            </button>
+        </form>
+
+        {% if asistencia %}
+            <div class="mb-3 p-3" style="background-color: #f8f9fa; border-radius: 10px;">
+                <h3 class="text-start" style="font-weight: 600;">Hora de Entrada:</h3>
+                <p class="fs-5">{{ asistencia.hora_entrada }}</p>
+            </div>
+            <div class="mb-3 p-3" style="background-color: #f8f9fa; border-radius: 10px;">
+                <h3 class="text-start" style="font-weight: 600;">Hora de Salida:</h3>
+                <p class="fs-5">{{ asistencia.hora_salida }}</p>
+            </div>
+            {% if tiempo_trabajado %}
+                <div class="mb-3 p-3" style="background-color: #f8f9fa; border-radius: 10px;">
+                    <h3 class="text-start" style="font-weight: 600;">Tiempo trabajado hoy:</h3>
+                    <p class="fs-5">{{ tiempo_trabajado }}</p>
+                </div>
+            {% endif %}
+        {% endif %}
+        <div class="d-flex justify-content-center mt-4">
+            <a href="{% url 'home' %}" class="btn btn-secondary px-4" style="border-radius: 10px;"><i class="fas fa-home"></i> Volver al Inicio</a>
+        </div>
+        <div class="d-flex justify-content-center mt-4">
+            <a href="{% url 'visualizacion_asistencia' %}" class="btn btn-secondary px-4" style="border-radius: 10px;"><i class="fas fa-list"></i> Ir a mis Asistencias</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+        border-radius: 20px;
+    }
+    .btn:hover {
+        background-color: #2eeff5 !important;
+        border-color: #2eeff5 !important;
+        color: black !important;
+    }
+    .btn-success {
+        background-color: #28a745 !important;
+        border: none;
+    }
+    .btn-danger {
+        background-color: #dc3545 !important;
+        border: none;
+    }
+</style>
+
+{% endblock %}

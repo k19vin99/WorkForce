@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprobante de Solicitud</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        .solicitud-info {
+            margin-bottom: 20px;
+        }
+        .solicitud-info p {
+            margin: 5px 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Comprobante de Solicitud</h1>
+    </div>
+
+    <div class="solicitud-info">
+        <p><strong>Colaborador:</strong> {{ solicitud.colaborador.username }}</p>
+        <p><strong>Tipo de Solicitud:</strong> {{ solicitud.get_tipo_display }}</p>
+        <p><strong>Descripción:</strong> {{ solicitud.descripcion }}</p>
+        <p><strong>Fecha de Inicio:</strong> {{ solicitud.fecha_inicio }}</p>
+        <p><strong>Fecha de Fin:</strong> {{ solicitud.fecha_fin }}</p>
+        <p><strong>Estado:</strong> {{ solicitud.get_estado_display }}</p>
+    </div>
+
+    <div class="footer">
+        <p>Emitido el: {{ solicitud.fecha_creacion }}</p>
+    </div>
+</body>
+</html>

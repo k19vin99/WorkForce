@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+{% load custom_tags %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+    </head>
+    <body>
+        <!-- Bloque Estadisticas -->
+        {% if user|is_supervisor %}
+        <h1 style="text-align: center">Estadísticas RRHH</h1>
+        <div class="container mt-5">
+            <div class="row justify-content-center">
+                <div class="col-md-2 d-flex justify-content-center">
+                    <div class="card shadow-sm mb-4 card-usuarios" style="width: 100%;">
+                        <div class="card-body text-center">
+                            <h6 class="card-title">A día de hoy somos:</h6>
+                            <p class="card-text h3">{{ cantidad_usuarios }}</p>
+                            <h6 class="card-title">Usuarios</h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2 d-flex justify-content-center">
+                    <div class="card shadow-sm mb-4 card-liquidaciones" style="width: 100%;">
+                        <div class="card-body text-center">
+                            <h6 class="card-title">Liquidaciones</h6>
+                            <p class="card-text h3">{{ cantidad_liquidaciones }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2 d-flex justify-content-center">
+                    <div class="card shadow-sm mb-4 card-cargas" style="width: 100%;">
+                        <div class="card-body text-center">
+                            <h6 class="card-title">Cargas Familiares</h6>
+                            <p class="card-text h3">{{ cantidad_cargas_familiares }}</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>            
+        </div>
+        <h1 style="text-align: center">Estadísticas Solicitudes</h1>
+        <div class="container mt-5">
+            <div class="row justify-content-center">
+                
+                <div class="col-md-2 d-flex justify-content-center">
+                    <div class="card shadow-sm mb-4 card-solicitudes-creadas" style="width: 100%;">
+                        <div class="card-body text-center">
+                            <h6 class="card-title">Solicitudes Creadas</h6>
+                            <p class="card-text h3">{{ cantidad_solicitudes }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2 d-flex justify-content-center">
+                    <div class="card shadow-sm mb-4 card-solicitudes-pendientes" style="width: 100%;">
+                        <div class="card-body text-center">
+                            <h6 class="card-title">Solicitudes Pendientes</h6>
+                            <p class="card-text h3">{{ solicitudes_pendientes }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2 d-flex justify-content-center">
+                    <div class="card shadow-sm mb-4 card-solicitudes-aprobadas" style="width: 100%;">
+                        <div class="card-body text-center">
+                            <h6 class="card-title">Solicitudes Aprobadas</h6>
+                            <p class="card-text h3">{{ solicitudes_aprobadas }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2 d-flex justify-content-center">
+                    <div class="card shadow-sm mb-4 card-solicitudes-rechazadas" style="width: 100%;">
+                        <div class="card-body text-center">
+                            <h6 class="card-title">Solicitudes Rechazadas</h6>
+                            <p class="card-text h3">{{ solicitudes_rechazadas }}</p>
+                        </div>
+                    </div>
+                </div>                
+            </div>
+        </div>
+        <h1 style="text-align: center">Estadísticas Denuncias</h1>
+        <div class="container mt-5">
+            <div class="row justify-content-center">
+                <div class="col-md-2 d-flex justify-content-center">
+                    <div class="card shadow-sm mb-4 card-denuncias-pendientes" style="width: 100%;">
+                        <div class="card-body text-center">
+                            <h6 class="card-title">Denuncias Pendientes</h6>
+                            <p class="card-text h3">{{ denuncias_pendientes }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2 d-flex justify-content-center">
+                    <div class="card shadow-sm mb-4 card-denuncias-revision" style="width: 100%;">
+                        <div class="card-body text-center">
+                            <h6 class="card-title">Denuncias en Revisión</h6>
+                            <p class="card-text h3">{{ denuncias_revision }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2 d-flex justify-content-center">
+                    <div class="card shadow-sm mb-4 card-denuncias-resueltas" style="width: 100%;">
+                        <div class="card-body text-center">
+                            <h6 class="card-title">Denuncias Resueltas</h6>
+                            <p class="card-text h3">{{ denuncias_resueltas }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>            
+        </div>
+        {% endif %}
+        <!-- Fin Bloque Estadisticas-->
+        <!-- Bloque Publicaciones -->
+         <!-- Publicaciones -->
+         <div class="container mt-4">
+            <h4 class="text-center">Novedades</h4>
+            <br>
+            <div class="publicacion-container">
+                {% for publicacion in publicaciones %}
+                    <div class="publicacion-card card mb-4 shadow-sm">  
+                        <div class="d-flex align-items-center p-3">
+                            {% if publicacion.autor.foto_perfil %}
+                                <img src="{{ publicacion.autor.foto_perfil.url }}" alt="{{ publicacion.autor.username }}" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+                            {% else %}
+                                <img src="{% static 'img/default_profile.png' %}" alt="{{ publicacion.autor.username }}" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+                            {% endif %}
+                            <div class="ms-3">
+                                <h6 class="mb-0">{{ publicacion.autor.username }}</h6>
+                                <small class="text-muted">{{ publicacion.fecha_creacion }}</small>
+                            </div>
+                        </div>
+                        {% if publicacion.imagen %}
+                            <img src="{{ publicacion.imagen.url }}" class="publicacion-img card-img-top" alt="Imagen de la publicación">
+                        {% endif %}
+                        <div class="card-body text-start">
+                            <h5 class="card-title">{{ publicacion.titulo }}</h5>
+                            <p class="card-text">{{ publicacion.contenido }}</p>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="text-center">No hay publicaciones disponibles.</p>
+                {% endfor %}
+            </div>
+        </div>
+        <!-- Fin bloque Publicaciones -->
+        <!-- Bloque Beneficios -->
+        <div class="container mt-4">
+            <h4 class="text-center">Beneficios</h4>
+            <br>
+            <div id="beneficiosCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    {% for beneficio in beneficios %}
+                    {% if forloop.counter0|divisibleby:3 %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        <div class="row">
+                            {% endif %}
+                            <div class="col-md-4">
+                                <div class="card shadow-sm mb-4 beneficio-card">
+                                    <img src="{{ beneficio.imagen.url }}" class="card-img-top" alt="Imagen del beneficio">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title">{{ beneficio.titulo }}</h5>
+                                        <p class="card-text">{{ beneficio.descripcion }}</p>
+                                        <p class="card-text"><small class="text-muted">{{ beneficio.detalle }}</small></p>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if forloop.counter|divisibleby:3 or forloop.last %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#beneficiosCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true" style="background-color: black;"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#beneficiosCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true" style="background-color: black;"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </div>
+        <!-- Fin bloque Beneficios -->
+    </body>
+</html>
+{% endblock %}

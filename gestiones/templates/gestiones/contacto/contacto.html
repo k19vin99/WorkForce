@@ -1,0 +1,71 @@
+
+{% load custom_filters %}
+{% block content %}
+<section class="hero py-5" style="background-color: #e8fbfc;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <h2 class="hero-title text-center mb-4">Deja tus datos y te contactaremos</h2>
+                <form method="post" class="contact-form bg-white p-4 shadow rounded" style="background-color: #e8fbfc;">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            {{ form.motivo_contacto.label_tag }}
+                            {{ form.motivo_contacto|add_class:"form-control" }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.nombre.label_tag }}
+                            {{ form.nombre|add_class:"form-control" }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.apellido.label_tag }}
+                            {{ form.apellido|add_class:"form-control" }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.numero_telefono.label_tag }}
+                            {{ form.numero_telefono|add_class:"form-control" }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.correo.label_tag }}
+                            {{ form.correo|add_class:"form-control" }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.nombre_empresa.label_tag }}
+                            {{ form.nombre_empresa|add_class:"form-control" }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.cantidad_colaboradores.label_tag }}
+                            {{ form.cantidad_colaboradores|add_class:"form-control" }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.cargo.label_tag }}
+                            {{ form.cargo|add_class:"form-control" }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.area_desempeno.label_tag }}
+                            {{ form.area_desempeno|add_class:"form-control" }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.rubro.label_tag }}
+                            {{ form.rubro|add_class:"form-control" }}
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            {{ form.mensaje.label_tag }}
+                            {{ form.mensaje|add_class:"form-control" }}
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <div class="form-check">
+                                {{ form.acepto_comunicaciones|add_class:"form-check-input" }}
+                                {{ form.acepto_comunicaciones.label_tag|add_class:"form-check-label" }}
+                            </div>
+                        </div>
+                        <div class="col-md-12 mb-3 text-center">
+                            <button type="submit" class="btn btn-primary btn-lg w-100" style="background-color: #2e2c4e; border-color: #2e2c4e;">Conversémos</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

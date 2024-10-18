@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5 d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="text-center bg-light p-5 rounded shadow" style="max-width: 600px;">
+        <h1 class="mb-4" style="color: #4e4b7a;">¡Gracias por contactarnos!</h1>
+        <p class="mb-4" style="font-size: 1.2rem; color: #6c757d;">Nos pondremos en contacto contigo pronto.</p>
+        <a href="{% url 'home' %}" class="btn btn-primary btn-lg" style="background-color: #4e4b7a; border-color: #4e4b7a;">Volver al Inicio</a>
+    </div>
+</div>
+{% endblock %}

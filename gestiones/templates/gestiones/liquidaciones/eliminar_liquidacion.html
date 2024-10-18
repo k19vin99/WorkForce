@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Eliminar Liquidación</h2>
+<p>¿Estás seguro de que deseas eliminar la liquidación de {{ liquidacion.usuario.username }} del {{ liquidacion.fecha }}?</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a href="{% url 'visualizacion_liquidaciones' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}
