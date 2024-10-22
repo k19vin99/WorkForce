@@ -4,7 +4,7 @@
 {% block content %}
 <div class="container mt-5 d-flex justify-content-center">
     <div class="card shadow-lg p-5" style="border-radius: 20px; max-width: 600px; width: 100%;">
-        <h1 class="text-center mb-4" style="font-weight: bold;">Registro de Asistencia</h1>
+        <h1 class="text-center mb-4" style="font-weight: bold;"><i class="fas fa-calendar"></i> Registro de Asistencia</h1>
         <form method="POST" class="d-flex justify-content-center mb-4">
             {% csrf_token %}
             <button type="submit" name="action" value="entrada" class="btn btn-success me-3 rounded-pill shadow-sm">

@@ -63,6 +63,13 @@
                         <div class="nav__items">
                             <h3 class="nav__subtitle">Aplicaciones</h3>
                             {% if user|is_supervisor %}
+                            <!-- Asistencia -->
+                            <div class="nav__dropdown">
+                                <a href="{% url 'registro_asistencia' %}" class="nav__link">
+                                    <i class='bx bx-calendar-check nav__icon'></i>
+                                    <span class="nav__name">Asistencia</span>
+                                </a>
+                            </div>
                             <!-- Usuarios -->
                             <div class="nav__dropdown">
                                 <a href="#" class="nav__link">
@@ -105,20 +112,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- Asistencia -->
-                            <div class="nav__dropdown">
-                                <a href="#" class="nav__link">
-                                    <i class='bx bx-calendar-check nav__icon'></i>
-                                    <span class="nav__name">Asistencia</span>
-                                    <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
-                                </a>
-                                <div class="nav__dropdown-collapse">
-                                    <div class="nav__dropdown-content">
-                                        <a href="{% url 'registro_asistencia' %}" class="nav__dropdown-item">Registrar Asistencia</a>
-                                        <a href="{% url 'visualizacion_asistencia' %}" class="nav__dropdown-item">Ver Asistencia</a>
-                                    </div>
-                                </div>
-                            </div>
+                            
                             <!-- Solicitudes -->
                             <div class="nav__dropdown">
                                 <a href="#" class="nav__link">
@@ -192,6 +186,13 @@
                                 </div>
                             </div>
                             {% else %}
+                            <!-- Asistencia -->
+                            <div class="nav__dropdown">
+                                <a href="{% url 'registro_asistencia' %}" class="nav__link">
+                                    <i class='bx bx-calendar-check nav__icon'></i>
+                                    <span class="nav__name">Asistencia</span>
+                                </a>
+                            </div>
                             <!-- Liquidaciones -->
                             <div class="nav__dropdown">
                                 <a href="#" class="nav__link">
@@ -218,20 +219,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- Asistencia -->
-                            <div class="nav__dropdown">
-                                <a href="#" class="nav__link">
-                                    <i class='bx bx-calendar-check nav__icon'></i>
-                                    <span class="nav__name">Asistencia</span>
-                                    <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
-                                </a>
-                                <div class="nav__dropdown-collapse">
-                                    <div class="nav__dropdown-content">
-                                        <a href="{% url 'registro_asistencia' %}" class="nav__dropdown-item">Registrar Asistencia</a>
-                                        <a href="{% url 'visualizacion_asistencia' %}" class="nav__dropdown-item">Ver Asistencia</a>
-                                    </div>
-                                </div>
-                            </div>
+                            
                             <!-- Solicitudes -->
                             <div class="nav__dropdown">
                                 <a href="#" class="nav__link">

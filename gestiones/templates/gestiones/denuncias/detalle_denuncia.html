@@ -35,16 +35,7 @@
                     </tbody>
                 </table>
             </div>
-            <br>
-            {% if es_analista_rrhh %}
-            <h3>Gestionar Denuncia</h3>
-            <form method="post" style="text-align: center;">
-                {% csrf_token %}
-                <button type="submit" name="revision" class="btn btn-warning">En Revisión</button>
-                <button type="submit" name="resuelta" class="btn btn-success">Resuelta</button>
-                <button type="submit" name="rechazar" class="btn btn-danger">Rechazar</button>
-            </form>
-            {% endif %}
+            
             <br>
             <h3>Notas de la Denuncia</h3>
             <br>
@@ -65,6 +56,16 @@
                 <button type="submit" class="btn btn-success">Agregar Nota</button>
             </form>
             <br>
+            <br>
+            {% if es_analista_rrhh %}
+            <h3>Gestionar Denuncia</h3>
+            <form method="post" style="text-align: center;">
+                {% csrf_token %}
+                <button type="submit" name="revision" class="btn btn-warning">En Revisión</button>
+                <button type="submit" name="resuelta" class="btn btn-success">Resuelta</button>
+                <button type="submit" name="rechazar" class="btn btn-danger">Rechazar</button>
+            </form>
+            {% endif %}
         </div>
     </div>
 </div>

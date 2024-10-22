@@ -7,9 +7,45 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Document</title>
     </head>
     <body>
+        <div class="container mt-5 d-flex justify-content-center">
+            <div class="card shadow-lg p-5" style="border-radius: 10px; max-width: auto; width: 100%;">
+                <h1 class="mb-3" style="text-align: center">
+                    <i class="fas fa-calendar"></i> Marcación - {{ today | date:"d/m/Y" }}
+                </h1>
+                <!-- Job Information Section -->
+                <div class="card mb-4 p-4" style="border-radius: 15px; background-color: #f8f9fa;">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <h3 class="text-start" style="font-weight: 600;">Hora de Entrada:</h3>
+                                <p class="fs-5">{{ asistencia.hora_entrada }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <h3 class="text-start" style="font-weight: 600;">Hora de Salida:</h3>
+                                <p class="fs-5">{{ asistencia.hora_salida }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {% if tiempo_trabajado %}
+                                <div class="mb-3 p-3" style="background-color: #f8f9fa; border-radius: 10px;">
+                                    <h3 class="text-start" style="font-weight: 600;">Tiempo trabajado hoy:</h3>
+                                    <p class="fs-5">{{ tiempo_trabajado }}</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <a href="{% url 'registro_asistencia'%}" style="text-align:center" class="btn btn-success rounded-pill shadow-sm">Registro de Asistencia</a>
+            </div>
+        </div>
         <!-- Bloque Estadisticas -->
         {% if user|is_supervisor %}
         <h1 style="text-align: center">Estadísticas RRHH</h1>
