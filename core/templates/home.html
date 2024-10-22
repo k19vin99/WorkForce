@@ -46,6 +46,7 @@
                 <a href="{% url 'registro_asistencia'%}" style="text-align:center" class="btn btn-success rounded-pill shadow-sm">Registro de Asistencia</a>
             </div>
         </div>
+        <br>
         <!-- Bloque Estadisticas -->
         {% if user|is_supervisor %}
         <h1 style="text-align: center">Estadísticas RRHH</h1>
@@ -151,7 +152,7 @@
         <!-- Bloque Publicaciones -->
          <!-- Publicaciones -->
          <div class="container mt-4">
-            <h4 class="text-center">Novedades</h4>
+            <h1 style="text-align: center">Novedades</h1>
             <br>
             <div class="publicacion-container">
                 {% for publicacion in publicaciones %}
@@ -183,7 +184,7 @@
         <!-- Fin bloque Publicaciones -->
         <!-- Bloque Beneficios -->
         <div class="container mt-4">
-            <h4 class="text-center">Beneficios</h4>
+            <h1 style="text-align: center">Beneficios</h1>
             <br>
             <div id="beneficiosCarousel" class="carousel slide" data-bs-ride="carousel">
                 <div class="carousel-inner">
