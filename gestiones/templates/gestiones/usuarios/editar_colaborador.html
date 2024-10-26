@@ -18,6 +18,9 @@
                     {% endfor %}
                 </div>
             {% endif %}
+            {% for field in form %}
+                <p>{{ field.label_tag }}: {{ field.value }}</p>
+            {% endfor %}
 
             <form method="post">
                 {% csrf_token %}
@@ -45,13 +48,6 @@
                                 {{ form.first_name.label_tag }}
                                 {{ form.first_name }}
                                 {{ form.first_name.errors }}
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group mb-3">
-                                {{ form.last_name.label_tag }}
-                                {{ form.last_name }}
-                                {{ form.last_name.errors }}
                             </div>
                         </div>
                         <div class="col-md-12">

@@ -12,18 +12,52 @@ class AreaInline(admin.TabularInline):
 # CustomUserAdmin para gestionar usuarios
 class CustomUserAdmin(UserAdmin):
     model = CustomUser
-    list_display = ('username', 'email', 'is_staff', 'is_active', 'empresa', 'area', 'rut')
+    list_display = ('username', 'email', 'is_staff', 'is_active', 'empresa', 'area', 'rut', 'fecha_contratacion', 'fecha_nacimiento')
     list_filter = ('is_staff', 'is_active', 'groups', 'empresa', 'area')
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
-        ('Personal info', {'fields': ('first_name', 'last_name', 'email', 'empresa', 'area', 'rut')}),
+        ('Personal info', {'fields': (
+            'first_name', 
+            'last_name', 
+            'email', 
+            'empresa', 
+            'area', 
+            'rut', 
+            'telefono', 
+            'fecha_nacimiento', 
+            'fecha_contratacion', 
+            'direccion', 
+            'foto_perfil', 
+            'salud', 
+            'afp', 
+            'horario_asignado'
+        )}),
         ('Permissions', {'fields': ('is_staff', 'is_active', 'groups', 'user_permissions')}),
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('username', 'email', 'password1', 'password2', 'is_staff', 'is_active', 'groups', 'empresa', 'area')}
+            'fields': (
+                'username', 
+                'email', 
+                'password1', 
+                'password2', 
+                'is_staff', 
+                'is_active', 
+                'groups', 
+                'empresa', 
+                'area', 
+                'rut', 
+                'telefono', 
+                'fecha_nacimiento', 
+                'fecha_contratacion', 
+                'direccion', 
+                'foto_perfil', 
+                'salud', 
+                'afp', 
+                'horario_asignado'
+            )}
         ),
     )
     search_fields = ('username', 'email', 'rut')

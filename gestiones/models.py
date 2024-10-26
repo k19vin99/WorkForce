@@ -264,3 +264,15 @@ class Publicacion(models.Model):
 
     def __str__(self):
         return self.titulo
+    
+class DocumentoEmpresa(models.Model):
+    titulo = models.CharField(max_length=255)
+    descripcion = models.TextField(blank=True, null=True)
+    archivo = models.FileField(upload_to='documentos_empresa/')
+    creado_por = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.titulo
+    
+    

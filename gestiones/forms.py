@@ -2,7 +2,7 @@ from django import forms
 import re
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.contrib.auth.models import Group
-from .models import Liquidacion, CargaFamiliar, CustomUser, Solicitud, Curso, Modulo, Comentario, Beneficio, Area, Denuncia, NotaDenuncia, EvidenciaDenuncia, Publicacion
+from .models import Liquidacion, CargaFamiliar, CustomUser, Solicitud, Curso, Modulo, Comentario, Beneficio, Area, Denuncia, NotaDenuncia, EvidenciaDenuncia, Publicacion, DocumentoEmpresa
 from django.contrib.auth import get_user_model
 from django.forms import modelformset_factory
 import datetime
@@ -108,16 +108,21 @@ class CustomUserCreationForm(UserCreationForm):
             return False
 
 class CustomUserChangeForm(forms.ModelForm):
-    grupo = forms.ModelChoiceField(queryset=Group.objects.all(), required=True, label="Grupo")
+    grupo = forms.ModelMultipleChoiceField(
+        queryset=Group.objects.all(),
+        required=False,
+        label="Grupo",
+        widget=forms.CheckboxSelectMultiple(),  # Puedes usar SelectMultiple si prefieres un dropdown
+    )
     area = forms.ModelChoiceField(queryset=Area.objects.all(), required=True, label="Área")
     fecha_nacimiento = forms.DateField(
-        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}), 
-        required=True, 
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}, format='%Y-%m-%d'),
+        required=False,
         label="Fecha de Nacimiento"
     )
     fecha_contratacion = forms.DateField(
-        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}), 
-        required=True, 
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}, format='%Y-%m-%d'),
+        required=False,
         label="Fecha de Contratación"
     )
     rut = forms.CharField(
@@ -129,49 +134,20 @@ class CustomUserChangeForm(forms.ModelForm):
             'class': 'form-control'
         })
     )
+
     class Meta:
         model = CustomUser
         fields = [
-            'username', 'first_name', 'last_name', 'email', 'rut', 'area', 'cargo', 
-            'telefono', 'fecha_nacimiento', 'direccion', 'salud', 'afp', 'horario_asignado', 
+            'username', 'first_name', 'last_name', 'email', 'rut', 'area', 'cargo',
+            'telefono', 'fecha_nacimiento', 'direccion', 'salud', 'afp', 'horario_asignado',
             'fecha_contratacion', 'grupo'
         ]
-    def clean_rut(self):
-        rut = self.cleaned_data.get('rut')
-        # Verificar que el RUT ya esté registrado para otro usuario (pero no el actual)
-        if CustomUser.objects.filter(rut=rut).exclude(pk=self.instance.pk).exists():
-            raise forms.ValidationError("El RUT ya está registrado por otro usuario.")
-        # Verificar formato correcto (Ej: 12345678-9)
-        rut_pattern = r'^\d{1,8}-[\dkK]$'
-        if not re.match(rut_pattern, rut):
-            raise forms.ValidationError("El formato del RUT no es válido. Debe ser en formato 12345678-9.")
-        # Verificar dígito verificador
-        if not self.validar_digito_verificador(rut):
-            raise forms.ValidationError("El RUT ingresado no es válido.")
-        return rut
-    def validar_digito_verificador(self, rut):
-        """ Función para validar el dígito verificador de un RUT chileno."""
-        try:
-            rut_sin_dv, dv = rut.split('-')
-            rut_sin_dv = int(rut_sin_dv)
-            dv = dv.upper()
-            suma = 0
-            factor = 2
-            for digit in reversed(str(rut_sin_dv)):
-                suma += int(digit) * factor
-                factor += 1
-                if factor > 7:
-                    factor = 2
-            mod = 11 - (suma % 11)
-            if mod == 11:
-                dv_calculado = '0'
-            elif mod == 10:
-                dv_calculado = 'K'
-            else:
-                dv_calculado = str(mod)
-            return dv == dv_calculado
-        except:
-            return False
+
+    def __init__(self, *args, **kwargs):
+        super(CustomUserChangeForm, self).__init__(*args, **kwargs)
+        # Si el usuario tiene grupos asociados, seleccionarlos por defecto
+        if self.instance.pk:
+            self.fields['grupo'].initial = self.instance.groups.all()
         
 class LiquidacionSueldoForm(forms.ModelForm):
     class Meta:
@@ -391,3 +367,8 @@ class PublicacionForm(forms.ModelForm):
         widgets = {
             'contenido': forms.Textarea(attrs={'rows': 4}),
         }
+
+class DocumentoEmpresaForm(forms.ModelForm):
+    class Meta:
+        model = DocumentoEmpresa
+        fields = ['titulo', 'descripcion', 'archivo']

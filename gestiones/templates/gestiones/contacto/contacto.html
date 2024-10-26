@@ -1,6 +1,20 @@
 {% extends "base_clean.html" %}
 {% load custom_filters %}
 {% block content %}
+<style>
+    .btn-primary {
+        color: black; /* Texto blanco */
+        border-color: white; /* Borde blanco */
+        background-color: #42d6e0; /* Fondo transparente */
+        transition: background-color 0.3s ease, color 0.3s ease; /* Suavizar la transición de colores */
+      }
+      
+      .btn-primary:hover {
+        color: black; /* Mantener el texto blanco */
+        background-color: #42d6e0; /* Calipso */
+        border-color: #42d6e0; /* Borde calipso */
+      }
+</style>
 <section class="hero py-5" style="background-color: #e8fbfc;">
     <div class="container">
         <div class="row justify-content-center">

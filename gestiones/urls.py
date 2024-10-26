@@ -53,6 +53,10 @@ urlpatterns = [
 
     #Publicaciones
     path('publicaciones/crear/', views.crear_publicacion, name='crear_publicacion'),
+    #Documentos
+    path('documentos/', views.lista_documentos_empresa, name='lista_documentos_empresa'),
+    path('documentos/subir/', views.subir_documento_empresa, name='subir_documento_empresa'),
+    path('documentos/descargar/<int:pk>/', views.descargar_documento_empresa, name='descargar_documento_empresa'),
 
     path('contacto/', views.contacto, name='contacto'),
     path('success/', views.success, name='success'),

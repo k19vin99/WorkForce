@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
-from .forms import CustomUserCreationForm, LiquidacionSueldoForm, EditarUsuarioForm, CargaFamiliarForm, SolicitudForm, ContactForm, EditProfileForm, EditProfilePhotoForm, PasswordChangeForm, CursoForm, ModuloForm, ComentarioForm, EditarParticipantesForm, BeneficioForm, DenunciaForm, EvidenciaFormset, NotaDenunciaForm, PublicacionForm, CustomUserChangeForm
+from .forms import CustomUserCreationForm, LiquidacionSueldoForm, EditarUsuarioForm, CargaFamiliarForm, SolicitudForm, ContactForm, EditProfileForm, EditProfilePhotoForm, PasswordChangeForm, CursoForm, ModuloForm, ComentarioForm, EditarParticipantesForm, BeneficioForm, DenunciaForm, EvidenciaFormset, NotaDenunciaForm, PublicacionForm, CustomUserChangeForm, DocumentoEmpresaForm
 
 import os
 from django.conf import settings
-from .models import Liquidacion, CustomUser, CargaFamiliar, Asistencia, Solicitud, Curso, Modulo, Comentario, Beneficio, Area, Denuncia, EvidenciaDenuncia
+from .models import Liquidacion, CustomUser, CargaFamiliar, Asistencia, Solicitud, Curso, Modulo, Comentario, Beneficio, Area, Denuncia, EvidenciaDenuncia, DocumentoEmpresa
 from django.http import HttpResponse
 from xhtml2pdf import pisa
 from django.template.loader import get_template
@@ -100,14 +100,18 @@ def lista_colaboradores(request):
     return render(request, 'gestiones/usuarios/lista_colaboradores.html', {'colaboradores': colaboradores})
 
 @login_required
-@user_passes_test(is_supervisor)  # Solo los supervisores pueden acceder a esta vista
+@user_passes_test(is_supervisor)
 def editar_colaborador(request, pk):
     colaborador = get_object_or_404(CustomUser, pk=pk)
     
     if request.method == 'POST':
         form = CustomUserChangeForm(request.POST, instance=colaborador)
         if form.is_valid():
+            # Guarda el colaborador
             form.save()
+            # Luego maneja la asignación de grupos
+            grupos = form.cleaned_data['grupo']
+            colaborador.groups.set(grupos)  # Esto ahora debe funcionar correctamente
             messages.success(request, 'El colaborador ha sido actualizado correctamente.')
             return redirect('lista_colaboradores')  # Redirige a la lista de colaboradores después de guardar
         else:
@@ -116,6 +120,8 @@ def editar_colaborador(request, pk):
         form = CustomUserChangeForm(instance=colaborador)
     
     return render(request, 'gestiones/usuarios/editar_colaborador.html', {'form': form, 'colaborador': colaborador})
+
+
 
 
 @login_required
@@ -314,13 +320,15 @@ def registro_asistencia(request):
 
 @login_required
 def visualizacion_asistencia(request):
-    if is_supervisor(request.user):
-        # Filtrar por la empresa del supervisor
+    if request.user.area and request.user.area.nombre == 'Recursos Humanos' and request.user.groups.filter(name='supervisores').exists():
+        # Filtrar por la empresa del supervisor del área de Recursos Humanos
         asistencias = Asistencia.objects.filter(colaborador__empresa=request.user.empresa)
     else:
+        # Los demás usuarios solo pueden ver sus propias asistencias
         asistencias = Asistencia.objects.filter(colaborador=request.user)
     
     return render(request, 'gestiones/asistencia/visualizacion_asistencia.html', {'asistencias': asistencias})
+
 
 #Vistas Solicitudes
 @login_required
@@ -339,17 +347,25 @@ def crear_solicitud(request):
 @login_required
 def lista_solicitudes(request):
     if request.user.groups.filter(name='supervisores').exists():
-        # Filtrar por la empresa del supervisor
-        solicitudes = Solicitud.objects.filter(colaborador__empresa=request.user.empresa)
+        if request.user.area and request.user.area.nombre == 'Recursos Humanos':
+            # Supervisores del área de Recursos Humanos pueden ver todas las solicitudes
+            solicitudes = Solicitud.objects.all()
+        else:
+            # Otros supervisores solo pueden ver las solicitudes de su área
+            solicitudes = Solicitud.objects.filter(colaborador__area=request.user.area)
         is_supervisor = True
     else:
+        # Los demás usuarios solo pueden ver sus propias solicitudes
         solicitudes = Solicitud.objects.filter(colaborador=request.user)
         is_supervisor = False
 
-    return render(request, 'gestiones/solicitudes/lista_solicitudes.html', {
+    # Agregamos la bandera es_supervisor al contexto
+    context = {
         'solicitudes': solicitudes,
         'is_supervisor': is_supervisor
-    })
+    }
+
+    return render(request, 'gestiones/solicitudes/lista_solicitudes.html', context)
 
 @login_required
 def gestionar_solicitud(request, pk):
@@ -755,3 +771,34 @@ def crear_publicacion(request):
         form = PublicacionForm()
 
     return render(request, 'gestiones/publicaciones/crear_publicacion.html', {'form': form})
+
+# Comprobar si el usuario pertenece al área de Recursos Humanos
+def is_hr_user(user):
+    return user.area and user.area.nombre == 'Recursos Humanos'
+
+@login_required
+@user_passes_test(is_hr_user)
+def subir_documento_empresa(request):
+    if request.method == 'POST':
+        form = DocumentoEmpresaForm(request.POST, request.FILES)
+        if form.is_valid():
+            documento = form.save(commit=False)
+            documento.creado_por = request.user
+            documento.save()
+            return redirect('lista_documentos_empresa')
+    else:
+        form = DocumentoEmpresaForm()
+    
+    return render(request, 'gestiones/documentos/subir_documento.html', {'form': form})
+
+@login_required
+def lista_documentos_empresa(request):
+    documentos = DocumentoEmpresa.objects.all()
+    return render(request, 'gestiones/documentos/lista_documentos.html', {'documentos': documentos})
+
+@login_required
+def descargar_documento_empresa(request, pk):
+    documento = get_object_or_404(DocumentoEmpresa, pk=pk)
+    response = HttpResponse(documento.archivo, content_type='application/octet-stream')
+    response['Content-Disposition'] = f'attachment; filename={documento.archivo.name}'
+    return response

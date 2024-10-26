@@ -33,7 +33,11 @@
         {% endif %}
         
         <div class="d-flex justify-content-center mt-4">
+            {% if user.area.nombre == "Recursos Humanos" %} 
+            <a href="{% url 'visualizacion_asistencia' %}" class="btn btn-secondary px-4" style="border-radius: 10px;"><i class="fas fa-list"></i> Ver Asistencias</a>
+            {% else %}
             <a href="{% url 'visualizacion_asistencia' %}" class="btn btn-secondary px-4" style="border-radius: 10px;"><i class="fas fa-list"></i> Ir a mis Asistencias</a>
+            {% endif %}
         </div>
         <div class="d-flex justify-content-center mt-4">
             <a href="{% url 'home' %}" class="btn btn-secondary px-4" style="border-radius: 10px;"><i class="fas fa-home"></i> Volver al Inicio</a>

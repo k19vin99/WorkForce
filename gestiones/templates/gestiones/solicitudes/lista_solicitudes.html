@@ -30,7 +30,7 @@
             </td>
             <td>
                 <div class="btn-group">
-                    {% if request.user.area.nombre == 'Recursos Humanos' and request.user.cargo == 'Analista de Personas' %}
+                    {% if is_supervisor %}
                     <a href="{% url 'gestionar_solicitud' solicitud.id %}" class="text-secondary me-3" title="Gestionar Solicitud">
                         <i class="fas fa-tasks fa-lg"></i>
                     </a>
