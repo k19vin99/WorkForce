@@ -3,11 +3,10 @@
 {% block content %}
 <header class="header">
   <div class="header__container">
-    <a href="{% url 'home' %}" class="header__logo">WorkForce</a>
     <img src="{% static 'img/banner.png' %}" style="width: 150px; height: 40px; padding-left: 20px" >
     <div  class="text-end" style="padding-right: 20px">
-      <a class="btn btn-outline-light me-2" href="{% url 'contacto' %}" style="padding-right: 20px">Contacto</a>
-      <a class="btn btn-outline-light me-2" href="{% url 'login' %}">Ingresa</a>
+      <a class="btn btn-outline-light-Ingresa me-2" href="{% url 'login' %}">Ingresa</a>
+      <a class="btn btn-outline-light-Contacto me-2" href="{% url 'contacto' %}" style="padding-right: 20px">Contacto</a>
     </div>
   </div>
 </header>
@@ -24,17 +23,33 @@
       background-repeat: no-repeat;
       background-attachment: fixed;
   }
-  .btn-outline-light {
+
+
+  .btn-outline-light-Ingresa {
     color: black; /* Texto blanco */
     border-color: white; /* Borde blanco */
-    background-color: transparent; /* Fondo transparente */
+    background-color: #42d6e0; /* Fondo transparente */
     transition: background-color 0.3s ease, color 0.3s ease; /* Suavizar la transición de colores */
+    border-radius: 30px;
   }
   
-  .btn-outline-light:hover {
-    color: white; /* Mantener el texto blanco */
-    background-color: #00c8c8; /* Calipso */
-    border-color: #00c8c8; /* Borde calipso */
+  .btn-outline-light-Ingresa:hover {
+    color: black; /* Mantener el texto blanco */
+    background-color: #42d6e0; /* Calipso */
+    border-color: #42d6e0; /* Borde calipso */
+  }
+
+
+  
+  .btn-outline-light-Contacto {
+    background-color: transparent; /* Fondo transparente */
+    border-radius: 30px;
+  }
+  
+  .btn-outline-light-Contacto:hover {
+    color: #232120; /* Mantener el texto blanco */
+    background-color: #e1dbd8; /* Calipso */
+    border-color: #232120; /* Borde calipso */
   }
 </style>
 <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">

@@ -18,9 +18,6 @@
                     {% endfor %}
                 </div>
             {% endif %}
-            {% for field in form %}
-                <p>{{ field.label_tag }}: {{ field.value }}</p>
-            {% endfor %}
 
             <form method="post">
                 {% csrf_token %}
