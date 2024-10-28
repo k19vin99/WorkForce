@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .forms import CustomUserCreationForm, LiquidacionSueldoForm, EditarUsuarioForm, CargaFamiliarForm, SolicitudForm, ContactForm, EditProfileForm, EditProfilePhotoForm, PasswordChangeForm, CursoForm, ModuloForm, ComentarioForm, EditarParticipantesForm, BeneficioForm, DenunciaForm, EvidenciaFormset, NotaDenunciaForm, PublicacionForm, CustomUserChangeForm, DocumentoEmpresaForm
-
+from rest_framework import viewsets
+from .serializers import DenunciaSerializer
 import os
 from django.conf import settings
 from .models import Liquidacion, CustomUser, CargaFamiliar, Asistencia, Solicitud, Curso, Modulo, Comentario, Beneficio, Area, Denuncia, EvidenciaDenuncia, DocumentoEmpresa
@@ -802,3 +803,8 @@ def descargar_documento_empresa(request, pk):
     response = HttpResponse(documento.archivo, content_type='application/octet-stream')
     response['Content-Disposition'] = f'attachment; filename={documento.archivo.name}'
     return response
+
+
+class DenunciaViewSet(viewsets.ModelViewSet):
+    queryset = Denuncia.objects.all()
+    serializer_class = DenunciaSerializer

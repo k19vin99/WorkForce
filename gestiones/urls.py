@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 
 urlpatterns = [
@@ -50,13 +50,13 @@ urlpatterns = [
     path('denuncias/<int:pk>/', views.detalle_denuncia, name='detalle_denuncia'),  # Agrega esta línea
     path('denuncia_creada/', views.denuncia_creada, name='denuncia_creada'),  # Nueva URL para la confirmación
     path('denuncias/gestionar/<int:pk>/', views.gestionar_denuncia, name='gestionar_denuncia'),
-
     #Publicaciones
     path('publicaciones/crear/', views.crear_publicacion, name='crear_publicacion'),
     #Documentos
     path('documentos/', views.lista_documentos_empresa, name='lista_documentos_empresa'),
     path('documentos/subir/', views.subir_documento_empresa, name='subir_documento_empresa'),
     path('documentos/descargar/<int:pk>/', views.descargar_documento_empresa, name='descargar_documento_empresa'),
+
 
     path('contacto/', views.contacto, name='contacto'),
     path('success/', views.success, name='success'),

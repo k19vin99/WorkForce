@@ -12,7 +12,7 @@ class AreaInline(admin.TabularInline):
 # CustomUserAdmin para gestionar usuarios
 class CustomUserAdmin(UserAdmin):
     model = CustomUser
-    list_display = ('username', 'email', 'is_staff', 'is_active', 'empresa', 'area', 'rut', 'fecha_contratacion', 'fecha_nacimiento')
+    list_display = ('username', 'email', 'is_staff', 'is_active', 'empresa', 'area','cargo', 'rut', 'fecha_contratacion', 'fecha_nacimiento')
     list_filter = ('is_staff', 'is_active', 'groups', 'empresa', 'area')
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
@@ -22,6 +22,7 @@ class CustomUserAdmin(UserAdmin):
             'email', 
             'empresa', 
             'area', 
+            'cargo',
             'rut', 
             'telefono', 
             'fecha_nacimiento', 
