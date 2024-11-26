@@ -2,10 +2,11 @@ from django import forms
 import re
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.contrib.auth.models import Group
-from .models import Liquidacion, CargaFamiliar, CustomUser, Solicitud, Curso, Modulo, Comentario, Beneficio, Area, Denuncia, NotaDenuncia, EvidenciaDenuncia, Publicacion, DocumentoEmpresa
+from .models import CargaFamiliar, CustomUser, Solicitud, Curso, Modulo, Comentario, Beneficio, Area, Denuncia, NotaDenuncia, EvidenciaDenuncia, Publicacion, DocumentoEmpresa, SolicitudVacaciones
 from django.contrib.auth import get_user_model
 from django.forms import modelformset_factory
 import datetime
+from django.core.exceptions import ValidationError
 
 #Formulario de Registro de Usuario
 class CustomUserCreationForm(UserCreationForm):
@@ -23,6 +24,16 @@ class CustomUserCreationForm(UserCreationForm):
         })
     )
     area = forms.ModelChoiceField(queryset=Area.objects.all(), required=True, label="Área")
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)  # Extraer el usuario que se pasa al formulario
+        super(CustomUserCreationForm, self).__init__(*args, **kwargs)
+        
+        # Filtrar las áreas según la empresa del usuario que registra
+        if user and user.empresa:
+            self.fields['area'].queryset = Area.objects.filter(empresa=user.empresa)
+        else:
+            self.fields['area'].queryset = Area.objects.none()  # No mostrar áreas si no hay empresa
+
     fecha_contratacion = forms.DateField(
         widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}), 
         required=True, 
@@ -72,16 +83,24 @@ class CustomUserCreationForm(UserCreationForm):
 
     def clean_rut(self):
         rut = self.cleaned_data.get('rut')
+        
         # Verificar que el RUT ya esté registrado
         if CustomUser.objects.filter(rut=rut).exists():
             raise forms.ValidationError("El RUT ya está registrado.")
+        
         # Verificar formato correcto (Ej: 12345678-9)
         rut_pattern = r'^\d{1,8}-[\dkK]$'
         if not re.match(rut_pattern, rut):
             raise forms.ValidationError("El formato del RUT no es válido. Debe ser en formato 12345678-9.")
+        
+        # Verificar longitud mínima
+        if len(rut) < 9:  # La longitud mínima estándar para RUT es 9 caracteres incluyendo el guión
+            raise forms.ValidationError("El RUT debe tener al menos 9 caracteres (incluyendo el guión).")
+        
         # Verificar dígito verificador
         if not self.validar_digito_verificador(rut):
             raise forms.ValidationError("El RUT ingresado no es válido.")
+        
         return rut
     def validar_digito_verificador(self, rut):
         """Función para validar el dígito verificador de un RUT chileno."""
@@ -106,6 +125,45 @@ class CustomUserCreationForm(UserCreationForm):
             return dv == dv_calculado
         except:
             return False
+    def clean(self):
+        cleaned_data = super().clean()
+        fecha_contratacion = cleaned_data.get('fecha_contratacion')
+        fecha_nacimiento = cleaned_data.get('fecha_nacimiento')
+
+        # Validar si ambos campos están presentes
+        if fecha_contratacion and fecha_nacimiento:
+            # Calcular la edad del usuario al momento de la contratación
+            edad = fecha_contratacion.year - fecha_nacimiento.year - (
+                (fecha_contratacion.month, fecha_contratacion.day) < (fecha_nacimiento.month, fecha_nacimiento.day)
+            )
+            print(edad)
+
+            # Verificar si la edad es menor a 15 años
+            if edad < 15:
+                self.add_error('fecha_nacimiento', "La fecha de nacimiento no corresponde, el usuario debe tener al menos 15 años. Presentando la documentación necesaria. Si no debe ser mayor de 18 años, según el artículo 13 del código del Trabajo")
+                self.add_error('fecha_contratacion', "La fecha de contratación no es válida porque el usuario es menor de 15 años.")
+
+        return cleaned_data
+    def clean_password1(self):
+        password = self.cleaned_data.get('password1')
+
+        # Verificar longitud mínima
+        if len(password) < 8:
+            raise forms.ValidationError("La contraseña debe tener al menos 8 caracteres.")
+
+        # Verificar al menos un carácter en mayúscula
+        if not any(char.isupper() for char in password):
+            raise forms.ValidationError("La contraseña debe contener al menos una letra mayúscula.")
+
+        # Verificar al menos un número
+        if not any(char.isdigit() for char in password):
+            raise forms.ValidationError("La contraseña debe contener al menos un número.")
+
+        # Verificar al menos un símbolo
+        if not any(char in "!@#$%^&*()-_+=<>?/.,:;" for char in password):
+            raise forms.ValidationError("La contraseña debe contener al menos un símbolo especial (!@#$%^&*()-_+=<>?/.,:;).")
+
+        return password
 
 class CustomUserChangeForm(forms.ModelForm):
     grupo = forms.ModelMultipleChoiceField(
@@ -148,21 +206,6 @@ class CustomUserChangeForm(forms.ModelForm):
         # Si el usuario tiene grupos asociados, seleccionarlos por defecto
         if self.instance.pk:
             self.fields['grupo'].initial = self.instance.groups.all()
-        
-class LiquidacionSueldoForm(forms.ModelForm):
-    class Meta:
-        model = Liquidacion
-        fields = ['usuario', 'sueldo_base', 'gratificacion', 'colacion', 'movilizacion', 'afp', 'salud', 'seguro_mutual', 'mes', 'año']
-        widgets = {
-            'mes': forms.Select(attrs={'class': 'form-control'}),
-            'año': forms.NumberInput(attrs={'class': 'form-control', 'min': 2000, 'max': datetime.datetime.now().year + 1}),
-        }
-
-    def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None)  # Obtiene el usuario desde kwargs
-        super(LiquidacionSueldoForm, self).__init__(*args, **kwargs)
-        if user and user.empresa:  # Verifica que el usuario y su empresa existan
-            self.fields['usuario'].queryset = CustomUser.objects.filter(empresa=user.empresa)
 
 class EditarUsuarioForm(forms.ModelForm):
     class Meta:
@@ -211,6 +254,20 @@ class SolicitudForm(forms.ModelForm):
             'fecha_fin': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
         }
 
+class SolicitudVacacionesForm(forms.ModelForm):
+    class Meta:
+        model = SolicitudVacaciones
+        fields = ['fecha_inicio', 'fecha_fin', 'motivo']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        fecha_inicio = cleaned_data.get('fecha_inicio')
+        fecha_fin = cleaned_data.get('fecha_fin')
+
+        if fecha_inicio and fecha_fin and fecha_inicio > fecha_fin:
+            raise forms.ValidationError("La fecha de inicio no puede ser posterior a la fecha de fin.")
+        return cleaned_data
+
 class ContactForm(forms.Form):
     MOTIVO_CONTACTO_CHOICES = [
         ('', 'Selecciona'),
@@ -247,14 +304,26 @@ class EditProfilePhotoForm(forms.ModelForm):
         fields = ['foto_perfil']
 
 class CustomPasswordChangeForm(PasswordChangeForm):
-    class Meta:
-        model = CustomUser
-        fields = ['old_password', 'new_password1', 'new_password2']
-        widgets = {
-            'old_password': forms.PasswordInput(attrs={'class': 'form-control'}),
-            'new_password1': forms.PasswordInput(attrs={'class': 'form-control'}),
-            'new_password2': forms.PasswordInput(attrs={'class': 'form-control'}),
-        }
+    def clean_new_password1(self):
+        password = self.cleaned_data.get('new_password1')
+
+        # Verificar longitud mínima
+        if len(password) < 8:
+            raise ValidationError("La contraseña debe tener al menos 8 caracteres.")
+
+        # Verificar al menos un carácter en mayúscula
+        if not any(char.isupper() for char in password):
+            raise ValidationError("La contraseña debe contener al menos una letra mayúscula.")
+
+        # Verificar al menos un número
+        if not any(char.isdigit() for char in password):
+            raise ValidationError("La contraseña debe contener al menos un número.")
+
+        # Verificar al menos un símbolo
+        if not any(char in "!@#$%^&*()-_+=<>?/.,:;" for char in password):
+            raise ValidationError("La contraseña debe contener al menos un símbolo especial (!@#$%^&*()-_+=<>?/.,:;).")
+
+        return password
 
 class CursoForm(forms.ModelForm):
     participantes = forms.ModelMultipleChoiceField(

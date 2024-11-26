@@ -8,12 +8,6 @@ urlpatterns = [
     path('colaboradores/editar/<int:pk>/', views.editar_colaborador, name='editar_colaborador'),
     path('colaboradores/eliminar/<int:pk>/', views.eliminar_colaborador, name='eliminar_colaborador'),
     path('colaboradores/exportar_excel/', views.exportar_colaboradores_excel, name='exportar_colaboradores_excel'),
-    #Liquidaciones
-    path('crear_liquidacion/', views.crear_liquidacion, name='crear_liquidacion'),
-    path('visualizacion_liquidaciones/', views.visualizacion_liquidaciones, name='visualizacion_liquidaciones'),
-    path('editar_liquidacion/<int:pk>/', views.editar_liquidacion, name='editar_liquidacion'),
-    path('eliminar_liquidacion/<int:pk>/', views.eliminar_liquidacion, name='eliminar_liquidacion'),
-    path('descargar_liquidacion/<int:pk>/', views.descargar_liquidacion_pdf, name='descargar_liquidacion'),
     #Cargas Familiares
     path('cargas/registrar/', views.registrar_carga, name='registrar_carga'),
     path('cargas/', views.listar_cargas, name='listar_cargas'),
@@ -27,6 +21,10 @@ urlpatterns = [
     path('solicitudes/', views.lista_solicitudes, name='lista_solicitudes'),
     path('gestionar_solicitud/<int:pk>/', views.gestionar_solicitud, name='gestionar_solicitud'),
     path('solicitudes/<int:pk>/pdf/', views.descargar_comprobante, name='descargar_comprobante'),
+    #Vacaciones
+    path('vacaciones/crear/', views.crear_solicitud_vacaciones, name='crear_solicitud_vacaciones'),
+    path('vacaciones/gestionar/<int:pk>/', views.gestionar_solicitud_vacaciones, name='gestionar_solicitud_vacaciones'),
+    path('vacaciones/listar/', views.lista_solicitudes_vacaciones, name='lista_solicitudes_vacaciones'),
     #Cursos
     path('cursos/', views.lista_cursos, name='lista_cursos'),
     path('cursos/crear/', views.crear_curso, name='crear_curso'),

@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="col-lg-10 col-md-12">
+        <div class="card p-5" style="border-radius: 20px; background-color: #ffffff; box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);">
+            <h1 class="text-center mb-4">Crear Solicitud de Vacaciones</h1>
+            <p class="text-center text-muted">
+                Tienes <strong>{{ dias_disponibles }}</strong> días de vacaciones disponibles.
+            </p>
+            <form method="POST" id="formSolicitudVacaciones">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="form-group">
+                            <label for="id_fecha_inicio" class="form-label">Fecha de Inicio</label>
+                            <input
+                                type="date"
+                                id="id_fecha_inicio"
+                                name="fecha_inicio"
+                                class="form-control"
+                                required>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="form-group">
+                            <label for="id_fecha_fin" class="form-label">Fecha de Fin</label>
+                            <input
+                                type="date"
+                                id="id_fecha_fin"
+                                name="fecha_fin"
+                                class="form-control"
+                                required>
+                        </div>
+                    </div>
+                    <div class="col-md-12 mb-4">
+                        <div class="form-group">
+                            <label for="id_motivo" class="form-label">Motivo</label>
+                            <textarea
+                                id="id_motivo"
+                                name="motivo"
+                                rows="4"
+                                class="form-control"
+                                placeholder="Escribe el motivo de tu solicitud..."
+                                required></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i> Crear Solicitud
+                    </button>
+                </div>                
+                <div class="d-flex justify-content-center mt-3">
+                    <a href="{% url 'home' %}" class="btn btn-secondary mt-3 px-4" style="border-radius: 10px;">
+                        <i class="fas fa-home"></i> Volver al Inicio
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Configurar los campos de fecha para que no permitan seleccionar fechas anteriores a la actual
+    document.addEventListener("DOMContentLoaded", function () {
+        const today = new Date().toISOString().split("T")[0]; // Obtener la fecha actual en formato yyyy-MM-dd
+
+        // Establecer el valor mínimo en los campos de fecha
+        const fechaInicio = document.getElementById("id_fecha_inicio");
+        const fechaFin = document.getElementById("id_fecha_fin");
+
+        fechaInicio.setAttribute("min", today);
+        fechaFin.setAttribute("min", today);
+
+        // Opcional: Asegurar que la fecha de fin sea mayor o igual a la de inicio
+        fechaInicio.addEventListener("change", function () {
+            fechaFin.setAttribute("min", fechaInicio.value);
+        });
+    });
+</script>
+{% endblock %}

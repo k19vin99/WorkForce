@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<h1 class="text-center mb-4" style="font-weight: bold;">Lista de Solicitudes de Vacaciones</h1>
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th scope="col">Colaborador</th>
+            <th scope="col">Fecha Inicio</th>
+            <th scope="col">Fecha Fin</th>
+            <th scope="col">Días Solicitados</th>
+            <th scope="col">Estado</th>
+            {% if es_supervisor %}
+            <th scope="col">Acciones</th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for solicitud in solicitudes %}
+        <tr>
+            <td>{{ solicitud.colaborador.get_full_name }}</td>
+            <td>{{ solicitud.fecha_inicio }}</td>
+            <td>{{ solicitud.fecha_fin }}</td>
+            <td>{{ solicitud.dias_habiles }}</td>
+            <td>
+                <span class="badge 
+                {% if solicitud.estado == 'pendiente' %}bg-warning text-dark
+                {% elif solicitud.estado == 'aprobada' %}bg-success
+                {% elif solicitud.estado == 'rechazada' %}bg-danger{% endif %}">
+                    {{ solicitud.get_estado_display }}
+                </span>
+            </td>
+            {% if es_supervisor %}
+            <td>
+                <a href="{% url 'gestionar_solicitud_vacaciones' solicitud.id %}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-tasks"></i> Gestionar
+                </a>
+            </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% if not solicitudes %}
+<p class="text-center text-muted mt-3">No hay solicitudes de vacaciones.</p>
+{% endif %}
+<div class="d-flex justify-content-center mt-4">
+    <a href="{% url 'home' %}" class="btn btn-secondary px-4" style="border-radius: 10px;">
+        <i class="fas fa-home"></i> Volver al Inicio
+    </a>
+</div>
+{% endblock %}

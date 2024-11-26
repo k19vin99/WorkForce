@@ -66,6 +66,11 @@
                             <div class="form-group mb-3">
                                 {{ form.fecha_nacimiento.label_tag }}
                                 {{ form.fecha_nacimiento }}
+                                {% if form.fecha_nacimiento.errors %}
+                                    <div class="text-danger">
+                                        {{ form.fecha_nacimiento.errors|striptags }}
+                                    </div>
+                                {% endif %}
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -132,16 +137,31 @@
                             <div class="form-group mb-3">
                                 {{ form.password1.label_tag }}
                                 {{ form.password1 }}
+                                {% if form.password1.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.password1.errors %}
+                                            <p>{{ error }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group mb-3">
                                 {{ form.password2.label_tag }}
                                 {{ form.password2 }}
+                                {% if form.password2.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.password2.errors %}
+                                            <p>{{ error }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
                 </div>
+                
                 <div class="d-flex justify-content-center mt-4">
                     <button type="submit" class="btn btn-primary px-4 d-flex align-items-center me-2" style="border-radius: 10px;">
                         <i class="fas fa-save me-1"></i> Guardar 
@@ -154,4 +174,14 @@
         </div>
     </div>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const today = new Date().toISOString().split("T")[0]; // Fecha actual en formato yyyy-MM-dd
+        const fechaNacimientoInput = document.querySelector("#id_fecha_nacimiento");
+
+        if (fechaNacimientoInput) {
+            fechaNacimientoInput.setAttribute("max", today); // Establecer la fecha máxima permitida
+        }
+    });
+</script>
 {% endblock %}

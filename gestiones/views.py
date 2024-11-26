@@ -1,11 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
-from .forms import CustomUserCreationForm, LiquidacionSueldoForm, EditarUsuarioForm, CargaFamiliarForm, SolicitudForm, ContactForm, EditProfileForm, EditProfilePhotoForm, PasswordChangeForm, CursoForm, ModuloForm, ComentarioForm, EditarParticipantesForm, BeneficioForm, DenunciaForm, EvidenciaFormset, NotaDenunciaForm, PublicacionForm, CustomUserChangeForm, DocumentoEmpresaForm
-from rest_framework import viewsets
-from .serializers import DenunciaSerializer
+from .forms import CustomUserCreationForm, EditarUsuarioForm, CargaFamiliarForm, SolicitudForm, ContactForm, EditProfileForm, EditProfilePhotoForm, PasswordChangeForm, CursoForm, ModuloForm, ComentarioForm, EditarParticipantesForm, BeneficioForm, DenunciaForm, EvidenciaFormset, NotaDenunciaForm, PublicacionForm, CustomUserChangeForm, DocumentoEmpresaForm, SolicitudVacacionesForm, CustomPasswordChangeForm
 import os
 from django.conf import settings
-from .models import Liquidacion, CustomUser, CargaFamiliar, Asistencia, Solicitud, Curso, Modulo, Comentario, Beneficio, Area, Denuncia, EvidenciaDenuncia, DocumentoEmpresa
+from .models import CustomUser, CargaFamiliar, Asistencia, Solicitud, Curso, Modulo, Comentario, Beneficio, Area, Denuncia, EvidenciaDenuncia, DocumentoEmpresa, SolicitudVacaciones
 from django.http import HttpResponse
 from xhtml2pdf import pisa
 from django.template.loader import get_template
@@ -45,54 +43,38 @@ def buscar(request):
         participantes__empresa=request.user.empresa
     ).distinct()
     
-    # Buscar en Liquidaciones
-    resultados_liquidaciones = Liquidacion.objects.filter(
-        Q(usuario__username__icontains=query) | 
-        Q(usuario__first_name__icontains=query) |  
-        Q(usuario__last_name__icontains=query) |  
-        Q(sueldo_base__icontains=query) |
-        Q(fecha__icontains=query),
-        usuario__empresa=request.user.empresa
-    )
-
     context = {
         'resultados_solicitudes': resultados_solicitudes,
         'resultados_cursos': resultados_cursos,
-        'resultados_liquidaciones': resultados_liquidaciones,
     }
 
     return render(request, 'gestiones/buscar/busqueda.html', context)
 
 @login_required
 def registrar_usuario(request):
-    if not is_supervisor(request.user):
-        return redirect('home')  # Redirige si el usuario no es un supervisor
+    if not is_supervisor(request.user):  # Verifica si el usuario es un supervisor
+        return redirect('home')
 
     if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST, user=request.user)  # Pasa el usuario autenticado al formulario
         if form.is_valid():
             new_user = form.save(commit=False)
-            new_user.empresa = request.user.empresa  # Asigna la empresa del supervisor al nuevo usuario
+            new_user.empresa = request.user.empresa  # Asigna la misma empresa del usuario autenticado
             new_user.save()
 
-            # Asigna el grupo seleccionado al nuevo usuario
             grupo = form.cleaned_data['grupo']
             group = Group.objects.get(name=grupo)
             new_user.groups.add(group)
 
-            # Añadir mensaje de éxito
             messages.success(request, 'Usuario registrado correctamente.')
-
-            # Limpiar el formulario volviendo a renderizar la vista con un formulario vacío
-            form = CustomUserCreationForm()  # Crear un formulario nuevo vacío
+            return redirect('lista_colaboradores')  # Redirige a la lista de colaboradores
         else:
-            # Si hay errores de validación, muestra el formulario con los errores
             messages.error(request, 'Hubo un error en el registro. Verifique los datos ingresados.')
-
     else:
-        form = CustomUserCreationForm()
+        form = CustomUserCreationForm(user=request.user)  # Pasa el usuario autenticado al formulario
 
     return render(request, 'gestiones/usuarios/registrar_usuario.html', {'form': form})
+
 
 @login_required
 @user_passes_test(is_supervisor)
@@ -160,89 +142,6 @@ def exportar_colaboradores_excel(request):
     
     return response
 
-#Vistas Liquidaciones
-@login_required
-@user_passes_test(is_supervisor)
-def crear_liquidacion(request):
-    if request.method == 'POST':
-        form = LiquidacionSueldoForm(request.POST, user=request.user)
-        if form.is_valid():
-            liquidacion = form.save(commit=False)
-            liquidacion.empresa = request.user.empresa  # Asigna la empresa del usuario que crea la liquidación
-            liquidacion.save()
-            return redirect('visualizacion_liquidaciones')
-    else:
-        form = LiquidacionSueldoForm(user=request.user)
-    
-    return render(request, 'gestiones/liquidaciones/crear_liquidacion.html', {'form': form})
-
-@login_required
-@user_passes_test(is_supervisor)
-def editar_liquidacion(request, pk):
-    liquidacion = get_object_or_404(Liquidacion, pk=pk)
-    if request.method == 'POST':
-        form = LiquidacionSueldoForm(request.POST, instance=liquidacion)
-        if form.is_valid():
-            form.save()
-            return redirect('visualizacion_liquidaciones')
-    else:
-        form = LiquidacionSueldoForm(instance=liquidacion)
-    return render(request, 'gestiones/liquidaciones/editar_liquidacion.html', {'form': form, 'liquidacion': liquidacion})
-
-@login_required
-def visualizacion_liquidaciones(request):
-    if is_supervisor(request.user):
-        # Filtra las liquidaciones de la empresa a la que pertenece el usuario supervisor
-        liquidaciones = Liquidacion.objects.filter(usuario__empresa=request.user.empresa)
-    else:
-        # Filtra solo las liquidaciones del usuario que está viendo la página
-        liquidaciones = Liquidacion.objects.filter(usuario=request.user)
-    
-    return render(request, 'gestiones/liquidaciones/visualizacion_liquidaciones.html', {'liquidaciones': liquidaciones})
-
-
-@login_required
-@user_passes_test(is_supervisor)
-def eliminar_liquidacion(request, pk):
-    liquidacion = get_object_or_404(Liquidacion, pk=pk)
-    if request.method == 'POST':
-        liquidacion.delete()
-        return redirect('visualizacion_liquidaciones')
-    return render(request, 'gestiones/liquidaciones/eliminar_liquidacion.html', {'liquidacion': liquidacion})
-
-@login_required
-def descargar_liquidacion_pdf(request, pk):
-    try:
-        if request.user.groups.filter(name='supervisores').exists():
-            liquidacion = get_object_or_404(Liquidacion, pk=pk, usuario__empresa=request.user.empresa)
-        else:
-            liquidacion = get_object_or_404(Liquidacion, pk=pk, usuario=request.user)
-
-        # Calcula el total de haberes y descuentos
-        total_haberes = liquidacion.sueldo_base + liquidacion.gratificacion + liquidacion.colacion + liquidacion.movilizacion
-        total_descuentos = liquidacion.afp + liquidacion.salud + liquidacion.seguro_mutual
-
-        template_path = 'gestiones/liquidaciones/liquidacion_pdf.html'
-        context = {
-            'liquidacion': liquidacion,
-            'total_haberes': total_haberes,
-            'total_descuentos': total_descuentos,
-        }
-
-        response = HttpResponse(content_type='application/pdf')
-        nombre_archivo = f'liquidacion_{liquidacion.id}.pdf'
-        response['Content-Disposition'] = f'inline; filename="{nombre_archivo}"'
-
-        template = get_template(template_path)
-        html = template.render(context)
-        pisa_status = pisa.CreatePDF(html, dest=response)
-
-        if pisa_status.err:
-            return HttpResponse('Ocurrieron algunos errores durante la generación del PDF <pre>' + html + '</pre>')
-
-        return response
-    except Liquidacion.DoesNotExist:
-        return HttpResponse('No se encontró la liquidación solicitada.', status=404)
 
 #Vistas Cargas Familiares
 @login_required
@@ -330,6 +229,71 @@ def visualizacion_asistencia(request):
     
     return render(request, 'gestiones/asistencia/visualizacion_asistencia.html', {'asistencias': asistencias})
 
+#Solicitudes Vacaciones
+
+@login_required
+def crear_solicitud_vacaciones(request):
+    user = request.user  # Usuario autenticado
+    dias_disponibles = user.dias_vacaciones_disponibles  # Propiedad calculada en el modelo
+
+    if request.method == 'POST':
+        form = SolicitudVacacionesForm(request.POST)
+        if form.is_valid():
+            solicitud = form.save(commit=False)
+            solicitud.colaborador = request.user
+            solicitud.save()
+            messages.success(request, 'Solicitud de vacaciones creada correctamente.')
+            return redirect('lista_solicitudes_vacaciones')
+    else:
+        form = SolicitudVacacionesForm()
+
+    return render(request, 'gestiones/vacaciones/crear_solicitud_vacaciones.html', {
+        'form': form,
+        'dias_disponibles': dias_disponibles,
+    })
+
+
+@login_required
+def gestionar_solicitud_vacaciones(request, pk):
+    """
+    Vista para que un supervisor gestione una solicitud de vacaciones.
+    """
+    solicitud = get_object_or_404(SolicitudVacaciones, pk=pk)
+    
+    if request.method == 'POST':
+        accion = request.POST.get('accion')
+        if accion == 'aprobar':
+            solicitud.estado = 'aprobada'
+        elif accion == 'rechazar':
+            solicitud.estado = 'rechazada'
+        solicitud.save()
+        return redirect('lista_solicitudes_vacaciones')
+    
+    return render(request, 'gestiones/vacaciones/gestionar_solicitud_vacaciones.html', {'solicitud': solicitud})
+
+@login_required
+def lista_solicitudes_vacaciones(request):
+    """
+    Vista para listar solicitudes de vacaciones.
+    Los supervisores ven las solicitudes de su área, y los colaboradores ven sus propias solicitudes.
+    """
+    if request.user.groups.filter(name='supervisores').exists():
+        # Si el usuario es supervisor, muestra las solicitudes de su área
+        solicitudes = SolicitudVacaciones.objects.filter(
+            colaborador__area=request.user.area
+        ).order_by('-fecha_creacion')
+        es_supervisor = True
+    else:
+        # Si el usuario es colaborador, muestra solo sus propias solicitudes
+        solicitudes = SolicitudVacaciones.objects.filter(
+            colaborador=request.user
+        ).order_by('-fecha_creacion')
+        es_supervisor = False
+
+    return render(request, 'gestiones/vacaciones/lista_solicitudes_vacaciones.html', {
+        'solicitudes': solicitudes,
+        'es_supervisor': es_supervisor
+    })
 
 #Vistas Solicitudes
 @login_required
@@ -473,13 +437,17 @@ def edit_profile_photo(request):
 @login_required
 def cambiar_contrasena(request):
     if request.method == 'POST':
-        form = PasswordChangeForm(request.user, request.POST)
+        form = CustomPasswordChangeForm(user=request.user, data=request.POST)
         if form.is_valid():
-            user = form.save()
-            update_session_auth_hash(request, user)  # Mantiene al usuario conectado
-            return redirect('profile')
+            user = form.save()  # Guarda la nueva contraseña
+            update_session_auth_hash(request, user)  # Mantiene al usuario autenticado
+            messages.success(request, "Tu contraseña ha sido cambiada exitosamente.")
+            return redirect('profile')  # Redirige al perfil
+        else:
+            messages.error(request, "Por favor corrige los errores a continuación.")
     else:
-        form = PasswordChangeForm(request.user)
+        form = CustomPasswordChangeForm(user=request.user)
+
     return render(request, 'gestiones/profile/cambiar_contrasena.html', {'form': form})
 
 #Vistas Cursos
@@ -803,8 +771,3 @@ def descargar_documento_empresa(request, pk):
     response = HttpResponse(documento.archivo, content_type='application/octet-stream')
     response['Content-Disposition'] = f'attachment; filename={documento.archivo.name}'
     return response
-
-
-class DenunciaViewSet(viewsets.ModelViewSet):
-    queryset = Denuncia.objects.all()
-    serializer_class = DenunciaSerializer

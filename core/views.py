@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from gestiones.models import Beneficio, CustomUser, Liquidacion, CargaFamiliar, Solicitud, Publicacion, Curso, Denuncia, Asistencia
+from gestiones.models import Beneficio, CustomUser, CargaFamiliar, Solicitud, Publicacion, Curso, Denuncia, Asistencia
 from datetime import datetime, timedelta, date
 
 def index(request):
@@ -8,7 +8,6 @@ def index(request):
 def home(request):
     empresa = request.user.empresa
     cantidad_usuarios = CustomUser.objects.filter(empresa=empresa).count()
-    cantidad_liquidaciones = Liquidacion.objects.filter(usuario__empresa=empresa).count()
     cantidad_cargas_familiares = CargaFamiliar.objects.filter(usuario__empresa=empresa).count()
     cantidad_solicitudes = Solicitud.objects.filter(colaborador__empresa=empresa).count()
     solicitudes_pendientes = Solicitud.objects.filter(colaborador__empresa=empresa, estado='Pendiente').count()
@@ -42,7 +41,6 @@ def home(request):
     context = {
         'today': today,
         'cantidad_usuarios': cantidad_usuarios,
-        'cantidad_liquidaciones': cantidad_liquidaciones,
         'cantidad_cargas_familiares': cantidad_cargas_familiares,
         'cantidad_solicitudes': cantidad_solicitudes,
         'solicitudes_pendientes': solicitudes_pendientes,

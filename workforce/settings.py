@@ -27,7 +27,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
     'core',
     'gestiones',
 
@@ -72,11 +71,11 @@ WSGI_APPLICATION = 'workforce.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'workforce_db',
+        'NAME': 'workforce',
         'USER': 'postgres',
         'PASSWORD': 'Isidora2020',
         'HOST':'localhost',
-        'PORT':'5432',
+        'PORT':'',
     }
 }
 

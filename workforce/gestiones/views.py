@@ -1,8 +1,7 @@
+import os
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .forms import CustomUserCreationForm, LiquidacionSueldoForm, EditarUsuarioForm, CargaFamiliarForm, SolicitudForm, ContactForm, EditProfileForm, EditProfilePhotoForm, PasswordChangeForm, CursoForm, ModuloForm, ComentarioForm, EditarParticipantesForm, BeneficioForm, DenunciaForm, EvidenciaFormset, NotaDenunciaForm, PublicacionForm, CustomUserChangeForm
-
-import os
 from django.conf import settings
 from .models import Liquidacion, CustomUser, CargaFamiliar, Asistencia, Solicitud, Curso, Modulo, Comentario, Beneficio, Area, Denuncia, EvidenciaDenuncia
 from django.http import HttpResponse
@@ -16,6 +15,7 @@ from django.db.models import Q
 from django.contrib.auth.models import Group
 from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
+
 
 def is_hr_analyst(user):
     return user.area and user.area.nombre == 'Recursos Humanos' and user.cargo == 'Analista de Personas'

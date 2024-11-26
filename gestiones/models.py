@@ -6,6 +6,8 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 from django.core.validators import MaxValueValidator, MinValueValidator
 import datetime
+from datetime import date, timedelta
+import holidays 
 
 class Empresa(models.Model):
     nombre = models.CharField(max_length=255)
@@ -26,8 +28,8 @@ class Area(models.Model):
         return f"{self.nombre} - {self.empresa.nombre}"
     
 class CustomUser(AbstractUser):
-    empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, null=True, blank=True)
-    area = models.ForeignKey(Area, on_delete=models.SET_NULL, null=True, blank=True)
+    empresa = models.ForeignKey('Empresa', on_delete=models.CASCADE, null=True, blank=True)
+    area = models.ForeignKey('Area', on_delete=models.SET_NULL, null=True, blank=True)
     cargo = models.CharField(max_length=255, blank=True, null=True)
     fecha_contratacion = models.DateField(blank=True, null=True)
     foto_perfil = models.ImageField(upload_to='fotos_perfil/', null=True, blank=True)
@@ -60,54 +62,46 @@ class CustomUser(AbstractUser):
         ('otro', 'Otro'),
     ], null=True, blank=True)
     rut = models.CharField(max_length=12, unique=True, null=True, blank=True)
+    
+    @property
+    def dias_vacaciones_disponibles(self):
+        """
+        Calcula los días de vacaciones disponibles considerando:
+        - 1.25 días hábiles por mes trabajado.
+        - Desde la fecha de contratación.
+        """
+        if not self.fecha_contratacion:
+            return 0
+
+        today = date.today()
+        # Calcular los meses trabajados
+        meses_trabajados = (today.year - self.fecha_contratacion.year) * 12 + (today.month - self.fecha_contratacion.month)
+
+        # Total acumulado según la ley chilena
+        total_vacaciones = meses_trabajados * 1.25
+
+        # Restar días ya usados en solicitudes aprobadas
+        dias_usados = sum(
+            solicitud.dias_habiles
+            for solicitud in self.solicitudes_vacaciones.filter(estado='aprobada')
+        )
+        return max(0, total_vacaciones - dias_usados)
+
+    def calcular_dias_habiles(self, fecha_inicio, fecha_fin):
+        """
+        Calcula la cantidad de días hábiles entre dos fechas dadas,
+        excluyendo feriados en Chile.
+        """
+        chilean_holidays = holidays.CL(years=range(fecha_inicio.year, fecha_fin.year + 1))
+        delta = (fecha_fin - fecha_inicio).days + 1
+        return sum(
+            1
+            for day in (fecha_inicio + timedelta(days=i) for i in range(delta))
+            if day.weekday() < 5 and day not in chilean_holidays
+        )
 
     def __str__(self):
         return self.username
-
-class Liquidacion(models.Model):
-    MESES_CHOICES = [
-        (1, "Enero"),
-        (2, "Febrero"),
-        (3, "Marzo"),
-        (4, "Abril"),
-        (5, "Mayo"),
-        (6, "Junio"),
-        (7, "Julio"),
-        (8, "Agosto"),
-        (9, "Septiembre"),
-        (10, "Octubre"),
-        (11, "Noviembre"),
-        (12, "Diciembre"),
-    ]
-
-    empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE)
-    usuario = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    sueldo_base = models.DecimalField(max_digits=10, decimal_places=2)
-    gratificacion = models.DecimalField(max_digits=10, decimal_places=2)
-    colacion = models.DecimalField(max_digits=10, decimal_places=2)
-    movilizacion = models.DecimalField(max_digits=10, decimal_places=2)
-    afp = models.DecimalField(max_digits=10, decimal_places=2)
-    salud = models.DecimalField(max_digits=10, decimal_places=2)
-    seguro_mutual = models.DecimalField(max_digits=10, decimal_places=2)
-    sueldo_liquido = models.DecimalField(max_digits=10, decimal_places=2, editable=False)
-    fecha = models.DateField(auto_now_add=True)
-    
-    # Nuevos campos para el mes y año de la liquidación
-    mes = models.PositiveSmallIntegerField(choices=MESES_CHOICES)
-    año = models.PositiveIntegerField(validators=[
-        MinValueValidator(2000), 
-        MaxValueValidator(datetime.datetime.now().year + 1)
-    ])
-
-    def save(self, *args, **kwargs):
-        haberes = self.sueldo_base + self.gratificacion + self.colacion + self.movilizacion
-        descuentos = self.afp + self.salud + self.seguro_mutual
-        self.sueldo_liquido = haberes - descuentos
-        super(Liquidacion, self).save(*args, **kwargs)
-
-    def __str__(self):
-        return f"Liquidación de {self.usuario.username} - {self.get_mes_display()} {self.año}"
-
 
 class CargaFamiliar(models.Model):
     nombre = models.CharField(max_length=100)
@@ -137,7 +131,6 @@ class Asistencia(models.Model):
     
 class Solicitud(models.Model):
     TIPOS_SOLICITUD = [
-        ('vacaciones', 'Días de Vacaciones'),
         ('tramite', 'Permiso Trámite Personal'),
         ('administrativo', 'Día Administrativo'),
         ('cumpleanos', 'Descanso por Cumpleaños'),
@@ -170,6 +163,34 @@ class Solicitud(models.Model):
         return f"{self.colaborador.username} - {self.tipo}"
 
 User = get_user_model()
+
+class SolicitudVacaciones(models.Model):
+    ESTADO_SOLICITUD = [
+        ('pendiente', 'Pendiente'),
+        ('aprobada', 'Aprobada'),
+        ('rechazada', 'Rechazada'),
+    ]
+
+    colaborador = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='solicitudes_vacaciones')
+    fecha_inicio = models.DateField()
+    fecha_fin = models.DateField()
+    dias_habiles = models.IntegerField(default=0) 
+    estado = models.CharField(max_length=20, choices=ESTADO_SOLICITUD, default='pendiente')
+    motivo = models.TextField(blank=True, null=True)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+
+    def calcular_dias_habiles(self):
+        chilean_holidays = holidays.CL(years=range(self.fecha_inicio.year, self.fecha_fin.year + 1))
+        delta = (self.fecha_fin - self.fecha_inicio).days + 1
+        return sum(
+            1
+            for day in (self.fecha_inicio + timedelta(days=i) for i in range(delta))
+            if day.weekday() < 5 and day not in chilean_holidays
+        )
+
+    def save(self, *args, **kwargs):
+        self.dias_habiles = self.calcular_dias_habiles()
+        super().save(*args, **kwargs)
 
 class Curso(models.Model):
     nombre = models.CharField(max_length=255)
