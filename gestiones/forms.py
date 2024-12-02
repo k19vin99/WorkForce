@@ -227,10 +227,21 @@ class CargaFamiliarForm(forms.ModelForm):
         label="Fecha de nacimiento",
         required=True
     )
+    tipo_certificado = forms.ChoiceField(
+        choices=CargaFamiliar.TIPO_CERTIFICADO_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        label="Tipo de Certificado",
+        required=True
+    )
+    archivo = forms.FileField(
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control'}),
+        label="Archivo del Certificado",
+        required=False  # El archivo puede no ser obligatorio
+    )
 
     class Meta:
         model = CargaFamiliar
-        fields = ['usuario', 'nombre', 'apellido', 'rut', 'parentesco', 'fecha_nacimiento']
+        fields = ['usuario', 'nombre', 'apellido', 'rut', 'parentesco', 'fecha_nacimiento', 'tipo_certificado', 'archivo']
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)

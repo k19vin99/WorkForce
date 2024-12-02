@@ -1,212 +1,111 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ficha de Usuario</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f4f6f9;
-            color: #333;
-        }
-        h1, h2, h3, h4 {
-            color: #007bff;
-            font-weight: bold;
-        }
-        .container {
-            width: 100%;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .text-center {
-            text-align: center;
-        }
-        .profile-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #ddd;
-        }
-        .profile-header img {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            margin-right: 20px;
-            object-fit: cover;
-        }
-        .profile-header .info {
-            font-size: 1.2em;
-        }
-        .profile-header .info h1 {
-            margin: 0;
-            font-size: 1.5em;
-            color: #007bff;
-        }
-        .profile-header .info h3 {
-            margin: 0;
-            color: #555;
-        }
-        .section {
-            background-color: #fafafa;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            padding: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .section-title {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 5px;
-        }
-        .list-group {
-            list-style: none;
-            padding: 0;
-        }
-        .list-group li {
-            margin-bottom: 8px;
-        }
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: #fff;
-            text-decoration: none;
-            border-radius: 5px;
-            margin-top: 10px;
-        }
-        .btn:hover {
-            background-color: #0056b3;
-        }
-        .section-table {
-            width: 100%;
-            margin-bottom: 15px;
-            border-collapse: collapse;
-        }
-        .section-table th, .section-table td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-        .section-table th {
-            background-color: #f2f2f2;
-            font-weight: bold;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <!-- Header with Profile Image and Name -->
-        <div class="profile-header">
-            {% if usuario.foto_perfil %}
-                <img src="{{ usuario.foto_perfil.url }}" alt="Foto de Perfil">
-            {% else %}
-                <img src="/static/default-avatar.png" alt="Foto de Perfil">
-            {% endif %}
-            <div class="info">
-                <h1>{{ usuario.first_name }} {{ usuario.last_name }}</h1>
-                <h3>{{ usuario.cargo }} - {{ usuario.empresa }}</h3>
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Ficha de Usuario{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white text-center">
+            <h3>Ficha del Colaborador</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <!-- Foto de Perfil -->
+                <div class="col-md-4 text-center mb-4">
+                    {% if usuario.foto_perfil %}
+                        <img src="{{ usuario.foto_perfil.url }}" alt="Foto de perfil" class="img-thumbnail" style="max-width: 200px; border-radius: 10px;">
+                    {% else %}
+                        <img src="{% static 'img/default_profile.png' %}" alt="Foto de perfil" class="img-thumbnail" style="max-width: 200px; border-radius: 10px;">
+                    {% endif %}
+                </div>
+
+                <!-- Información General -->
+                <div class="col-md-8">
+                    <h4 class="text-primary">Información General</h4>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>Username:</strong> {{ usuario.username }}</li>
+                        <li class="list-group-item"><strong>RUT:</strong> {{ usuario.rut }}</li>
+                        <li class="list-group-item"><strong>Correo Electrónico:</strong> {{ usuario.email }}</li>
+                        <li class="list-group-item"><strong>Teléfono:</strong> {{ usuario.telefono }}</li>
+                        <li class="list-group-item"><strong>Dirección:</strong> {{ usuario.direccion }}</li>
+                    </ul>
+                </div>
             </div>
-        </div>
 
-        <!-- Información Personal -->
-        <div class="section">
-            <div class="section-title">Información Personal</div>
-            <table class="section-table">
-                <tr>
-                    <th>Fecha de Nacimiento:</th>
-                    <td>{{ usuario.fecha_nacimiento }}</td>
-                </tr>
-                <tr>
-                    <th>Edad:</th>
-                    <td>{{ edad }} años</td>
-                </tr>
-                <tr>
-                    <th>AFP:</th>
-                    <td>{{ usuario.get_afp_display }}</td>
-                </tr>
-                <tr>
-                    <th>Salud:</th>
-                    <td>{{ usuario.get_salud_display }}</td>
-                </tr>
-            </table>
-        </div>
+            <hr>
 
-        <!-- Información Laboral -->
-        <div class="section">
-            <div class="section-title">Información Laboral</div>
-            <table class="section-table">
-                <tr>
-                    <th>Empresa:</th>
-                    <td>{{ usuario.empresa }}</td>
-                </tr>
-                <tr>
-                    <th>Área:</th>
-                    <td>{{ usuario.area }}</td>
-                </tr>
-                <tr>
-                    <th>Cargo:</th>
-                    <td>{{ usuario.cargo }}</td>
-                </tr>
-                <tr>
-                    <th>Fecha de Contratación:</th>
-                    <td>{{ usuario.fecha_contratacion }}</td>
-                </tr>
-                <tr>
-                    <th>Horario Asignado:</th>
-                    <td>{{ usuario.get_horario_asignado_display }}</td>
-                </tr>
-            </table>
-        </div>
+            <!-- Información Personal -->
+            <h4 class="text-primary mt-3">Información Personal</h4>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>Edad:</strong> 
+                    {% if edad %}
+                        {{ edad }} años
+                    {% else %}
+                        No especificada
+                    {% endif %}
+                </li>
+                <li class="list-group-item"><strong>Fecha de Nacimiento:</strong> {{ usuario.fecha_nacimiento }}</li>
+                <li class="list-group-item"><strong>AFP:</strong> {{ usuario.get_afp_display }}</li>
+                <li class="list-group-item"><strong>Salud:</strong> {{ usuario.get_salud_display }}</li>
+            </ul>
 
-        <!-- Cursos en los que participa -->
-        <div class="section">
-            <div class="section-title">Cursos en los que participa</div>
+            <hr>
+
+            <!-- Información Laboral -->
+            <h4 class="text-primary mt-3">Información Laboral</h4>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>Empresa:</strong> {{ usuario.empresa }}</li>
+                <li class="list-group-item"><strong>Área:</strong> {{ usuario.area }}</li>
+                <li class="list-group-item"><strong>Cargo:</strong> {{ usuario.cargo }}</li>
+                <li class="list-group-item"><strong>Fecha de Contratación:</strong> {{ usuario.fecha_contratacion }}</li>
+                <li class="list-group-item"><strong>Horario Asignado:</strong> {{ usuario.get_horario_asignado_display }}</li>
+            </ul>
+
+            <hr>
+
+            <!-- Cursos -->
+            <h4 class="text-primary mt-3">Cursos en los que participa</h4>
             {% if usuario.cursos.exists %}
-                <table class="section-table">
-                    <tr>
-                        <th>Nombre del Curso</th>
-                        <th>Descripción</th>
-                    </tr>
+                <ul class="list-group list-group-flush">
                     {% for curso in usuario.cursos.all %}
-                        <tr>
-                            <td>{{ curso.nombre }}</td>
-                            <td>{{ curso.descripcion }}</td>
-                        </tr>
-                    {% endfor %}
-                </table>
-            {% else %}
-                <p>No está inscrito en ningún curso actualmente.</p>
-            {% endif %}
-        </div>
-
-        <!-- Documentos Descargados -->
-        <div class="section">
-            <div class="section-title">Documentos Descargados</div>
-            {% if documentos %}
-                <ul class="list-group">
-                    {% for documento in documentos %}
                         <li class="list-group-item">
-                            <strong>{{ documento.nombre_documento }}</strong> - {{ documento.fecha_descarga|date:"d/m/Y H:i" }}
+                            <strong>{{ curso.nombre }}</strong> 
                         </li>
                     {% endfor %}
                 </ul>
             {% else %}
-                <p>No ha descargado documentos aún.</p>
+                <p>No está inscrito en ningún curso actualmente.</p>
             {% endif %}
-        </div>
+            <hr>
 
+            <!-- Documentos Descargados -->
+            <h4 class="text-primary mt-3">Documentos Descargados</h4>
+            {% if descargas %}
+                <ul class="list-group list-group-flush">
+                    {% for descarga in descargas %}
+                        <li class="list-group-item">
+                            <strong>{{ descarga.documento.titulo }}</strong> - {{ descarga.fecha_descarga }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No ha descargado ningún documento.</p>
+            {% endif %}
+            <hr>
+
+        </div>
     </div>
-</body>
-</html>
+
+    <!-- Botones de Navegación -->
+    <div class="d-flex justify-content-center mt-4">
+        <a href="{% url 'lista_colaboradores' %}" class="btn btn-secondary px-4 me-2" style="border-radius: 10px;">
+            <i class="fas fa-arrow-left"></i> Volver a la Lista
+        </a>
+        <a href="{% url 'editar_colaborador' usuario.pk %}" class="btn btn-primary px-4" style="border-radius: 10px;">
+            <i class="fas fa-edit"></i> Editar Usuario
+        </a>
+    </div>
+</div>
+{% endblock %}

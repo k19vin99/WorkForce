@@ -1,5 +1,7 @@
 from django.urls import path, include
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     #Usuarios
@@ -56,7 +58,8 @@ urlpatterns = [
     path('documentos/', views.lista_documentos_empresa, name='lista_documentos_empresa'),
     path('documentos/subir/', views.subir_documento_empresa, name='subir_documento_empresa'),
     path('documentos/descargar/<int:pk>/', views.descargar_documento_empresa, name='descargar_documento_empresa'),
-
+    path('gestiones/documentos/descargar/<int:pk>/', views.descargar_documento_empresa, name='descargar_documento_empresa'),
+    path('gestiones/documentos/<int:documento_id>/ver_descargas/', views.ver_descargas_documento, name='ver_descargas_documento'),
 
     path('contacto/', views.contacto, name='contacto'),
     path('success/', views.success, name='success'),
@@ -67,4 +70,4 @@ urlpatterns = [
     path('buscar/', views.buscar, name='buscar'),
     
     
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -4,7 +4,7 @@
 <div class="container mt-5">
     <div class="card p-4 shadow" style="border-radius: 15px;">
         <h2 class="text-center mb-4">Registrar Carga Familiar</h2>
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">  <!-- Agregar enctype para cargar archivos -->
             {% csrf_token %}
             <div class="row">
                 <div class="col-md-6 mb-3">
@@ -41,6 +41,18 @@
                     <div class="form-group">
                         <label for="id_fecha_nacimiento" class="form-label">{{ form.fecha_nacimiento.label }}</label>
                         {{ form.fecha_nacimiento }}
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="form-group">
+                        <label for="id_tipo_certificado" class="form-label">{{ form.tipo_certificado.label }}</label>
+                        {{ form.tipo_certificado }}
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="form-group">
+                        <label for="id_archivo" class="form-label">{{ form.archivo.label }}</label>
+                        {{ form.archivo }}
                     </div>
                 </div>
             </div>

@@ -1,49 +1,44 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container">
-    <h2>Listado de Cargas Familiares</h2>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Apellido</th>
-                <th>RUT</th>
-                <th>Parentesco</th>
-                <th>Fecha de Nacimiento</th>
-                <th>Usuario</th> <!-- Nueva columna para el usuario -->
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for carga in cargas %}
-            <tr>
-                <td>{{ carga.nombre }}</td>
-                <td>{{ carga.apellido }}</td>
-                <td>{{ carga.rut }}</td>
-                <td>{{ carga.get_parentesco_display }}</td>
-                <td>{{ carga.fecha_nacimiento }}</td>
-                <td>{{ carga.usuario.get_full_name }}</td> <!-- Mostrar el nombre completo del usuario -->
-                <td>
-                    <a href="{% url 'editar_carga' carga.pk %}" class="btn btn-warning">Editar</a>
-                    <a href="{% url 'eliminar_carga' carga.pk %}" class="btn btn-danger">Eliminar</a>
-                    
-                </td>
-            </tr>
-            {% endfor %}
-            
-        </tbody>
-    </table>
-    <div class="d-flex justify-content-center mt-4">
-        <a href="{% url 'registrar_carga' %}" class="btn btn-primary px-4" style="border-radius: 10px;">
-            <i class="fas fa-plus-circle"></i> Nueva Carga
-        </a>
-    </div>
-    <div class="d-flex justify-content-center mt-4">
-        <a href="{% url 'home' %}" class="btn btn-secondary px-4" style="border-radius: 10px;">
-            <i class="fas fa-home"></i> Volver al Inicio
-        </a>
-    </div>
-    
-</div>
+<h1 class="text-center mb-4" style="font-weight: bold;">Listado de Cargas Familiares</h1>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>RUT</th>
+            <th>Parentesco</th>
+            <th>Fecha de Nacimiento</th>
+            <th>Tipo de Certificado</th>  <!-- Nueva columna para tipo de certificado -->
+            <th>Archivo</th>  <!-- Nueva columna para archivo -->
+            <th>Usuario</th> <!-- Columna de usuario -->
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for carga in cargas %}
+        <tr>
+            <td>{{ carga.nombre }}</td>
+            <td>{{ carga.apellido }}</td>
+            <td>{{ carga.rut }}</td>
+            <td>{{ carga.get_parentesco_display }}</td>
+            <td>{{ carga.fecha_nacimiento }}</td>
+            <td>{{ carga.get_tipo_certificado_display }}</td>  <!-- Mostrar tipo de certificado -->
+            <td>
+                {% if carga.archivo %}
+                    <a href="{{ carga.archivo.url }}" class="btn btn-info" target="_blank">Ver Archivo</a>
+                {% else %}
+                    No disponible
+                {% endif %}
+            </td>
+            <td>{{ carga.usuario.get_full_name }}</td> <!-- Mostrar el nombre completo del usuario -->
+            <td>
+                <a href="{% url 'editar_carga' carga.pk %}" class="btn btn-warning">Editar</a>
+                <a href="{% url 'eliminar_carga' carga.pk %}" class="btn btn-danger">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock %}

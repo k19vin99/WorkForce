@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Usuarios que han descargado "{{ documento.titulo }}"</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Usuario</th>
+                <th>Fecha de Descarga</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for descarga in descargas %}
+                <tr>
+                    <td>{{ descarga.usuario }}</td>
+                    <td>{{ descarga.fecha_descarga }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

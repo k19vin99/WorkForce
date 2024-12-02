@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from .forms import CustomUserCreationForm, EditarUsuarioForm, CargaFamiliarForm, SolicitudForm, ContactForm, EditProfileForm, EditProfilePhotoForm, PasswordChangeForm, CursoForm, ModuloForm, ComentarioForm, EditarParticipantesForm, BeneficioForm, DenunciaForm, EvidenciaFormset, NotaDenunciaForm, PublicacionForm, CustomUserChangeForm, DocumentoEmpresaForm, SolicitudVacacionesForm, CustomPasswordChangeForm
 import os
 from django.conf import settings
-from .models import CustomUser, CargaFamiliar, Asistencia, Solicitud, Curso, Modulo, Comentario, Beneficio, Area, Denuncia, EvidenciaDenuncia, DocumentoEmpresa, SolicitudVacaciones, DocumentoDescargado
+from .models import CustomUser, CargaFamiliar, Asistencia, Solicitud, Curso, Modulo, Comentario, Beneficio, Area, Denuncia, EvidenciaDenuncia, DocumentoEmpresa, SolicitudVacaciones, DescargaDocumento
 from django.http import HttpResponse
 from xhtml2pdf import pisa
 from django.template.loader import get_template
@@ -81,13 +81,7 @@ from datetime import date
 @user_passes_test(is_supervisor)
 def ficha_usuario(request, pk):
     usuario = get_object_or_404(CustomUser, pk=pk)
-    documentos = DocumentoDescargado.objects.filter(usuario=usuario)
 
-    context = {
-        'usuario': usuario,
-        'documentos': documentos,
-    }
-    
     # Verificar que el usuario pertenece a la misma empresa que el supervisor
     if usuario.empresa != request.user.empresa:
         messages.error(request, "No tienes permiso para ver esta ficha.")
@@ -102,9 +96,14 @@ def ficha_usuario(request, pk):
     else:
         edad = None
 
+    # Obtener los documentos descargados por el usuario
+    descargas = DescargaDocumento.objects.filter(usuario=usuario)
+
+    # Pasar documentos al contexto
     return render(request, 'gestiones/usuarios/ficha_usuario.html', {
         'usuario': usuario,
         'edad': edad,  # Pasar la edad al contexto
+        'descargas': descargas,  # Pasar los documentos descargados al contexto
     })
 
 @login_required
@@ -172,7 +171,6 @@ def editar_colaborador(request, pk):
 
 
 
-
 @login_required
 @user_passes_test(is_supervisor)
 def eliminar_colaborador(request, pk):
@@ -214,13 +212,14 @@ def exportar_colaboradores_excel(request):
 @user_passes_test(is_supervisor)
 def registrar_carga(request):
     if request.method == 'POST':
-        form = CargaFamiliarForm(request.POST, user=request.user)  # Pasa el usuario al formulario
+        form = CargaFamiliarForm(request.POST, request.FILES, user=request.user) 
         if form.is_valid():
             form.save()
             return redirect('listar_cargas')
     else:
         form = CargaFamiliarForm(user=request.user)  # Pasa el usuario al formulario
     return render(request, 'gestiones/cargas_familiares/registrar_carga.html', {'form': form})
+
 
 @login_required
 def listar_cargas(request):
@@ -826,15 +825,25 @@ def subir_documento_empresa(request):
     
     return render(request, 'gestiones/documentos/subir_documento.html', {'form': form})
 
+    
 @login_required
 def lista_documentos_empresa(request):
     documentos = DocumentoEmpresa.objects.all()
     return render(request, 'gestiones/documentos/lista_documentos.html', {'documentos': documentos})
 
-@login_required
 def descargar_documento_empresa(request, pk):
     documento = get_object_or_404(DocumentoEmpresa, pk=pk)
-    response = HttpResponse(documento.archivo, content_type='application/octet-stream')
+    
+    # Registrar la descarga en la base de datos
+    DescargaDocumento.objects.create(documento=documento, usuario=request.user)
+
+    # Lógica para servir el archivo
+    response = HttpResponse(documento.archivo, content_type='application/pdf')  # Cambia el tipo si no es PDF
     response['Content-Disposition'] = f'attachment; filename={documento.archivo.name}'
     return response
 
+@login_required
+def ver_descargas_documento(request, documento_id):
+    documento = get_object_or_404(DocumentoEmpresa, id=documento_id)
+    descargas = DescargaDocumento.objects.filter(documento=documento)
+    return render(request, 'gestiones/documentos/ver_descargas.html', {'documento': documento, 'descargas': descargas})

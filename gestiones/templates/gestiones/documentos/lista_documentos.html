@@ -1,29 +1,36 @@
 {% extends 'base.html' %}
-
+{% load custom_filters %}
+{% load custom_tags %}
 {% block content %}
-<div class="container mt-5">
-    <h1>Documentos de la Empresa</h1>
-    <table class="table">
-        <thead>
+<h1 class="text-center mb-4" style="font-weight: bold;">Documentos de la Empresa</h1>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Título</th>
+            <th>Descripción</th>
+            <th>Fecha de Creación</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for documento in documentos %}
             <tr>
-                <th>Título</th>
-                <th>Descripción</th>
-                <th>Fecha de Creación</th>
-                <th>Acciones</th>
+                <td>{{ documento.titulo }}</td>
+                <td>{{ documento.descripcion }}</td>
+                <td>{{ documento.fecha_creacion }}</td>
+                <td>
+                    <a href="{% url 'descargar_documento_empresa' documento.id %}" class="btn btn-info">Descargar</a>
+                    {% if user|is_supervisor and user.area.nombre == "Recursos Humanos" %}
+                    <a href="{% url 'ver_descargas_documento' documento.id %}" class="btn btn-secondary">Ver Descargas</a>
+                    {% endif %}
+                </td>
             </tr>
-        </thead>
-        <tbody>
-            {% for documento in documentos %}
-                <tr>
-                    <td>{{ documento.titulo }}</td>
-                    <td>{{ documento.descripcion }}</td>
-                    <td>{{ documento.fecha_creacion }}</td>
-                    <td>
-                        <a href="{% url 'descargar_documento_empresa' documento.id %}" class="btn btn-info">Descargar</a>
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+        {% endfor %}
+    </tbody>
+</table>
+{% if user|is_supervisor and user.area.nombre == "Recursos Humanos" %}
+<div class="d-flex justify-content-end">
+    <a href="{% url 'subir_documento_empresa' %}" class="btn btn-success px-4 d-flex align-items-center me-2" style="border-radius: 10px; font-weight: 600;"><i class="fas fa-book"></i> Nuevo Documento</a>
 </div>
+{% endif %}
 {% endblock %}

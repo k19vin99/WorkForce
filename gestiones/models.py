@@ -104,6 +104,15 @@ class CustomUser(AbstractUser):
         return self.username
 
 class CargaFamiliar(models.Model):
+    TIPO_CERTIFICADO_CHOICES = [
+        ('AFC', 'Certificado de Carga Familiar (AFC)'),
+        ('ISAPRE', 'Certificado de Carga Familiar de la Isapre'),
+        ('SUBSIDIOS', 'Certificado de Carga Familiar para Subsidios o Beneficios Sociales'),
+        ('SII', 'Certificado de Carga Familiar del Servicio de Impuestos Internos (SII)'),
+        ('REGISTRO_CIVIL', 'Certificados del Registro Civil'),
+        ('OTRO', 'Otro'),
+    ]
+    
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
     rut = models.CharField(max_length=12)
@@ -116,6 +125,9 @@ class CargaFamiliar(models.Model):
     ])
     fecha_nacimiento = models.DateField(null=True, blank=True)
     usuario = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='cargas_familiares')
+    
+    tipo_certificado = models.CharField(max_length=20, choices=TIPO_CERTIFICADO_CHOICES, null=True, blank=True)
+    archivo = models.FileField(upload_to='cargas_familiares/', null=True, blank=True)
 
     def __str__(self):
         return f'{self.nombre} {self.apellido} ({self.parentesco})'
@@ -296,11 +308,7 @@ class DocumentoEmpresa(models.Model):
     def __str__(self):
         return self.titulo
     
-class DocumentoDescargado(models.Model):
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name="documentos_descargados")
-    nombre_documento = models.CharField(max_length=255)
+class DescargaDocumento(models.Model):
+    documento = models.ForeignKey(DocumentoEmpresa, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     fecha_descarga = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.nombre_documento} ({self.fecha_descarga})"
-    
