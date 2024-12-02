@@ -83,20 +83,16 @@ class CustomUserCreationForm(UserCreationForm):
 
     def clean_rut(self):
         rut = self.cleaned_data.get('rut')
-        
         # Verificar que el RUT ya esté registrado
         if CustomUser.objects.filter(rut=rut).exists():
             raise forms.ValidationError("El RUT ya está registrado.")
-        
         # Verificar formato correcto (Ej: 12345678-9)
         rut_pattern = r'^\d{1,8}-[\dkK]$'
         if not re.match(rut_pattern, rut):
             raise forms.ValidationError("El formato del RUT no es válido. Debe ser en formato 12345678-9.")
-        
         # Verificar longitud mínima
         if len(rut) < 9:  # La longitud mínima estándar para RUT es 9 caracteres incluyendo el guión
             raise forms.ValidationError("El RUT debe tener al menos 9 caracteres (incluyendo el guión).")
-        
         # Verificar dígito verificador
         if not self.validar_digito_verificador(rut):
             raise forms.ValidationError("El RUT ingresado no es válido.")

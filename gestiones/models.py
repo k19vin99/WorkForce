@@ -296,4 +296,11 @@ class DocumentoEmpresa(models.Model):
     def __str__(self):
         return self.titulo
     
+class DocumentoDescargado(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name="documentos_descargados")
+    nombre_documento = models.CharField(max_length=255)
+    fecha_descarga = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.nombre_documento} ({self.fecha_descarga})"
     

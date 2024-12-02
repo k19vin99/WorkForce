@@ -45,4 +45,22 @@
         </div>
     </div>
 </div>
+<script>
+    // Configurar los campos de fecha para que no permitan seleccionar fechas anteriores a la actual
+    document.addEventListener("DOMContentLoaded", function () {
+        const today = new Date().toISOString().split("T")[0]; // Obtener la fecha actual en formato yyyy-MM-dd
+
+        // Establecer el valor mínimo en los campos de fecha
+        const fechaInicio = document.getElementById("id_fecha_inicio");
+        const fechaFin = document.getElementById("id_fecha_fin");
+
+        fechaInicio.setAttribute("min", today);
+        fechaFin.setAttribute("min", today);
+
+        // Opcional: Asegurar que la fecha de fin sea mayor o igual a la de inicio
+        fechaInicio.addEventListener("change", function () {
+            fechaFin.setAttribute("min", fechaInicio.value);
+        });
+    });
+</script>
 {% endblock %}

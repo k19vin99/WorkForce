@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from .forms import CustomUserCreationForm, EditarUsuarioForm, CargaFamiliarForm, SolicitudForm, ContactForm, EditProfileForm, EditProfilePhotoForm, PasswordChangeForm, CursoForm, ModuloForm, ComentarioForm, EditarParticipantesForm, BeneficioForm, DenunciaForm, EvidenciaFormset, NotaDenunciaForm, PublicacionForm, CustomUserChangeForm, DocumentoEmpresaForm, SolicitudVacacionesForm, CustomPasswordChangeForm
 import os
 from django.conf import settings
-from .models import CustomUser, CargaFamiliar, Asistencia, Solicitud, Curso, Modulo, Comentario, Beneficio, Area, Denuncia, EvidenciaDenuncia, DocumentoEmpresa, SolicitudVacaciones
+from .models import CustomUser, CargaFamiliar, Asistencia, Solicitud, Curso, Modulo, Comentario, Beneficio, Area, Denuncia, EvidenciaDenuncia, DocumentoEmpresa, SolicitudVacaciones, DocumentoDescargado
 from django.http import HttpResponse
 from xhtml2pdf import pisa
 from django.template.loader import get_template
@@ -75,6 +75,72 @@ def registrar_usuario(request):
 
     return render(request, 'gestiones/usuarios/registrar_usuario.html', {'form': form})
 
+from datetime import date
+
+@login_required
+@user_passes_test(is_supervisor)
+def ficha_usuario(request, pk):
+    usuario = get_object_or_404(CustomUser, pk=pk)
+    documentos = DocumentoDescargado.objects.filter(usuario=usuario)
+
+    context = {
+        'usuario': usuario,
+        'documentos': documentos,
+    }
+    
+    # Verificar que el usuario pertenece a la misma empresa que el supervisor
+    if usuario.empresa != request.user.empresa:
+        messages.error(request, "No tienes permiso para ver esta ficha.")
+        return redirect('lista_colaboradores')
+
+    # Calcular la edad si la fecha de nacimiento está definida
+    if usuario.fecha_nacimiento:
+        today = date.today()
+        edad = today.year - usuario.fecha_nacimiento.year - (
+            (today.month, today.day) < (usuario.fecha_nacimiento.month, usuario.fecha_nacimiento.day)
+        )
+    else:
+        edad = None
+
+    return render(request, 'gestiones/usuarios/ficha_usuario.html', {
+        'usuario': usuario,
+        'edad': edad,  # Pasar la edad al contexto
+    })
+
+@login_required
+@user_passes_test(is_supervisor)
+def ficha_usuario_pdf(request, pk):
+    usuario = get_object_or_404(CustomUser, pk=pk)
+
+    # Verificar que el usuario pertenece a la misma empresa que el supervisor
+    if usuario.empresa != request.user.empresa:
+        messages.error(request, "No tienes permiso para ver esta ficha.")
+        return redirect('lista_colaboradores')
+
+    # Calcular la edad si la fecha de nacimiento está definida
+    if usuario.fecha_nacimiento:
+        today = date.today()
+        edad = today.year - usuario.fecha_nacimiento.year - (
+            (today.month, today.day) < (usuario.fecha_nacimiento.month, usuario.fecha_nacimiento.day)
+        )
+    else:
+        edad = None
+
+    # Renderizar la plantilla a HTML
+    template_path = 'gestiones/usuarios/ficha_usuario_pdf.html'
+    context = {'usuario': usuario, 'edad': edad}
+    template = get_template(template_path)
+    html = template.render(context)
+
+    # Crear un archivo PDF desde el HTML
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename=ficha_usuario_{usuario.username}.pdf'
+    pisa_status = pisa.CreatePDF(html, dest=response)
+
+    # Manejar errores
+    if pisa_status.err:
+        return HttpResponse('Ocurrió un error al generar el PDF.')
+    return response
 
 @login_required
 @user_passes_test(is_supervisor)
@@ -771,3 +837,4 @@ def descargar_documento_empresa(request, pk):
     response = HttpResponse(documento.archivo, content_type='application/octet-stream')
     response['Content-Disposition'] = f'attachment; filename={documento.archivo.name}'
     return response
+

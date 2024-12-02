@@ -8,6 +8,8 @@ urlpatterns = [
     path('colaboradores/editar/<int:pk>/', views.editar_colaborador, name='editar_colaborador'),
     path('colaboradores/eliminar/<int:pk>/', views.eliminar_colaborador, name='eliminar_colaborador'),
     path('colaboradores/exportar_excel/', views.exportar_colaboradores_excel, name='exportar_colaboradores_excel'),
+    path('colaboradores/ficha/<int:pk>/', views.ficha_usuario, name='ficha_usuario'),
+    path('colaboradores/ficha/<int:pk>/pdf/', views.ficha_usuario_pdf, name='ficha_usuario_pdf'),
     #Cargas Familiares
     path('cargas/registrar/', views.registrar_carga, name='registrar_carga'),
     path('cargas/', views.listar_cargas, name='listar_cargas'),
