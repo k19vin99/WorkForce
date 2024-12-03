@@ -30,7 +30,7 @@
 </table>
 {% if user|is_supervisor and user.area.nombre == "Recursos Humanos" %}
 <div class="d-flex justify-content-end">
-    <a href="{% url 'subir_documento_empresa' %}" class="btn btn-success px-4 d-flex align-items-center me-2" style="border-radius: 10px; font-weight: 600;"><i class="fas fa-book"></i> Nuevo Documento</a>
+    <a href="{% url 'subir_documento_empresa' %}" class="btn btn-success px-4 d-flex align-items-center me-2" style="border-radius: 10px; font-weight: 600;"><i class="fas fa-plus"> </i> Nuevo Documento</a>
 </div>
 {% endif %}
 {% endblock %}

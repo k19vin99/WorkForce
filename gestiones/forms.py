@@ -17,8 +17,10 @@ class CustomUserCreationForm(UserCreationForm):
         label="Género",
         widget=forms.RadioSelect()  # Usa RadioSelect para mostrar opciones de radio button
     )
-    first_name = forms.CharField(max_length=30, required=True, label="Nombre")
-    last_name = forms.CharField(max_length=30, required=True, label="Apellido")
+    first_name = forms.CharField(max_length=30, required=True, label="Primer Nombre")
+    last_name = forms.CharField(max_length=30, required=True, label="Primer Apellido")
+    segundo_nombre = forms.CharField(max_length=30, required=False, label="Segundo Nombre")
+    segundo_apellido = forms.CharField(max_length=30, required=False, label="Segundo Apellido")
     email = forms.EmailField(required=True, label="Correo Electrónico")
     rut = forms.CharField(
         max_length=12,
@@ -82,7 +84,7 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = CustomUser
         fields = [
-            'username', 'first_name', 'last_name', 'email', 'rut', 'area', 'cargo', 
+            'username', 'first_name', 'segundo_nombre', 'last_name', 'segundo_apellido', 'email', 'rut', 'area', 'cargo', 
             'telefono', 'fecha_nacimiento', 'direccion', 'salud', 'afp', 'horario_asignado', 
             'fecha_contratacion', 'grupo', 'password1', 'password2','genero'
         ]
@@ -198,7 +200,7 @@ class CustomUserChangeForm(forms.ModelForm):
     class Meta:
         model = CustomUser
         fields = [
-            'username', 'first_name', 'last_name', 'email', 'rut', 'area', 'cargo',
+            'username', 'first_name', 'segundo_nombre', 'last_name', 'segundo_apellido','email', 'rut', 'area', 'cargo',
             'telefono', 'fecha_nacimiento', 'direccion', 'salud', 'afp', 'horario_asignado',
             'fecha_contratacion', 'grupo'
         ]

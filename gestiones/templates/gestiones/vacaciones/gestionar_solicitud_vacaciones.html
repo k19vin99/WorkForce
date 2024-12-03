@@ -1,36 +1,29 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container mt-5">
-    <h1 class="text-center mb-4">Gestionar Solicitud</h1>
-    <table class="table table-bordered">
-        <tr>
-            <th>Colaborador</th>
-            <td>{{ solicitud.colaborador.get_full_name }}</td>
-        </tr>
-        <tr>
-            <th>Fecha Inicio</th>
-            <td>{{ solicitud.fecha_inicio }}</td>
-        </tr>
-        <tr>
-            <th>Fecha Fin</th>
-            <td>{{ solicitud.fecha_fin }}</td>
-        </tr>
-        <tr>
-            <th>Días Solicitados</th>
-            <td>{{ solicitud.dias_habiles }}</td>
-        </tr>
-        <tr>
-            <th>Estado</th>
-            <td>{{ solicitud.get_estado_display }}</td>
-        </tr>
-    </table>
-    <form method="post" class="mt-3">
-        {% csrf_token %}
-        <button type="submit" name="accion" value="aprobar" class="btn btn-success me-2">Aprobar</button>
-        <button type="submit" name="accion" value="rechazar" class="btn btn-danger">Rechazar</button>
-    </form>
-    <div class="mt-4">
-        <a href="{% url 'lista_solicitudes_vacaciones' %}" class="btn btn-secondary">Volver a la lista</a>
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="col-lg-10 col-md-12">
+        <div class="card p-5" style="border-radius: 20px; background-color: #ffffff; box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);">
+            <h1 class="text-center mb-4">Gestionar Solicitud de Vacaciones</h1>
+            <div class="container mt-5">
+                <p>Colaborador: {{ solicitud.colaborador.username }}</p>
+                <p>Estado: {{ solicitud.get_estado_display }}</p>
+                <p>Descripción: {{ solicitud.descripcion }}</p>
+                <p>Fecha Inicio: {{ solicitud.fecha_inicio }}</p>
+                <p>Fecha Fin: {{ solicitud.fecha_fin }}</p>
+                <p>Cantidad de días Solicitados: {{ solicitud.dias_habiles }}</p>
+                <form method="POST" style="text-align: center">
+                    {% csrf_token %}
+                    <button name="aprobar" type="submit" class="btn btn-success">Aprobar</button>
+                    <button name="rechazar" type="submit" class="btn btn-danger">Rechazar</button>
+                </form>
+                <div class="d-flex justify-content-center mt-4">
+                    <a href="{% url 'home' %}" class="btn btn-secondary px-4" style="border-radius: 10px;">
+                        <i class="fas fa-home"></i> Volver al Inicio
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
 {% endblock %}

@@ -28,6 +28,8 @@ class Area(models.Model):
         return f"{self.nombre} - {self.empresa.nombre}"
     
 class CustomUser(AbstractUser):
+    segundo_nombre = models.CharField(max_length=30, blank=True, null=True)
+    segundo_apellido = models.CharField(max_length=30, blank=True, null=True)
     empresa = models.ForeignKey('Empresa', on_delete=models.CASCADE, null=True, blank=True)
     area = models.ForeignKey('Area', on_delete=models.SET_NULL, null=True, blank=True)
     cargo = models.CharField(max_length=255, blank=True, null=True)
@@ -68,7 +70,16 @@ class CustomUser(AbstractUser):
         ('otro', 'Otro'),
     ], null=True, blank=True)
     rut = models.CharField(max_length=12, unique=True, null=True, blank=True)
-    
+    @property
+    def nombre_completo(self):
+        """
+        Retorna el nombre completo del usuario incluyendo segundo nombre y segundo apellido si están presentes.
+        """
+        nombres = [self.first_name, self.segundo_nombre, self.last_name, self.segundo_apellido]
+        return " ".join(filter(None, nombres))
+
+    def __str__(self):
+        return self.username
     @property
     def dias_vacaciones_disponibles(self):
         """

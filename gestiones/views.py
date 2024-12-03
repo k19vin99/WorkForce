@@ -826,7 +826,7 @@ def subir_documento_empresa(request):
     
     return render(request, 'gestiones/documentos/subir_documento.html', {'form': form})
 
-    
+
 @login_required
 def lista_documentos_empresa(request):
     documentos = DocumentoEmpresa.objects.all()

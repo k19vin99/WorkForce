@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% load static %}
+{% load custom_tags %}
 {% block content %}
 <h1 class="text-center mb-4" style="font-weight: bold;">Lista de Cursos</h1>
 <table class="table table-striped">
@@ -18,7 +20,7 @@
             <td>{{ curso.supervisor.username }}</td>
             <td>
                 <a href="{% url 'detalle_curso' curso.id %}" class="btn btn-info">Ingresar</a>
-                {% if user.is_supervisor %}
+                {% if user|is_supervisor %}
                 <a href="{% url 'agregar_modulo' curso.id %}" class="btn btn-primary">Agregar Módulo</a>
                 {% endif %}
             </td>
@@ -26,6 +28,13 @@
         {% endfor %}
     </tbody>
 </table>
+<div class="d-flex justify-content-end">
+    {% if user|is_supervisor %}
+    <a href="{% url 'crear_curso' %}" class="btn btn-primary px-4 py-2" style="border-radius: 10px; font-weight: 600;">
+        <i class="fas fa-user-plus"></i> Nuevo Curso
+    </a>
+    {% endif%}
+</div>
 <div class="d-flex justify-content-center mt-4">
     <a href="{% url 'home' %}" class="btn btn-secondary px-4" style="border-radius: 10px;"><i class="fas fa-home"></i> Volver al Inicio</a>
 </div>

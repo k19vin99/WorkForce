@@ -31,7 +31,8 @@ class CustomUserAdmin(UserAdmin):
             'foto_perfil', 
             'salud', 
             'afp', 
-            'horario_asignado'
+            'horario_asignado',
+            'genero'
         )}),
         ('Permissions', {'fields': ('is_staff', 'is_active', 'groups', 'user_permissions')}),
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
