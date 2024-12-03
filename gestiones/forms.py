@@ -11,6 +11,12 @@ from django.core.exceptions import ValidationError
 #Formulario de Registro de Usuario
 class CustomUserCreationForm(UserCreationForm):
     grupo = forms.ModelChoiceField(queryset=Group.objects.all(), required=True, label="Grupo")
+    genero = forms.ChoiceField(
+        choices=CustomUser.GENERO_CHOICES,
+        required=True,
+        label="Género",
+        widget=forms.RadioSelect()  # Usa RadioSelect para mostrar opciones de radio button
+    )
     first_name = forms.CharField(max_length=30, required=True, label="Nombre")
     last_name = forms.CharField(max_length=30, required=True, label="Apellido")
     email = forms.EmailField(required=True, label="Correo Electrónico")
@@ -78,7 +84,7 @@ class CustomUserCreationForm(UserCreationForm):
         fields = [
             'username', 'first_name', 'last_name', 'email', 'rut', 'area', 'cargo', 
             'telefono', 'fecha_nacimiento', 'direccion', 'salud', 'afp', 'horario_asignado', 
-            'fecha_contratacion', 'grupo', 'password1', 'password2'
+            'fecha_contratacion', 'grupo', 'password1', 'password2','genero'
         ]
 
     def clean_rut(self):

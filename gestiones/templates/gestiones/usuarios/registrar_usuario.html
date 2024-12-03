@@ -85,6 +85,17 @@
                                 {{ form.direccion }}
                             </div>
                         </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.genero.label_tag }}
+                                {{ form.genero }}
+                                {% if form.genero.errors %}
+                                    <div class="text-danger">
+                                        {{ form.genero.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="card mb-4 p-4" style="border-radius: 15px; background-color: #f8f9fa;">

@@ -36,6 +36,12 @@ class CustomUser(AbstractUser):
     telefono = models.CharField(max_length=15, null=True, blank=True)
     fecha_nacimiento = models.DateField(null=True, blank=True)
     direccion = models.CharField(max_length=255, blank=True, null=True)
+    GENERO_CHOICES = [
+        ('Masculino', 'Masculino'),
+        ('Femenino', 'Femenino'),
+        ('Otro', 'Otro'),
+    ]
+    genero = models.CharField(max_length=10, choices=GENERO_CHOICES, null=True, blank=True)
     salud = models.CharField(max_length=30, choices=[
         ('fonasa', 'Fonasa'),
         ('banmedica', 'Banmédica'),
@@ -103,6 +109,16 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return self.username
 
+class ContactoEmergencia(models.Model):
+    usuario = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='contactos_emergencia')
+    nombre = models.CharField(max_length=50)
+    apellido = models.CharField(max_length=50)
+    telefono = models.CharField(max_length=15)
+    parentesco = models.CharField(max_length=50)
+
+    def __str__(self):
+        return f"{self.nombre} {self.apellido} ({self.parentesco})"
+        
 class CargaFamiliar(models.Model):
     TIPO_CERTIFICADO_CHOICES = [
         ('AFC', 'Certificado de Carga Familiar (AFC)'),
