@@ -432,7 +432,7 @@ def descargar_comprobante(request, pk):
         return HttpResponse('Error al generar el PDF: <pre>' + html + '</pre>')
     
     return response
-
+#Vista Contacto
 def contacto(request):
     if request.method == 'POST':
         form = ContactForm(request.POST)

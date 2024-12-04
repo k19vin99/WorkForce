@@ -3,7 +3,7 @@ from gestiones.models import Beneficio, CustomUser, CargaFamiliar, Solicitud, Pu
 from datetime import datetime, timedelta, date
 
 def index(request):
-    return render(request, 'index.html')  # Renderiza el template 'index.html'
+    return render(request, 'index/index.html')  # Renderiza el template 'index.html'
 
 def home(request):
     empresa = request.user.empresa
@@ -58,5 +58,5 @@ def home(request):
         'tiempo_trabajado': tiempo_trabajado  # Añade el tiempo trabajado al contexto
     }
 
-    return render(request, 'home.html', context)
+    return render(request, 'home/home.html', context)
 

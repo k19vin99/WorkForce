@@ -1,0 +1,52 @@
+header {
+    background-color: red;
+
+
+  }
+  body, html {
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden; /* Evitar desplazamiento horizontal */
+  }
+
+  .carousel {
+      width: 100%;
+      padding: 0;
+  }
+
+  .carousel-inner img {
+    width: 100%;
+    height: auto;
+  }
+
+  .carousel {
+      margin: 0; /* Elimina cualquier margen adicional */
+      width: 100%; /* Asegura que ocupe todo el ancho */
+  }
+
+  .btn-outline-light-Ingresa {
+    color: black; /* Texto blanco */
+    border-color: white; /* Borde blanco */
+    background-color: #42d6e0; /* Fondo transparente */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Suavizar la transición de colores */
+    border-radius: 30px;
+  }
+  
+  .btn-outline-light-Ingresa:hover {
+    color: black; /* Mantener el texto blanco */
+    background-color: #42d6e0; /* Calipso */
+    border-color: #42d6e0; /* Borde calipso */
+  }
+
+
+  
+  .btn-outline-light-Contacto {
+    background-color: transparent; /* Fondo transparente */
+    border-radius: 30px;
+  }
+  
+  .btn-outline-light-Contacto:hover {
+    color: #232120; /* Mantener el texto blanco */
+    background-color: #e1dbd8; /* Calipso */
+    border-color: #232120; /* Borde calipso */
+  }

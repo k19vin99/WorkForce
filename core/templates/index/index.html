@@ -1,69 +1,42 @@
-{% extends "base_index.html" %}
 {% load static %}
 {% block content %}
-<header class="header">
-  <div class="header__container">
-    <img src="{% static 'img/banner.png' %}" style="width: 150px; height: 40px; padding-left: 20px" >
-    <div  class="text-end" style="padding-right: 20px">
-      <a class="btn btn-outline-light-Ingresa me-2" href="{% url 'login' %}">Ingresa</a>
-      <a class="btn btn-outline-light-Contacto me-2" href="{% url 'contacto' %}" style="padding-right: 20px">Contacto</a>
-    </div>
-  </div>
-</header>
-<style>
-  header {
-    background-color: red;
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+    <link rel="shortcut icon" href="{% static 'img/favicon.icon'%}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!--========== BOX ICONS ==========-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+    <!--========== CSS ==========-->
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  </head>
+  <body>
+    <header class="header">
+      <div class="header__container">
+        <img src="{% static 'img/banner.png' %}" style="width: 150px; height: 40px; padding-left: 20px" >
+        <div  class="text-end" style="padding-right: 20px">
+          <a class="btn btn-outline-light-Ingresa me-2" href="{% url 'login' %}">Ingresa</a>
+          <a class="btn btn-outline-light-Contacto me-2" href="{% url 'contacto' %}" style="padding-right: 20px">Contacto</a>
+        </div>
+      </div>
+    </header>
+  </body>
+  <style>
+    
+  </style>
+<head>
 
 
-  }
-  body, html {
-      margin: 0;
-      padding: 0;
-      overflow-x: hidden; /* Evitar desplazamiento horizontal */
-  }
-
-  .carousel {
-      width: 100%;
-      padding: 0;
-  }
-
-  .carousel-inner img {
-    width: 100%;
-    height: auto;
-  }
-
-  .carousel {
-      margin: 0; /* Elimina cualquier margen adicional */
-      width: 100%; /* Asegura que ocupe todo el ancho */
-  }
-
-  .btn-outline-light-Ingresa {
-    color: black; /* Texto blanco */
-    border-color: white; /* Borde blanco */
-    background-color: #42d6e0; /* Fondo transparente */
-    transition: background-color 0.3s ease, color 0.3s ease; /* Suavizar la transición de colores */
-    border-radius: 30px;
-  }
-  
-  .btn-outline-light-Ingresa:hover {
-    color: black; /* Mantener el texto blanco */
-    background-color: #42d6e0; /* Calipso */
-    border-color: #42d6e0; /* Borde calipso */
-  }
 
 
-  
-  .btn-outline-light-Contacto {
-    background-color: transparent; /* Fondo transparente */
-    border-radius: 30px;
-  }
-  
-  .btn-outline-light-Contacto:hover {
-    color: #232120; /* Mantener el texto blanco */
-    background-color: #e1dbd8; /* Calipso */
-    border-color: #232120; /* Borde calipso */
-  }
-</style>
+
+</head>
+
+
 <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
   <div class="carousel-indicators">
     <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
@@ -200,37 +173,7 @@
       </div>
   </div>
 </section>
-<section id="cards-section" class="cards-section py-5">
-  <div class="container text-center">
-      <h2 class="section-title mb-4">Nuestros Servicios</h2>
-      <div class="row justify-content-center">
-          <!-- Card 1 -->
-          <div class="col-md-4 mb-4">
-              <div class="service-card p-4 shadow-sm border">
-                  <h3 class="service-title">Card 1</h3>
-                  <p class="service-description">Descripción breve del servicio o función que se ofrece en este card.</p>
-                  <img src="{% static 'img/service1.jpg' %}" alt="Card 1" class="service-img">
-              </div>
-          </div>
-          <!-- Card 2 -->
-          <div class="col-md-4 mb-4">
-              <div class="service-card p-4 shadow-sm border">
-                  <h3 class="service-title">Card 2</h3>
-                  <p class="service-description">Descripción breve del servicio o función que se ofrece en este card.</p>
-                  <img src="{% static 'img/service2.jpg' %}" alt="Card 2" class="service-img">
-              </div>
-          </div>
-          <!-- Card 3 -->
-          <div class="col-md-4 mb-4">
-              <div class="service-card p-4 shadow-sm border">
-                  <h3 class="service-title">Card 3</h3>
-                  <p class="service-description">Descripción breve del servicio o función que se ofrece en este card.</p>
-                  <img src="{% static 'img/service3.jpg' %}" alt="Card 3" class="service-img">
-              </div>
-          </div>
-      </div>
-  </div>
-</section>
+
 <style>
   .cards-section .service-card {
     background-color: #42d6e0; /* Calipso */
