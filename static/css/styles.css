@@ -332,6 +332,17 @@ img {
   }
 }
 
+.carousel-inner {
+  width: 100%;
+  padding: 0; /* Eliminar cualquier padding innecesario */
+}
+
+.carousel-item img {
+  width: 100%;
+  height: auto; /* Asegura que la imagen se ajuste proporcionalmente */
+  object-fit: cover; /* Hace que la imagen cubra el área disponible sin distorsionarse */
+}
+
 .card-usuarios {
   background-color: #e0f7fa; /* Color claro para usuarios registrados */
 }

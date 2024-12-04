@@ -16,14 +16,26 @@
 
 
   }
-  body {
-      background-image: url("{% static 'img/fondo.jpg' %}");
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
+  body, html {
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden; /* Evitar desplazamiento horizontal */
   }
 
+  .carousel {
+      width: 100%;
+      padding: 0;
+  }
+
+  .carousel-inner img {
+    width: 100%;
+    height: auto;
+  }
+
+  .carousel {
+      margin: 0; /* Elimina cualquier margen adicional */
+      width: 100%; /* Asegura que ocupe todo el ancho */
+  }
 
   .btn-outline-light-Ingresa {
     color: black; /* Texto blanco */
@@ -104,6 +116,8 @@
   </button>
 </div>
 <br>
+<br>
+<br>
 <section id="leykarin" class="leykarin">
   <div class="container text-center">
     <h2 class="section-title">Módulo de Denuncias - Ley Karin</h2>
@@ -131,14 +145,20 @@
         </div>
         <div class="col-md-8 mb-4" data-aos="fade-up" data-aos-duration="1000">
           <div class="service-card p-4 shadow-sm">
-            <h3 class="service-title">Solicitudes Administrativas</h3>
-            <p class="service-description">Gestionamos las solicitudes de tus colaboradores.</p>
+            <h3 class="service-title">Asistencia</h3>
+            <p class="service-description">Gestiona las marcaciones de entrada y salida, accede a cada una de ellas.</p>
           </div>
         </div>
         <div class="col-md-8 mb-4" data-aos="fade-up" data-aos-duration="1000">
           <div class="service-card p-4 shadow-sm">
-            <h3 class="service-title">Solicitudes de Vacaciones</h3>
-            <p class="service-description">Gestionamos las solicitudes de Vacaciones de tus colaboradores.</p>
+            <h3 class="service-title">Cargas Familiares</h3>
+            <p class="service-description">Registra las Cargas Familiares de tus colaboradores.</p>
+          </div>
+        </div>
+        <div class="col-md-8 mb-4" data-aos="fade-up" data-aos-duration="1000">
+          <div class="service-card p-4 shadow-sm">
+            <h3 class="service-title">Solicitudes Administrativas</h3>
+            <p class="service-description">Gestionamos las solicitudes de permisos especiales de tus colaboradores como vacaciones u otros.</p>
           </div>
         </div>
         <div class="col-md-8 mb-4" data-aos="fade-up" data-aos-duration="1000">
@@ -180,6 +200,69 @@
       </div>
   </div>
 </section>
+<section id="cards-section" class="cards-section py-5">
+  <div class="container text-center">
+      <h2 class="section-title mb-4">Nuestros Servicios</h2>
+      <div class="row justify-content-center">
+          <!-- Card 1 -->
+          <div class="col-md-4 mb-4">
+              <div class="service-card p-4 shadow-sm border">
+                  <h3 class="service-title">Card 1</h3>
+                  <p class="service-description">Descripción breve del servicio o función que se ofrece en este card.</p>
+                  <img src="{% static 'img/service1.jpg' %}" alt="Card 1" class="service-img">
+              </div>
+          </div>
+          <!-- Card 2 -->
+          <div class="col-md-4 mb-4">
+              <div class="service-card p-4 shadow-sm border">
+                  <h3 class="service-title">Card 2</h3>
+                  <p class="service-description">Descripción breve del servicio o función que se ofrece en este card.</p>
+                  <img src="{% static 'img/service2.jpg' %}" alt="Card 2" class="service-img">
+              </div>
+          </div>
+          <!-- Card 3 -->
+          <div class="col-md-4 mb-4">
+              <div class="service-card p-4 shadow-sm border">
+                  <h3 class="service-title">Card 3</h3>
+                  <p class="service-description">Descripción breve del servicio o función que se ofrece en este card.</p>
+                  <img src="{% static 'img/service3.jpg' %}" alt="Card 3" class="service-img">
+              </div>
+          </div>
+      </div>
+  </div>
+</section>
+<style>
+  .cards-section .service-card {
+    background-color: #42d6e0; /* Calipso */
+    color: black; /* Letras negras */
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+    border: 1px solid #ddd; /* Borde sutil */
+    padding-bottom: 20px; /* Espacio adicional para la imagen */
+}
+
+.cards-section .service-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.cards-section .service-description {
+    font-size: 1rem;
+    color: black; /* Texto en color negro */
+    margin-bottom: 15px; /* Espacio antes de la imagen */
+}
+
+.cards-section .service-img {
+    width: 100%;
+    max-height: 200px; /* Limitar la altura de la imagen */
+    object-fit: cover; /* Asegurar que la imagen se ajuste sin distorsionarse */
+    border-radius: 5px; /* Bordes redondeados para la imagen */
+    margin-top: 10px; /* Espacio entre la descripción y la imagen */
+}
+
+</style>
+
 <section id="about" class="about">
   <div class="container text-center">
         <h2 class="section-title">¿Quienes Somos?</h2>
