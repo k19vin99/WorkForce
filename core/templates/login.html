@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/login.css' %}">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet"> <!-- Fuente personalizada -->
     <title>Inicio de Sesión</title>
 </head>
 <body>
@@ -27,7 +26,7 @@
                 </div>
                 {% endif %}
 
-                <form method="post" action="" style="width: 100%;" >
+                <form method="post" action="" style="width: 97%;" >
                     {% csrf_token %}
                     <div class="form-group" style="width: 98%; margin-bottom: 10px;">
                         <label for="username">Nombre de usuario:</label>
@@ -47,7 +46,7 @@
                 </form>
 
                 <!-- Enlace para recuperar la contraseña -->
-                <a href="{% url 'password_reset' %}" class="forgot-password-link btn-outline-light-Contacto">¿Olvidaste tu contraseña?</a>
+                <a href="{% url 'password_reset' %}" class="forgot-password-link btn-outline-light-Contacto" style="width: 92%;" >¿Olvidaste tu contraseña?</a>
             </div>
         </div>
     </div>

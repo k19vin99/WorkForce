@@ -15,6 +15,7 @@ from django.db.models import Q
 from django.contrib.auth.models import Group
 from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
+from openpyxl import Workbook
 
 def is_hr_analyst(user):
     return user.area and user.area.nombre == 'Recursos Humanos' and user.cargo == 'Analista de Personas'
@@ -227,11 +228,32 @@ def listar_cargas(request):
     if is_supervisor(request.user):
         # Si el usuario es supervisor, muestra todas las cargas de su empresa
         cargas = CargaFamiliar.objects.filter(usuario__empresa=request.user.empresa)
+
+        # Obtener la lista de usuarios para el filtro
+        usuarios = CustomUser.objects.filter(empresa=request.user.empresa)
     else:
         # Si el usuario es colaborador, muestra solo sus cargas
         cargas = CargaFamiliar.objects.filter(usuario=request.user)
-    
-    return render(request, 'gestiones/cargas_familiares/listar_cargas.html', {'cargas': cargas})
+        usuarios = []  # Los colaboradores no necesitan ver este filtro
+
+    # Obtener parámetros de filtrado desde el formulario
+    nombre = request.GET.get('nombre')
+    usuario_id = request.GET.get('usuario_id')  # Filtro de usuario
+
+    # Aplicar filtros si están presentes
+    if nombre:
+        cargas = cargas.filter(nombre__icontains=nombre)
+    if usuario_id:
+        cargas = cargas.filter(usuario_id=usuario_id)
+
+    return render(request, 'gestiones/cargas_familiares/listar_cargas.html', {
+        'cargas': cargas,
+        'nombre': nombre,  # Para mantener el valor en el formulario
+        'usuario_id': usuario_id,  # Para mantener el filtro seleccionado
+        'usuarios': usuarios,  # Lista de usuarios para el filtro
+    })
+
+
 
 @login_required
 def editar_carga(request, pk):
@@ -286,14 +308,169 @@ def registro_asistencia(request):
 
 @login_required
 def visualizacion_asistencia(request):
+
+    usuario_id = None
+
+    # Verificar si el usuario es un supervisor o un colaborador regular
     if request.user.area and request.user.area.nombre == 'Recursos Humanos' and request.user.groups.filter(name='supervisores').exists():
-        # Filtrar por la empresa del supervisor del área de Recursos Humanos
+        # Supervisores ven todas las asistencias de la empresa
         asistencias = Asistencia.objects.filter(colaborador__empresa=request.user.empresa)
+        
+        # Filtrar por usuario si el parámetro usuario_id está presente
+        usuario_id = request.GET.get('usuario_id')
+        if usuario_id:
+            asistencias = asistencias.filter(colaborador_id=usuario_id)
     else:
-        # Los demás usuarios solo pueden ver sus propias asistencias
+        # Colaboradores regulares solo ven sus propias asistencias
         asistencias = Asistencia.objects.filter(colaborador=request.user)
-    
-    return render(request, 'gestiones/asistencia/visualizacion_asistencia.html', {'asistencias': asistencias})
+
+    # Obtener los parámetros de filtro de fecha desde el formulario
+    fecha_inicio = request.GET.get('fecha_inicio')
+    fecha_fin = request.GET.get('fecha_fin')
+
+    if fecha_inicio and fecha_fin:
+        try:
+            # Asegurarse de que las fechas estén en el formato correcto
+            fecha_inicio = datetime.strptime(fecha_inicio, "%Y-%m-%d").date()
+            fecha_fin = datetime.strptime(fecha_fin, "%Y-%m-%d").date()
+            asistencias = asistencias.filter(fecha__range=[fecha_inicio, fecha_fin])
+        except ValueError:
+            # Manejar el error si las fechas no están en el formato esperado
+            pass
+
+    # Procesar los datos para calcular tiempos trabajados y faltantes
+    datos_asistencias = []
+    for asistencia in asistencias:
+        tiempo_trabajado = None
+        tiempo_faltante = None
+        if asistencia.hora_entrada and asistencia.hora_salida:
+            entrada = datetime.combine(asistencia.fecha, asistencia.hora_entrada)
+            salida = datetime.combine(asistencia.fecha, asistencia.hora_salida)
+            tiempo_trabajado = salida - entrada
+            tiempo_planificado = timedelta(hours=8)  # Jornada estándar de 8 horas
+            tiempo_faltante = tiempo_planificado - tiempo_trabajado
+
+        datos_asistencias.append({
+            'fecha': asistencia.fecha,
+            'hora_entrada': asistencia.hora_entrada,
+            'hora_salida': asistencia.hora_salida,
+            'tiempo_trabajado': tiempo_trabajado,
+            'tiempo_faltante': tiempo_faltante,
+            'colaborador': asistencia.colaborador.username,
+        })
+
+    # Obtener lista de usuarios (solo para supervisores)
+    colaboradores = []
+    if request.user.groups.filter(name='supervisores').exists():
+        colaboradores = CustomUser.objects.filter(empresa=request.user.empresa)
+
+    return render(request, 'gestiones/asistencia/visualizacion_asistencia.html', {
+        'datos_asistencias': datos_asistencias,
+        'fecha_inicio': fecha_inicio,
+        'fecha_fin': fecha_fin,
+        'colaboradores': colaboradores,  # Pasar lista de colaboradores al template
+        'usuario_id': usuario_id,  # Mantener el filtro seleccionado en el formulario
+    })
+
+
+
+
+@login_required
+@user_passes_test(is_supervisor)  # Asegúrate de usar un decorador adecuado según los permisos
+def exportar_asistencias_excel(request):
+    # Filtrar asistencias por la empresa del usuario y las fechas (si se pasan como parámetros)
+    fecha_inicio = request.GET.get('fecha_inicio')
+    fecha_fin = request.GET.get('fecha_fin')
+
+    # Obtener las asistencias según los filtros
+    if fecha_inicio and fecha_fin:
+        asistencias = Asistencia.objects.filter(
+            colaborador__empresa=request.user.empresa,
+            fecha__range=[fecha_inicio, fecha_fin]
+        )
+    else:
+        asistencias = Asistencia.objects.filter(colaborador__empresa=request.user.empresa)
+
+    # Crear un libro de trabajo y una hoja
+    wb = Workbook()
+    ws = wb.active
+    ws.title = 'Asistencias'
+
+    # Escribir encabezados
+    ws.append(['Fecha', 'Hora de Entrada', 'Hora de Salida', 'Colaborador', 'Tiempo Trabajado'])
+
+    # Escribir datos de asistencias
+    for asistencia in asistencias:
+        tiempo_trabajado = None
+        if asistencia.hora_entrada and asistencia.hora_salida:
+            entrada = datetime.combine(asistencia.fecha, asistencia.hora_entrada)
+            salida = datetime.combine(asistencia.fecha, asistencia.hora_salida)
+            tiempo_trabajado = salida - entrada
+
+        ws.append([
+            asistencia.fecha,
+            asistencia.hora_entrada if asistencia.hora_entrada else 'N/A',
+            asistencia.hora_salida if asistencia.hora_salida else 'N/A',
+            asistencia.colaborador.username,
+            str(tiempo_trabajado) if tiempo_trabajado else 'N/A'
+        ])
+
+    # Configurar la respuesta HTTP para descargar el archivo Excel
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = 'attachment; filename=asistencias.xlsx'
+    wb.save(response)
+
+    return response
+
+@login_required
+def exportar_asistencias_excel(request):
+    # Filtrar asistencias por la empresa del usuario y las fechas (si se pasan como parámetros)
+    fecha_inicio = request.GET.get('fecha_inicio')
+    fecha_fin = request.GET.get('fecha_fin')
+
+    # Obtener las asistencias según los filtros
+    if fecha_inicio and fecha_fin:
+        asistencias = Asistencia.objects.filter(
+            colaborador__empresa=request.user.empresa,
+            fecha__range=[fecha_inicio, fecha_fin]
+        )
+    else:
+        asistencias = Asistencia.objects.filter(colaborador__empresa=request.user.empresa)
+
+    # Crear un libro de trabajo y una hoja
+    wb = Workbook()
+    ws = wb.active
+    ws.title = 'Asistencias'
+
+    # Escribir encabezados
+    ws.append(['Fecha', 'Hora de Entrada', 'Hora de Salida', 'Colaborador', 'Tiempo Trabajado'])
+
+    # Escribir datos de asistencias
+    for asistencia in asistencias:
+        tiempo_trabajado = None
+        if asistencia.hora_entrada and asistencia.hora_salida:
+            entrada = datetime.combine(asistencia.fecha, asistencia.hora_entrada)
+            salida = datetime.combine(asistencia.fecha, asistencia.hora_salida)
+            tiempo_trabajado = salida - entrada
+
+        ws.append([
+            asistencia.fecha,
+            asistencia.hora_entrada if asistencia.hora_entrada else 'N/A',
+            asistencia.hora_salida if asistencia.hora_salida else 'N/A',
+            asistencia.colaborador.username,
+            str(tiempo_trabajado) if tiempo_trabajado else 'N/A'
+        ])
+
+    # Configurar la respuesta HTTP para descargar el archivo Excel
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = 'attachment; filename=asistencias.xlsx'
+    wb.save(response)
+
+    return response
 
 #Solicitudes Vacaciones
 

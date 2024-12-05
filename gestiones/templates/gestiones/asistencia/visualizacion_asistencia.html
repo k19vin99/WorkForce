@@ -3,31 +3,75 @@
 
 {% block content %}
 <h1 class="text-center mb-4" style="font-weight: bold;">Visualización de Asistencia</h1>
-<table class="table table-striped">
-    <thead>
+
+<form method="get" class="mb-4">
+    <div class="row justify-content-center">
+        <!-- Filtro de Fecha -->
+        <div class="col-md-3">
+            <input type="date" name="fecha_inicio" class="form-control" placeholder="Fecha Inicio" value="{{ fecha_inicio }}">
+        </div>
+        <div class="col-md-3">
+            <input type="date" name="fecha_fin" class="form-control" placeholder="Fecha Fin" value="{{ fecha_fin }}">
+        </div>
+        
+        <!-- Filtro de Usuario (solo visible para supervisores) -->
+        {% if colaboradores %}
+        <div class="col-md-3">
+            {% if  user.area.nombre == "Recursos Humanos" %} 
+            <select name="usuario_id" class="form-control">
+                <option value="">-- Seleccionar Usuario --</option>
+                {% for colaborador in colaboradores %}
+                <option value="{{ colaborador.id }}" {% if usuario_id == colaborador.id %}selected{% endif %}>
+                    {{ colaborador.first_name }} {{ colaborador.last_name }}
+                </option>
+                {% endfor %}
+            </select>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Botón para Filtrar -->
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+        </div>
+    </div>
+</form>
+
+
+<table class="table table-bordered">
+    <thead class="table-light">
         <tr>
-            <th scope="col" class="text-center">Fecha</th>
-            <th scope="col" class="text-center">Hora de Entrada</th>
-            <th scope="col" class="text-center">Hora de Salida</th>
-            <th scope="col" class="text-center">Colaborador</th>
+            <th class="text-center">Fecha</th>
+            <th class="text-center">Hora de Entrada</th>
+            <th class="text-center">Hora de Salida</th>
+            <th class="text-center">Colaborador</th>
+            <th class="text-center">Tiempo Trabajado</th>
         </tr>
     </thead>
     <tbody>
-        {% for asistencia in asistencias %}
+        {% for asistencia in datos_asistencias %}
         <tr>
             <td class="text-center">{{ asistencia.fecha }}</td>
             <td class="text-center">{{ asistencia.hora_entrada|default_if_none:"-" }}</td>
             <td class="text-center">{{ asistencia.hora_salida|default_if_none:"-" }}</td>
-            <td class="text-center">{{ asistencia.colaborador.username }}</td>
+            <td class="text-center">{{ asistencia.colaborador }}</td>
+            <td class="text-center">{{ asistencia.tiempo_trabajado|default_if_none:"-" }}</td>
+            
         </tr>
         {% endfor %}
     </tbody>
 </table>
 <div class="d-flex justify-content-end">
-    <a href="{% url 'registro_asistencia' %}" class="btn btn-secondary px-4" style="border-radius: 10px;"><i class="fas fa-clock"></i> Registrar Asistencia</a>
-    
+    <a href="{% url 'exportar_asistencias_excel' %}" class="btn btn-success px-4 d-flex align-items-center me-2" style="border-radius: 10px; font-weight: 600;">
+        <i class="fas fa-file-excel"></i> Exportar a Excel
+    </a>
+    <a href="{% url 'registro_asistencia' %}" class="btn btn-secondary px-4" style="border-radius: 10px;">
+        <i class="fas fa-clock"></i> Registrar Asistencia
+    </a>
 </div>
 <div class="d-flex justify-content-center mt-4">
-    <a href="{% url 'home' %}" class="btn btn-secondary px-4" style="border-radius: 10px;"><i class="fas fa-home"></i> Volver al Inicio</a>
+    <a href="{% url 'home' %}" class="btn btn-secondary px-4" style="border-radius: 10px;">
+        <i class="fas fa-home"></i> Volver al Inicio
+    </a>
 </div>
 {% endblock %}

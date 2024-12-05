@@ -72,11 +72,11 @@
                         </div>
         
                         <div class="nav__items">
-                            <h3 class="nav__subtitle">Aplicaciones</h3>
+                            <h3 class="nav__subtitle">Módulos</h3>
                             {% if user|is_supervisor %}
                             <!-- Asistencia -->
                             <div class="nav__dropdown">
-                                <a href="{% url 'registro_asistencia' %}" class="nav__link">
+                                <a href="{% url 'visualizacion_asistencia' %}" class="nav__link">
                                     <i class='bx bx-calendar-check nav__icon'></i>
                                     <span class="nav__name">Asistencia</span>
                                 </a>
@@ -91,7 +91,7 @@
                             </div>
                             <!-- Cargas Familiares -->
                             <div class="nav__dropdown">
-                                <a href="{% url 'registrar_carga' %}" class="nav__link">
+                                <a href="{% url 'listar_cargas' %}" class="nav__link">
                                     <i class='bx bx-group nav__icon'></i>
                                     <span class="nav__name">Cargas Familiares</span>
                                 </a>

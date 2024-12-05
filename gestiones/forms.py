@@ -244,7 +244,7 @@ class CargaFamiliarForm(forms.ModelForm):
     archivo = forms.FileField(
         widget=forms.ClearableFileInput(attrs={'class': 'form-control'}),
         label="Archivo del Certificado",
-        required=False  # El archivo puede no ser obligatorio
+        required=True  # El archivo puede no ser obligatorio
     )
 
     class Meta:

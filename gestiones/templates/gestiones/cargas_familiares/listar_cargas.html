@@ -3,6 +3,43 @@
 {% load custom_tags %}
 {% block content %}
 <h1 class="text-center mb-4" style="font-weight: bold;">Listado de Cargas Familiares</h1>
+
+<form method="get" class="mb-4">
+    <div class="row">
+        <!-- Filtro por Nombre -->
+        <p>Buscar Nombre de Carga Familiar: </p>
+        <div class="col-md-4">
+            <input type="text" name="nombre" class="form-control" placeholder="Buscar por Nombre" value=" ">
+        </div>
+        <br>
+        <!-- Filtro por Usuario (solo para supervisores) -->
+         <br>
+        <p>Buscar Nombre de Carga Familiar: </p>
+        <div class="col-md-4">
+            <select name="usuario_id" class="form-control">
+                <option value="">-- Seleccionar Usuario -- </option>
+                {% for usuario in usuarios %}
+                <option value="{{ usuario.id }}" {% if usuario_id == usuario.id %}selected{% endif %}>
+                    {{ usuario.first_name }} {{ usuario.last_name }}
+                <br>
+
+                </option>
+                <br>
+                {% endfor %}
+            </select>
+        </div>
+            
+
+        
+        
+    </div>
+    <br>
+    <!-- Botón de Filtrar -->
+    <div class="col-md-4">
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+    </div>
+</form>
+
 <table class="table table-striped">
     <thead>
         <tr>
@@ -44,7 +81,7 @@
 </table>
 {% if user|is_supervisor%}
 <div class="d-flex justify-content-end">
-    <a href="{% url 'registrar_usuario' %}" class="btn btn-primary px-4 py-2" style="border-radius: 10px; font-weight: 600;">
+    <a href="{% url 'registrar_carga' %}" class="btn btn-primary px-4 py-2" style="border-radius: 10px; font-weight: 600;">
         <i class="fas fa-user-plus"></i> Nueva Carga
     </a>
 </div>

@@ -6,7 +6,6 @@ body {
     justify-content: center; /* Centra horizontalmente */
     align-items: center; /* Centra verticalmente */
     background-color: #f5f5f5; /* Color de fondo */
-    font-family: 'Poppins', sans-serif; /* Fuente personalizada */
 }
 
 /* Contenedor principal del formulario */

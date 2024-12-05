@@ -20,6 +20,7 @@ urlpatterns = [
     #Asistencia
     path('registro_asistencia/', views.registro_asistencia, name='registro_asistencia'),
     path('visualizacion_asistencia/', views.visualizacion_asistencia, name='visualizacion_asistencia'),
+    path('exportar-asistencias/', views.exportar_asistencias_excel, name='exportar_asistencias_excel'),
     #Solicitudes
     path('crear_solicitud/', views.crear_solicitud, name='crear_solicitud'),
     path('solicitudes/', views.lista_solicitudes, name='lista_solicitudes'),
