@@ -64,6 +64,11 @@ class CustomUserCreationForm(UserCreationForm):
         ('masvida', 'Nueva Masvida'),
         ('vidatres', 'Vida Tres'),
     ], required=True, label="Plan de Salud")
+    certificado_salud = forms.FileField(
+        required=True,
+        label="Certificado de Salud (PDF)",
+        widget=forms.ClearableFileInput(attrs={'accept': '.pdf'}),
+    )
     afp = forms.ChoiceField(choices=[
         ('capital', 'AFP Capital'),
         ('cuprum', 'AFP Cuprum'),
@@ -73,6 +78,11 @@ class CustomUserCreationForm(UserCreationForm):
         ('provida', 'AFP Provida'),
         ('uno', 'AFP Uno'),
     ], required=True, label="AFP")
+    certificado_afp = forms.FileField(
+        required=True,
+        label="Certificado AFP (PDF)",
+        widget=forms.ClearableFileInput(attrs={'accept': '.pdf'}),
+    )
     horario_asignado = forms.ChoiceField(choices=[
         ('8:00-17:30', '8:00 a 17:30'),
         ('9:00-18:30', '9:00 a 18:30'),
@@ -86,7 +96,7 @@ class CustomUserCreationForm(UserCreationForm):
         fields = [
             'username', 'first_name', 'segundo_nombre', 'last_name', 'segundo_apellido', 'email', 'rut', 'area', 'cargo', 
             'telefono', 'fecha_nacimiento', 'direccion', 'salud', 'afp', 'horario_asignado', 
-            'fecha_contratacion', 'grupo', 'password1', 'password2','genero'
+            'fecha_contratacion', 'grupo', 'password1', 'password2','genero', 'certificado_afp', 'certificado_salud'
         ]
 
     def clean_rut(self):
@@ -174,8 +184,20 @@ class CustomUserChangeForm(forms.ModelForm):
         queryset=Group.objects.all(),
         required=False,
         label="Grupo",
-        widget=forms.CheckboxSelectMultiple(),  # Puedes usar SelectMultiple si prefieres un dropdown
+        widget=forms.CheckboxSelectMultiple()
     )
+    certificado_afp = forms.FileField(
+        required=False,
+        label="Certificado AFP",
+        widget=forms.ClearableFileInput(attrs={'accept': '.pdf'}),
+    )
+    certificado_salud = forms.FileField(
+        required=False,
+        label="Certificado Salud",
+        widget=forms.ClearableFileInput(attrs={'accept': '.pdf'}),
+    )
+
+
     area = forms.ModelChoiceField(queryset=Area.objects.all(), required=True, label="Área")
     fecha_nacimiento = forms.DateField(
         widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}, format='%Y-%m-%d'),
@@ -202,7 +224,7 @@ class CustomUserChangeForm(forms.ModelForm):
         fields = [
             'username', 'first_name', 'segundo_nombre', 'last_name', 'segundo_apellido','email', 'rut', 'area', 'cargo',
             'telefono', 'fecha_nacimiento', 'direccion', 'salud', 'afp', 'horario_asignado',
-            'fecha_contratacion', 'grupo'
+            'fecha_contratacion', 'grupo', 'certificado_afp', 'certificado_salud'
         ]
 
     def __init__(self, *args, **kwargs):
@@ -210,6 +232,7 @@ class CustomUserChangeForm(forms.ModelForm):
         # Si el usuario tiene grupos asociados, seleccionarlos por defecto
         if self.instance.pk:
             self.fields['grupo'].initial = self.instance.groups.all()
+
 
 class EditarUsuarioForm(forms.ModelForm):
     class Meta:
@@ -274,13 +297,29 @@ class SolicitudVacacionesForm(forms.ModelForm):
         model = SolicitudVacaciones
         fields = ['fecha_inicio', 'fecha_fin', 'motivo']
 
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+
     def clean(self):
         cleaned_data = super().clean()
         fecha_inicio = cleaned_data.get('fecha_inicio')
         fecha_fin = cleaned_data.get('fecha_fin')
 
+        # Validar que la fecha de inicio no sea posterior a la fecha de fin
         if fecha_inicio and fecha_fin and fecha_inicio > fecha_fin:
             raise forms.ValidationError("La fecha de inicio no puede ser posterior a la fecha de fin.")
+
+        # Verificar solapamientos con solicitudes aprobadas
+        solicitudes_aprobadas = SolicitudVacaciones.objects.filter(
+            colaborador=self.user,
+            estado='aprobada',
+            fecha_inicio__lte=fecha_fin,
+            fecha_fin__gte=fecha_inicio
+        )
+        if solicitudes_aprobadas.exists():
+            raise forms.ValidationError("Las fechas seleccionadas ya están reservadas. Por favor, elija otra fecha.")
+
         return cleaned_data
 
 class ContactForm(forms.Form):
@@ -303,15 +342,6 @@ class ContactForm(forms.Form):
     rubro = forms.CharField(max_length=100, required=True, label='Rubro')
     mensaje = forms.CharField(widget=forms.Textarea, required=False, label='¿En qué podemos ayudarte?')
 
-class EditProfileForm(forms.ModelForm):
-    class Meta:
-        model = CustomUser
-        fields = ['username', 'email', 'first_name', 'last_name', 'telefono', 'direccion', 'fecha_nacimiento', 'foto_perfil']
-
-    def __init__(self, *args, **kwargs):
-        super(EditProfileForm, self).__init__(*args, **kwargs)
-        for visible in self.visible_fields():
-            visible.field.widget.attrs['class'] = 'form-control shadow-sm'
 
 class EditProfilePhotoForm(forms.ModelForm):
     class Meta:

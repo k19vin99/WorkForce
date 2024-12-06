@@ -13,9 +13,10 @@
                 <p>Cantidad de días Solicitados: {{ solicitud.dias_habiles }}</p>
                 <form method="POST" style="text-align: center">
                     {% csrf_token %}
-                    <button name="aprobar" type="submit" class="btn btn-success">Aprobar</button>
-                    <button name="rechazar" type="submit" class="btn btn-danger">Rechazar</button>
+                    <button name="accion" value="aprobar" type="submit" class="btn btn-success">Aprobar</button>
+                    <button name="accion" value="rechazar" type="submit" class="btn btn-danger">Rechazar</button>
                 </form>
+                
                 <div class="d-flex justify-content-center mt-4">
                     <a href="{% url 'home' %}" class="btn btn-secondary px-4" style="border-radius: 10px;">
                         <i class="fas fa-home"></i> Volver al Inicio

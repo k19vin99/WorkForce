@@ -54,6 +54,7 @@ class CustomUser(AbstractUser):
         ('masvida', 'Nueva Masvida'),
         ('vidatres', 'Vida Tres'),
     ], blank=True, null=True)
+    certificado_salud = models.FileField(upload_to='certificados/salud/', null=True, blank=True, verbose_name="Certificado de Salud")
     afp = models.CharField(max_length=30, choices=[
         ('capital', 'AFP Capital'),
         ('cuprum', 'AFP Cuprum'),
@@ -63,6 +64,7 @@ class CustomUser(AbstractUser):
         ('provida', 'AFP Provida'),
         ('uno', 'AFP Uno'),
     ], blank=True, null=True)
+    certificado_afp = models.FileField(upload_to='certificados/afp/', null=True, blank=True, verbose_name="Certificado AFP")
     horario_asignado = models.CharField(max_length=20, choices=[
         ('8:00-17:30', '8:00 a 17:30'),
         ('9:00-18:30', '9:00 a 18:30'),
@@ -204,17 +206,18 @@ class Solicitud(models.Model):
 User = get_user_model()
 
 class SolicitudVacaciones(models.Model):
-    ESTADO_SOLICITUD = [
+    ESTADO_CHOICES = [
         ('pendiente', 'Pendiente'),
         ('aprobada', 'Aprobada'),
         ('rechazada', 'Rechazada'),
     ]
+    estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='pendiente')
+
 
     colaborador = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='solicitudes_vacaciones')
     fecha_inicio = models.DateField()
     fecha_fin = models.DateField()
     dias_habiles = models.IntegerField(default=0) 
-    estado = models.CharField(max_length=20, choices=ESTADO_SOLICITUD, default='pendiente')
     motivo = models.TextField(blank=True, null=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
 

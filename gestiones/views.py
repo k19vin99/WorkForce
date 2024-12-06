@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
-from .forms import CustomUserCreationForm, EditarUsuarioForm, CargaFamiliarForm, SolicitudForm, ContactForm, EditProfileForm, EditProfilePhotoForm, PasswordChangeForm, CursoForm, ModuloForm, ComentarioForm, EditarParticipantesForm, BeneficioForm, DenunciaForm, EvidenciaFormset, NotaDenunciaForm, PublicacionForm, CustomUserChangeForm, DocumentoEmpresaForm, SolicitudVacacionesForm, CustomPasswordChangeForm
+from .forms import CustomUserCreationForm, EditarUsuarioForm, CargaFamiliarForm, SolicitudForm, ContactForm, EditProfilePhotoForm, PasswordChangeForm, CursoForm, ModuloForm, ComentarioForm, EditarParticipantesForm, BeneficioForm, DenunciaForm, EvidenciaFormset, NotaDenunciaForm, PublicacionForm, CustomUserChangeForm, DocumentoEmpresaForm, SolicitudVacacionesForm, CustomPasswordChangeForm
 import os
 from django.conf import settings
 from .models import CustomUser, CargaFamiliar, Asistencia, Solicitud, Curso, Modulo, Comentario, Beneficio, Area, Denuncia, EvidenciaDenuncia, DocumentoEmpresa, SolicitudVacaciones, DescargaDocumento
@@ -52,29 +52,30 @@ def buscar(request):
     return render(request, 'gestiones/buscar/busqueda.html', context)
 
 @login_required
+@user_passes_test(is_supervisor)
 def registrar_usuario(request):
-    if not is_supervisor(request.user):  # Verifica si el usuario es un supervisor
-        return redirect('home')
-
     if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST, user=request.user)  # Pasa el usuario autenticado al formulario
+        form = CustomUserCreationForm(request.POST, request.FILES)  # Maneja request.FILES aquí
         if form.is_valid():
             new_user = form.save(commit=False)
-            new_user.empresa = request.user.empresa  # Asigna la misma empresa del usuario autenticado
+            # Asigna otros datos adicionales si es necesario
+            new_user.empresa = request.user.empresa
             new_user.save()
 
+            # Maneja los grupos
             grupo = form.cleaned_data['grupo']
             group = Group.objects.get(name=grupo)
             new_user.groups.add(group)
 
-            messages.success(request, 'Usuario registrado correctamente.')
-            return redirect('lista_colaboradores')  # Redirige a la lista de colaboradores
+            messages.success(request, "Usuario registrado correctamente.")
+            return redirect('lista_colaboradores')
         else:
-            messages.error(request, 'Hubo un error en el registro. Verifique los datos ingresados.')
+            messages.error(request, "Por favor, corrige los errores en el formulario.")
     else:
-        form = CustomUserCreationForm(user=request.user)  # Pasa el usuario autenticado al formulario
+        form = CustomUserCreationForm()
 
     return render(request, 'gestiones/usuarios/registrar_usuario.html', {'form': form})
+
 
 from datetime import date
 
@@ -155,21 +156,33 @@ def editar_colaborador(request, pk):
     colaborador = get_object_or_404(CustomUser, pk=pk)
     
     if request.method == 'POST':
-        form = CustomUserChangeForm(request.POST, instance=colaborador)
+        # Asegúrate de pasar request.FILES al formulario
+        form = CustomUserChangeForm(request.POST, request.FILES, instance=colaborador)
         if form.is_valid():
-            # Guarda el colaborador
-            form.save()
-            # Luego maneja la asignación de grupos
+            # Guarda los datos del formulario (incluidos los archivos)
+            colaborador = form.save(commit=False)
+
+            # Maneja archivos individualmente si no son procesados automáticamente
+            if 'certificado_afp' in request.FILES:
+                colaborador.certificado_afp = request.FILES['certificado_afp']
+            if 'certificado_salud' in request.FILES:
+                colaborador.certificado_salud = request.FILES['certificado_salud']
+
+            colaborador.save()
+
+            # Maneja los grupos del colaborador
             grupos = form.cleaned_data['grupo']
-            colaborador.groups.set(grupos)  # Esto ahora debe funcionar correctamente
+            colaborador.groups.set(grupos)
+
             messages.success(request, 'El colaborador ha sido actualizado correctamente.')
-            return redirect('lista_colaboradores')  # Redirige a la lista de colaboradores después de guardar
+            return redirect('lista_colaboradores')
         else:
             messages.error(request, 'Por favor, corrige los errores a continuación.')
     else:
         form = CustomUserChangeForm(instance=colaborador)
     
     return render(request, 'gestiones/usuarios/editar_colaborador.html', {'form': form, 'colaborador': colaborador})
+
 
 
 
@@ -254,7 +267,6 @@ def listar_cargas(request):
     })
 
 
-
 @login_required
 def editar_carga(request, pk):
     carga = get_object_or_404(CargaFamiliar, pk=pk)
@@ -299,7 +311,13 @@ def registro_asistencia(request):
     if asistencia and asistencia.hora_entrada and asistencia.hora_salida:
         entrada = datetime.combine(asistencia.fecha, asistencia.hora_entrada)
         salida = datetime.combine(asistencia.fecha, asistencia.hora_salida)
-        tiempo_trabajado = salida - entrada
+        tiempo_trabajado_delta = salida - entrada
+        
+        # Formatear a HH:MM:SS
+        total_segundos = int(tiempo_trabajado_delta.total_seconds())
+        horas, resto = divmod(total_segundos, 3600)
+        minutos, segundos = divmod(resto, 60)
+        tiempo_trabajado = f"{horas:02}:{minutos:02}:{segundos:02}"
     
     return render(request, 'gestiones/asistencia/registro_asistencia.html', {
         'asistencia': asistencia,
@@ -476,31 +494,32 @@ def exportar_asistencias_excel(request):
 
 @login_required
 def crear_solicitud_vacaciones(request):
-    user = request.user  # Usuario autenticado
-    dias_disponibles = user.dias_vacaciones_disponibles  # Propiedad calculada en el modelo
+    user = request.user
+    dias_disponibles = user.dias_vacaciones_disponibles
+
+    # Restricción: No permitir solicitudes si los días disponibles son 0
+    if dias_disponibles <= 0:
+        messages.error(request, 'No puedes solicitar más días de vacaciones. No tienes días disponibles.')
+        return redirect('lista_solicitudes_vacaciones')
 
     if request.method == 'POST':
-        form = SolicitudVacacionesForm(request.POST)
+        form = SolicitudVacacionesForm(request.POST, user=user)
         if form.is_valid():
             solicitud = form.save(commit=False)
-            solicitud.colaborador = request.user
+            solicitud.colaborador = user
             solicitud.save()
             messages.success(request, 'Solicitud de vacaciones creada correctamente.')
             return redirect('lista_solicitudes_vacaciones')
     else:
-        form = SolicitudVacacionesForm()
+        form = SolicitudVacacionesForm(user=user)
 
     return render(request, 'gestiones/vacaciones/crear_solicitud_vacaciones.html', {
         'form': form,
         'dias_disponibles': dias_disponibles,
     })
 
-
 @login_required
 def gestionar_solicitud_vacaciones(request, pk):
-    """
-    Vista para que un supervisor gestione una solicitud de vacaciones.
-    """
     solicitud = get_object_or_404(SolicitudVacaciones, pk=pk)
     
     if request.method == 'POST':
@@ -513,6 +532,7 @@ def gestionar_solicitud_vacaciones(request, pk):
         return redirect('lista_solicitudes_vacaciones')
     
     return render(request, 'gestiones/vacaciones/gestionar_solicitud_vacaciones.html', {'solicitud': solicitud})
+
 
 @login_required
 def lista_solicitudes_vacaciones(request):
@@ -646,22 +666,17 @@ def success(request):
 # Vista del perfil de usuario
 @login_required
 def profile(request):
-    
     user = request.user
-    return render(request, 'gestiones/profile/profile.html', {'user': user})
-
-# Vista para editar el perfil
-@login_required
-def edit_profile(request):
-    if request.method == 'POST':
-        form = EditProfileForm(request.POST, request.FILES, instance=request.user)
-        if form.is_valid():
-            form.save()
-            return redirect('profile')
-    else:
-        form = EditProfileForm(instance=request.user)
+    edad = None
+    if user.fecha_nacimiento:
+        today = date.today()
+        edad = today.year - user.fecha_nacimiento.year - ((today.month, today.day) < (user.fecha_nacimiento.month, user.fecha_nacimiento.day))
     
-    return render(request, 'gestiones/profile/edit_profile.html', {'form': form})
+    return render(request, 'gestiones/profile/profile.html', {
+        'user': user,
+        'edad': edad,
+        'dias_vacaciones': user.dias_vacaciones_disponibles,
+    })
 
 # Vista para editar la foto de perfil
 @login_required

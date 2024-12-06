@@ -94,6 +94,25 @@
                 <p>No ha descargado ningún documento.</p>
             {% endif %}
             <hr>
+            <h4 class="text-primary mt-3">Documentos del Colaborador</h4>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    <strong>Certificado AFP:</strong>
+                    {% if usuario.certificado_afp %}
+                        <a href="{{ usuario.certificado_afp.url }}" download class="btn btn-link">Descargar Certificado AFP</a>
+                    {% else %}
+                        No disponible
+                    {% endif %}
+                </li>
+                <li class="list-group-item">
+                    <strong>Certificado de Salud:</strong>
+                    {% if usuario.certificado_salud %}
+                        <a href="{{ usuario.certificado_salud.url }}" download class="btn btn-link">Descargar Certificado de Salud</a>
+                    {% else %}
+                        No disponible
+                    {% endif %}
+                </li>
+            </ul>
 
         </div>
     </div>

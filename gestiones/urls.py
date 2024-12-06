@@ -65,7 +65,6 @@ urlpatterns = [
     path('contacto/', views.contacto, name='contacto'),
     path('success/', views.success, name='success'),
     path('profile/', views.profile, name='profile'),
-    path('profile/edit/', views.edit_profile, name='edit_profile'),
     path('profile/edit/photo/', views.edit_profile_photo, name='edit_profile_photo'),
     path('profile/change_password/', views.cambiar_contrasena, name='cambiar_contrasena'),
     path('buscar/', views.buscar, name='buscar'),

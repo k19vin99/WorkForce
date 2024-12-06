@@ -17,34 +17,59 @@
                     <table class="table table-striped">
                         <tbody>
                             <tr>
-                                <th class="bg-light">Nombre de Usuario:</th>
-                                <td>{{ user.username }}</td>
+                                <th class="bg-light">Nombre Completo:</th>
+                                <td>{{ user.nombre_completo }}</td>
                             </tr>
                             <tr>
-                                <th class="bg-light">Email:</th>
+                                <th class="bg-light">Edad:</th>
+                                <td>{{ edad }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">Correo:</th>
                                 <td>{{ user.email }}</td>
                             </tr>
                             <tr>
-                                <th class="bg-light">Nombre:</th>
-                                <td>{{ user.first_name }}</td>
-                            </tr>
-                            <tr>
-                                <th class="bg-light">Apellido:</th>
-                                <td>{{ user.last_name }}</td>
-                            </tr>
-                            <tr>
-                                <th class="bg-light">Fecha de Registro:</th>
+                                <th class="bg-light">Fecha de Ingreso:</th>
                                 <td>{{ user.date_joined|date:"d-m-Y" }}</td>
                             </tr>
+                            <tr>
+                                <th class="bg-light">Días Disponibles de Vacaciones:</th>
+                                <td>{{ dias_vacaciones }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">Cargo:</th>
+                                <td>{{ user.cargo }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">Horario Asignado:</th>
+                                <td>{{ user.horario_asignado }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">Empresa:</th>
+                                <td>
+                                    {% if user.empresa %}
+                                        {{ user.empresa.nombre }}
+                                    {% else %}
+                                        No asignada
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">Área:</th>
+                                <td>
+                                    {% if user.area %}
+                                        {{ user.area.nombre }}
+                                    {% else %}
+                                        No asignada
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            
                         </tbody>
                     </table>
-                    
                 </div>
             </div>
             <div class="d-flex justify-content-center mt-4">
-                <a href="{% url 'edit_profile' %}" class="btn btn-primary px-4 d-flex align-items-center me-2" style="border-radius: 10px;">
-                    <i class="fas fa-user-edit me-1"></i> Editar Perfil
-                </a>
                 <a href="{% url 'edit_profile_photo' %}" class="btn btn-primary px-4 d-flex align-items-center me-2" style="border-radius: 10px;">
                     <i class="fas fa-camera me-1"></i> Cambiar Foto de Perfil
                 </a>
