@@ -1,17 +1,15 @@
 {% extends "base.html" %}
-
 {% block content %}
-<div class="container mt-5">
-    <h1>Editar Participantes para el Curso: {{ curso.nombre }}</h1>
-    
+
+<div class="container">
+    <h1 class="text-center my-4">Editar Participantes: {{ curso.nombre }}</h1>
     <form method="POST">
         {% csrf_token %}
-        <div class="form-group">
-            <label for="participantes">Participantes:</label>
-            {{ form.participantes }}
+        {{ form.as_p }}
+        <div class="d-flex justify-content-center mt-4">
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
         </div>
-        <button type="submit" class="btn btn-success">Guardar Cambios</button>
-        <a href="{% url 'detalle_curso' curso.id %}" class="btn btn-secondary">Cancelar</a>
     </form>
 </div>
+
 {% endblock %}

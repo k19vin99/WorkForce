@@ -4,19 +4,52 @@
     <div class="col-lg-10 col-md-12">
         <div class="card p-5" style="border-radius: 20px; background-color: #ffffff; box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);">
             <h1 class="text-center mb-4">Crear Curso</h1>
-            <form method="POST">
+            <p class="text-center text-muted">
+                Completa el siguiente formulario para registrar un nuevo curso.
+            </p>
+            <form method="POST" id="formCrearCurso">
                 {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" class="btn btn-primary">Crear Curso</button>
+                <div class="row">
+                    <!-- Campo Nombre -->
+                    <div class="col-md-12 mb-4">
+                        <div class="form-group">
+                            <label for="id_nombre" class="form-label">Nombre</label>
+                            <input
+                                type="text"
+                                id="id_nombre"
+                                name="nombre"
+                                class="form-control"
+                                placeholder="Ingresa el nombre del curso"
+                                required>
+                        </div>
+                    </div>
+                    <!-- Campo Descripción -->
+                    <div class="col-md-12 mb-4">
+                        <div class="form-group">
+                            <label for="id_descripcion" class="form-label">Descripción</label>
+                            <textarea
+                                id="id_descripcion"
+                                name="descripcion"
+                                rows="4"
+                                class="form-control"
+                                placeholder="Escribe una breve descripción del curso"
+                                required></textarea>
+                        </div>
+                    </div>
+                </div>
+                <!-- Botones -->
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Crear Curso
+                    </button>
+                </div>
+                <div class="d-flex justify-content-center mt-3">
+                    <a href="{% url 'home' %}" class="btn btn-secondary mt-3 px-4" style="border-radius: 10px;">
+                        <i class="fas fa-home"></i> Volver al Inicio
+                    </a>
+                </div>
             </form>
         </div>
     </div>
-</div>
-
-
-
-
-<div class="container mt-5">
-    
 </div>
 {% endblock %}

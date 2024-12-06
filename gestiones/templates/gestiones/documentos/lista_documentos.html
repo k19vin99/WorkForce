@@ -21,7 +21,8 @@
                 <td>
                     <a href="{% url 'descargar_documento_empresa' documento.id %}" class="btn btn-info">Descargar</a>
                     {% if user|is_supervisor and user.area.nombre == "Recursos Humanos" %}
-                    <a href="{% url 'ver_descargas_documento' documento.id %}" class="btn btn-secondary">Ver Descargas</a>
+                        <a href="{% url 'ver_descargas_documento' documento.id %}" class="btn btn-secondary">Ver Descargas</a>
+                        <a href="{% url 'eliminar_documento_confirmacion' documento.id %}" class="btn btn-danger">Eliminar</a>
                     {% endif %}
                 </td>
             </tr>

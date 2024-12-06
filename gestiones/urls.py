@@ -33,15 +33,10 @@ urlpatterns = [
     #Cursos
     path('cursos/', views.lista_cursos, name='lista_cursos'),
     path('cursos/crear/', views.crear_curso, name='crear_curso'),
-    path('cursos/<int:curso_id>/agregar_modulo/', views.agregar_modulo, name='agregar_modulo'),
-    path('modulos/<int:modulo_id>/', views.detalle_modulo, name='detalle_modulo'),
-    path('modulos/<int:modulo_id>/agregar_comentario/', views.agregar_comentario, name='agregar_comentario'),
     path('cursos/<int:curso_id>/', views.detalle_curso, name='detalle_curso'),
     path('cursos/<int:curso_id>/editar_participantes/', views.editar_participantes, name='editar_participantes'),
-    path('cursos/', views.lista_cursos_colaborador, name='lista_cursos_colaborador'),
-    path('cursos/<int:curso_id>/', views.detalle_curso_colaborador, name='detalle_curso_colaborador'),
-    path('modulos/<int:modulo_id>/editar/', views.editar_modulo, name='editar_modulo'),
-    path('modulos/<int:modulo_id>/eliminar/', views.eliminar_modulo, name='eliminar_modulo'),
+    path('cursos/<int:curso_id>/actualizar_progreso/', views.actualizar_progreso, name='actualizar_progreso'),
+    path('cursos/<int:curso_id>/eliminar/', views.eliminar_curso, name='eliminar_curso'),
     #Beneficios
     path('beneficios/', views.lista_beneficios, name='lista_beneficios'),
     path('beneficios/crear/', views.crear_beneficio, name='crear_beneficio'),
@@ -61,6 +56,7 @@ urlpatterns = [
     path('documentos/descargar/<int:pk>/', views.descargar_documento_empresa, name='descargar_documento_empresa'),
     path('gestiones/documentos/descargar/<int:pk>/', views.descargar_documento_empresa, name='descargar_documento_empresa'),
     path('gestiones/documentos/<int:documento_id>/ver_descargas/', views.ver_descargas_documento, name='ver_descargas_documento'),
+    path('documentos/eliminar/<int:documento_id>/', views.eliminar_documento_empresa, name='eliminar_documento_confirmacion'),
 
     path('contacto/', views.contacto, name='contacto'),
     path('success/', views.success, name='success'),

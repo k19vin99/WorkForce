@@ -2,26 +2,65 @@ from django import forms
 import re
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.contrib.auth.models import Group
-from .models import CargaFamiliar, CustomUser, Solicitud, Curso, Modulo, Comentario, Beneficio, Area, Denuncia, NotaDenuncia, EvidenciaDenuncia, Publicacion, DocumentoEmpresa, SolicitudVacaciones
+from .models import CargaFamiliar, CustomUser, Solicitud, Curso, Beneficio, Area, Denuncia, NotaDenuncia, EvidenciaDenuncia, Publicacion, DocumentoEmpresa, SolicitudVacaciones, ProgresoParticipante
 from django.contrib.auth import get_user_model
 from django.forms import modelformset_factory
 import datetime
 from django.core.exceptions import ValidationError
+from .models import CustomUser as User
+
 
 #Formulario de Registro de Usuario
 class CustomUserCreationForm(UserCreationForm):
-    grupo = forms.ModelChoiceField(queryset=Group.objects.all(), required=True, label="Grupo")
+    username = forms.CharField(
+        max_length=150,
+        required=True,
+        label="Nombre de Usuario",
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
+    )
+    grupo = forms.ModelChoiceField(
+        queryset=Group.objects.all(),
+        required=True,
+        label="Grupo",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
     genero = forms.ChoiceField(
         choices=CustomUser.GENERO_CHOICES,
         required=True,
         label="Género",
-        widget=forms.RadioSelect()  # Usa RadioSelect para mostrar opciones de radio button
+        widget=forms.RadioSelect(attrs={
+            'class': 'form-check-input'  # Clase de Bootstrap para botones de radio estilizados
+        })
     )
-    first_name = forms.CharField(max_length=30, required=True, label="Primer Nombre")
-    last_name = forms.CharField(max_length=30, required=True, label="Primer Apellido")
-    segundo_nombre = forms.CharField(max_length=30, required=False, label="Segundo Nombre")
-    segundo_apellido = forms.CharField(max_length=30, required=False, label="Segundo Apellido")
-    email = forms.EmailField(required=True, label="Correo Electrónico")
+    first_name = forms.CharField(
+        max_length=30,
+        required=True,
+        label="Primer Nombre",
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    last_name = forms.CharField(
+        max_length=30,
+        required=True,
+        label="Primer Apellido",
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    segundo_nombre = forms.CharField(
+        max_length=30,
+        required=False,
+        label="Segundo Nombre",
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    segundo_apellido = forms.CharField(
+        max_length=30,
+        required=False,
+        label="Segundo Apellido",
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    email = forms.EmailField(
+        required=True,
+        label="Correo Electrónico",
+        widget=forms.EmailInput(attrs={'class': 'form-control'})
+    )
     rut = forms.CharField(
         max_length=12,
         required=True,
@@ -31,153 +70,134 @@ class CustomUserCreationForm(UserCreationForm):
             'class': 'form-control'
         })
     )
-    area = forms.ModelChoiceField(queryset=Area.objects.all(), required=True, label="Área")
+    area = forms.ModelChoiceField(
+        queryset=Area.objects.all(),
+        required=True,
+        label="Área",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    fecha_contratacion = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+        required=True,
+        label="Fecha de Contratación"
+    )
+    telefono = forms.CharField(
+        max_length=9,
+        required=True,
+        label="Número de Teléfono",
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Ej: 912345678'
+        })
+    )
+    fecha_nacimiento = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+        required=True,
+        label="Fecha de Nacimiento"
+    )
+    direccion = forms.CharField(
+        max_length=255,
+        required=True,
+        label="Dirección",
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    salud = forms.ChoiceField(
+        choices=[
+            ('fonasa', 'Fonasa'),
+            ('banmedica', 'Banmédica'),
+            ('colmena', 'Colmena Golden Cross'),
+            ('consalud', 'Consalud'),
+            ('cruzblanca', 'CruzBlanca'),
+            ('esencial', 'Esencial'),
+            ('masvida', 'Nueva Masvida'),
+            ('vidatres', 'Vida Tres'),
+        ],
+        required=True,
+        label="Plan de Salud",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    certificado_salud = forms.FileField(
+        required=True,
+        label="Certificado de Salud (PDF)",
+        widget=forms.ClearableFileInput(attrs={'accept': '.pdf', 'class': 'form-control'})
+    )
+    afp = forms.ChoiceField(
+        choices=[
+            ('capital', 'AFP Capital'),
+            ('cuprum', 'AFP Cuprum'),
+            ('habitat', 'AFP Habitat'),
+            ('modelo', 'AFP Modelo'),
+            ('planvital', 'AFP Planvital'),
+            ('provida', 'AFP Provida'),
+            ('uno', 'AFP Uno'),
+        ],
+        required=True,
+        label="AFP",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    certificado_afp = forms.FileField(
+        required=True,
+        label="Certificado AFP (PDF)",
+        widget=forms.ClearableFileInput(attrs={'accept': '.pdf', 'class': 'form-control'})
+    )
+    horario_asignado = forms.ChoiceField(
+        choices=[
+            ('8:00-17:30', '8:00 a 17:30'),
+            ('9:00-18:30', '9:00 a 18:30'),
+            ('21:00-8:00', '21:00 a 8:00'),
+            ('otro', 'Otro'),
+        ],
+        required=True,
+        label="Horario Asignado",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    cargo = forms.CharField(
+        max_length=255,
+        required=True,
+        label="Cargo",
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    password1 = forms.CharField(
+        label="Contraseña",
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Contraseña'}),
+    )
+    password2 = forms.CharField(
+        label="Confirmar Contraseña",
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirmar Contraseña'}),
+    )
     def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None)  # Extraer el usuario que se pasa al formulario
-        super(CustomUserCreationForm, self).__init__(*args, **kwargs)
-        
+        user = kwargs.pop('user', None)  # Extraer el usuario si se pasa al formulario
+        super().__init__(*args, **kwargs)  # Llamar al constructor base
         # Filtrar las áreas según la empresa del usuario que registra
         if user and user.empresa:
             self.fields['area'].queryset = Area.objects.filter(empresa=user.empresa)
         else:
-            self.fields['area'].queryset = Area.objects.none()  # No mostrar áreas si no hay empresa
-
-    fecha_contratacion = forms.DateField(
-        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}), 
-        required=True, 
-        label="Fecha de contratación"
-    )
-    telefono = forms.CharField(max_length=15, required=True, label="Número de Teléfono")
-    fecha_nacimiento = forms.DateField(
-        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}), 
-        required=True, 
-        label="Fecha de Nacimiento"
-    )
-    direccion = forms.CharField(max_length=255, required=True, label="Dirección")
-    salud = forms.ChoiceField(choices=[
-        ('fonasa', 'Fonasa'),
-        ('banmedica', 'Banmédica'),
-        ('colmena', 'Colmena Golden Cross'),
-        ('consalud', 'Consalud'),
-        ('cruzblanca', 'CruzBlanca'),
-        ('esencial', 'Esencial'),
-        ('masvida', 'Nueva Masvida'),
-        ('vidatres', 'Vida Tres'),
-    ], required=True, label="Plan de Salud")
-    certificado_salud = forms.FileField(
-        required=True,
-        label="Certificado de Salud (PDF)",
-        widget=forms.ClearableFileInput(attrs={'accept': '.pdf'}),
-    )
-    afp = forms.ChoiceField(choices=[
-        ('capital', 'AFP Capital'),
-        ('cuprum', 'AFP Cuprum'),
-        ('habitat', 'AFP Habitat'),
-        ('modelo', 'AFP Modelo'),
-        ('planvital', 'AFP Planvital'),
-        ('provida', 'AFP Provida'),
-        ('uno', 'AFP Uno'),
-    ], required=True, label="AFP")
-    certificado_afp = forms.FileField(
-        required=True,
-        label="Certificado AFP (PDF)",
-        widget=forms.ClearableFileInput(attrs={'accept': '.pdf'}),
-    )
-    horario_asignado = forms.ChoiceField(choices=[
-        ('8:00-17:30', '8:00 a 17:30'),
-        ('9:00-18:30', '9:00 a 18:30'),
-        ('21:00-8:00', '21:00 a 8:00'),
-        ('otro', 'Otro'),
-    ], required=True, label="Horario Asignado")
-    cargo = forms.CharField(max_length=255, required=True, label="Cargo")
-
+            self.fields['area'].queryset = Area.objects.none()
     class Meta:
         model = CustomUser
         fields = [
-            'username', 'first_name', 'segundo_nombre', 'last_name', 'segundo_apellido', 'email', 'rut', 'area', 'cargo', 
-            'telefono', 'fecha_nacimiento', 'direccion', 'salud', 'afp', 'horario_asignado', 
-            'fecha_contratacion', 'grupo', 'password1', 'password2','genero', 'certificado_afp', 'certificado_salud'
+            'username', 'first_name', 'segundo_nombre', 'last_name', 'segundo_apellido', 'email', 'rut', 'area', 'cargo',
+            'telefono', 'fecha_nacimiento', 'direccion', 'salud', 'afp', 'horario_asignado',
+            'fecha_contratacion', 'grupo', 'password1', 'password2', 'genero', 'certificado_afp', 'certificado_salud'
         ]
+
+    def clean_telefono(self):
+        telefono = self.cleaned_data.get('telefono')
+        if not telefono.isdigit():
+            raise forms.ValidationError("El número de teléfono debe contener solo dígitos.")
+        if not telefono.startswith('9'):
+            raise forms.ValidationError("El número de teléfono debe comenzar con un '9'.")
+        if len(telefono) != 9:
+            raise forms.ValidationError("El número de teléfono debe tener exactamente 9 dígitos.")
+        return telefono
 
     def clean_rut(self):
         rut = self.cleaned_data.get('rut')
-        # Verificar que el RUT ya esté registrado
-        if CustomUser.objects.filter(rut=rut).exists():
-            raise forms.ValidationError("El RUT ya está registrado.")
         # Verificar formato correcto (Ej: 12345678-9)
         rut_pattern = r'^\d{1,8}-[\dkK]$'
         if not re.match(rut_pattern, rut):
             raise forms.ValidationError("El formato del RUT no es válido. Debe ser en formato 12345678-9.")
-        # Verificar longitud mínima
-        if len(rut) < 9:  # La longitud mínima estándar para RUT es 9 caracteres incluyendo el guión
-            raise forms.ValidationError("El RUT debe tener al menos 9 caracteres (incluyendo el guión).")
-        # Verificar dígito verificador
-        if not self.validar_digito_verificador(rut):
-            raise forms.ValidationError("El RUT ingresado no es válido.")
-        
         return rut
-    def validar_digito_verificador(self, rut):
-        """Función para validar el dígito verificador de un RUT chileno."""
-        try:
-            rut_sin_dv, dv = rut.split('-')
-            rut_sin_dv = int(rut_sin_dv)
-            dv = dv.upper()
-            suma = 0
-            factor = 2
-            for digit in reversed(str(rut_sin_dv)):
-                suma += int(digit) * factor
-                factor += 1
-                if factor > 7:
-                    factor = 2
-            mod = 11 - (suma % 11)
-            if mod == 11:
-                dv_calculado = '0'
-            elif mod == 10:
-                dv_calculado = 'K'
-            else:
-                dv_calculado = str(mod)
-            return dv == dv_calculado
-        except:
-            return False
-    def clean(self):
-        cleaned_data = super().clean()
-        fecha_contratacion = cleaned_data.get('fecha_contratacion')
-        fecha_nacimiento = cleaned_data.get('fecha_nacimiento')
-
-        # Validar si ambos campos están presentes
-        if fecha_contratacion and fecha_nacimiento:
-            # Calcular la edad del usuario al momento de la contratación
-            edad = fecha_contratacion.year - fecha_nacimiento.year - (
-                (fecha_contratacion.month, fecha_contratacion.day) < (fecha_nacimiento.month, fecha_nacimiento.day)
-            )
-            print(edad)
-
-            # Verificar si la edad es menor a 15 años
-            if edad < 15:
-                self.add_error('fecha_nacimiento', "La fecha de nacimiento no corresponde, el usuario debe tener al menos 15 años. Presentando la documentación necesaria. Si no debe ser mayor de 18 años, según el artículo 13 del código del Trabajo")
-                self.add_error('fecha_contratacion', "La fecha de contratación no es válida porque el usuario es menor de 15 años.")
-
-        return cleaned_data
-    def clean_password1(self):
-        password = self.cleaned_data.get('password1')
-
-        # Verificar longitud mínima
-        if len(password) < 8:
-            raise forms.ValidationError("La contraseña debe tener al menos 8 caracteres.")
-
-        # Verificar al menos un carácter en mayúscula
-        if not any(char.isupper() for char in password):
-            raise forms.ValidationError("La contraseña debe contener al menos una letra mayúscula.")
-
-        # Verificar al menos un número
-        if not any(char.isdigit() for char in password):
-            raise forms.ValidationError("La contraseña debe contener al menos un número.")
-
-        # Verificar al menos un símbolo
-        if not any(char in "!@#$%^&*()-_+=<>?/.,:;" for char in password):
-            raise forms.ValidationError("La contraseña debe contener al menos un símbolo especial (!@#$%^&*()-_+=<>?/.,:;).")
-
-        return password
 
 class CustomUserChangeForm(forms.ModelForm):
     grupo = forms.ModelMultipleChoiceField(
@@ -371,16 +391,10 @@ class CustomPasswordChangeForm(PasswordChangeForm):
         return password
 
 class CursoForm(forms.ModelForm):
-    participantes = forms.ModelMultipleChoiceField(
-        queryset=CustomUser.objects.none(),
-        widget=forms.CheckboxSelectMultiple,
-        required=True,
-        label="Participantes"
-    )
 
     class Meta:
         model = Curso
-        fields = ['nombre', 'descripcion', 'participantes']
+        fields = ['nombre', 'descripcion']
 
     def __init__(self, *args, **kwargs):
         supervisor = kwargs.pop('supervisor', None)
@@ -390,33 +404,29 @@ class CursoForm(forms.ModelForm):
             self.fields['participantes'].queryset = CustomUser.objects.filter(empresa=supervisor.empresa)
 
 
-class ModuloForm(forms.ModelForm):
-    class Meta:
-        model = Modulo
-        fields = ['titulo', 'descripcion', 'archivo']
-        widgets = {
-            'titulo': forms.TextInput(attrs={'class': 'form-control'}),
-            'descripcion': forms.Textarea(attrs={'class': 'form-control'}),
-            'archivo': forms.ClearableFileInput(attrs={'class': 'form-control'}),
-        }
-
-class ComentarioForm(forms.ModelForm):
-    class Meta:
-        model = Comentario
-        fields = ['comentario']
-
 
 class EditarParticipantesForm(forms.ModelForm):
     participantes = forms.ModelMultipleChoiceField(
-        queryset=CustomUser.objects.all(),
+        queryset=User.objects.all(),  # Puedes filtrar usuarios aquí si lo necesitas
         widget=forms.CheckboxSelectMultiple,
         required=False,
-        label="Participantes"
+        label="Participantes",
     )
 
     class Meta:
         model = Curso
-        fields = ['participantes']
+        fields = ['participantes']  # Incluir solo el campo 'participantes'
+
+class ActualizarProgresoForm(forms.ModelForm):
+    progreso = forms.IntegerField(
+        min_value=0, 
+        max_value=100, 
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Porcentaje de progreso'})
+    )
+
+    class Meta:
+        model = ProgresoParticipante
+        fields = ['progreso']
 
 class BeneficioForm(forms.ModelForm):
     class Meta:
@@ -431,7 +441,7 @@ class BeneficioForm(forms.ModelForm):
 class DenunciaForm(forms.ModelForm):
     class Meta:
         model = Denuncia
-        fields = ['denunciado', 'motivo', 'descripcion', 'contacto_urgencia']  # Quitamos 'evidencias'
+        fields = ['denunciado', 'motivo', 'descripcion', 'contacto_urgencia']
         labels = {
             'denunciado': 'Quiero denunciar a',
             'motivo': 'Motivo',
@@ -439,8 +449,32 @@ class DenunciaForm(forms.ModelForm):
             'contacto_urgencia': 'Datos de contacto para urgencias'
         }
         widgets = {
-            'descripcion': forms.Textarea(attrs={'rows': 4}),
+            'denunciado': forms.Select(attrs={'class': 'form-control'}),
+            'motivo': forms.TextInput(attrs={'class': 'form-control'}),
+            'descripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+            'contacto_urgencia': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': '9XXXXXXXX',
+                'maxlength': '9'
+            }),
         }
+
+    def clean_contacto_urgencia(self):
+        contacto = self.cleaned_data.get('contacto_urgencia')
+
+        # Validar solo números
+        if not contacto.isdigit():
+            raise ValidationError("El contacto debe contener solo números.")
+
+        # Validar que comience con 9
+        if not contacto.startswith('9'):
+            raise ValidationError("El contacto debe comenzar con un 9.")
+
+        # Validar longitud exacta de 9 dígitos
+        if len(contacto) != 9:
+            raise ValidationError("El contacto debe tener exactamente 9 dígitos (Ejemplo: 9XXXXXXXX).")
+
+        return contacto
 
 
 class NotaDenunciaForm(forms.ModelForm):
@@ -486,3 +520,8 @@ class DocumentoEmpresaForm(forms.ModelForm):
     class Meta:
         model = DocumentoEmpresa
         fields = ['titulo', 'descripcion', 'archivo']
+        widgets = {
+            'titulo': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Título del Documento'}),
+            'descripcion': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Descripción'}),
+            'archivo': forms.FileInput(attrs={'class': 'form-control'}),
+        }

@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="text-center">Confirmación de Eliminación</h2>
+<p class="text-center">¿Estás seguro de que deseas eliminar el documento <strong>{{ documento.titulo }}</strong>?</p>
+<div class="text-center">
+    <form method="post" action="{% url 'eliminar_documento_confirmacion' documento.id %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Eliminar</button>
+        <a href="{% url 'lista_documentos_empresa' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

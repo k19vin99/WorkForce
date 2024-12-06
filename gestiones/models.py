@@ -9,6 +9,8 @@ import datetime
 from datetime import date, timedelta
 import holidays 
 
+
+#Empresa
 class Empresa(models.Model):
     nombre = models.CharField(max_length=255)
     razon_social = models.CharField(max_length=255)
@@ -20,6 +22,7 @@ class Empresa(models.Model):
     def __str__(self):
         return self.nombre
 
+#Área
 class Area(models.Model):
     nombre = models.CharField(max_length=255)
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, related_name='areas')
@@ -27,6 +30,7 @@ class Area(models.Model):
     def __str__(self):
         return f"{self.nombre} - {self.empresa.nombre}"
     
+#Usuario
 class CustomUser(AbstractUser):
     segundo_nombre = models.CharField(max_length=30, blank=True, null=True)
     segundo_apellido = models.CharField(max_length=30, blank=True, null=True)
@@ -122,16 +126,7 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return self.username
 
-class ContactoEmergencia(models.Model):
-    usuario = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='contactos_emergencia')
-    nombre = models.CharField(max_length=50)
-    apellido = models.CharField(max_length=50)
-    telefono = models.CharField(max_length=15)
-    parentesco = models.CharField(max_length=50)
-
-    def __str__(self):
-        return f"{self.nombre} {self.apellido} ({self.parentesco})"
-        
+#Cargas Familiares       
 class CargaFamiliar(models.Model):
     TIPO_CERTIFICADO_CHOICES = [
         ('AFC', 'Certificado de Carga Familiar (AFC)'),
@@ -161,6 +156,7 @@ class CargaFamiliar(models.Model):
     def __str__(self):
         return f'{self.nombre} {self.apellido} ({self.parentesco})'
 
+#Asistencia
 class Asistencia(models.Model):
     colaborador = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     fecha = models.DateField(auto_now_add=True)
@@ -170,6 +166,7 @@ class Asistencia(models.Model):
     def __str__(self):
         return f"{self.colaborador} - {self.fecha}"
     
+#Solicitudes
 class Solicitud(models.Model):
     TIPOS_SOLICITUD = [
         ('tramite', 'Permiso Trámite Personal'),
@@ -203,6 +200,7 @@ class Solicitud(models.Model):
     def __str__(self):
         return f"{self.colaborador.username} - {self.tipo}"
 
+#Solicitudes de Vacaciones
 User = get_user_model()
 
 class SolicitudVacaciones(models.Model):
@@ -234,33 +232,26 @@ class SolicitudVacaciones(models.Model):
         self.dias_habiles = self.calcular_dias_habiles()
         super().save(*args, **kwargs)
 
+#Curso
 class Curso(models.Model):
     nombre = models.CharField(max_length=255)
     descripcion = models.TextField()
     supervisor = models.ForeignKey(User, on_delete=models.CASCADE)
-    participantes = models.ManyToManyField(User, related_name='cursos')
+    participantes = models.ManyToManyField(User, related_name="cursos", blank=True)  # blank=True permite dejarlo vacío
 
     def __str__(self):
         return self.nombre
 
-class Modulo(models.Model):
-    curso = models.ForeignKey(Curso, on_delete=models.CASCADE, related_name="modulos")
-    titulo = models.CharField(max_length=255)
-    descripcion = models.TextField()
-    archivo = models.FileField(upload_to='modulos_archivos/', null=True, blank=True)
+#Progreso de Participantes del curso
+class ProgresoParticipante(models.Model):
+    curso = models.ForeignKey(Curso, on_delete=models.CASCADE, related_name="progresos")
+    participante = models.ForeignKey(User, on_delete=models.CASCADE)
+    progreso = models.PositiveIntegerField(default=0)  # Progreso inicial
 
     def __str__(self):
-        return self.titulo
+        return f"{self.participante.username} - {self.curso.nombre} ({self.progreso}%)"
 
-class Comentario(models.Model):
-    modulo = models.ForeignKey(Modulo, on_delete=models.CASCADE, related_name="comentarios")
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
-    comentario = models.TextField()
-    fecha = models.DateTimeField(default=timezone.now)  # Asegúrate de que timezone.now esté como default
-
-    def __str__(self):
-        return f"Comentario de {self.usuario.username} en {self.modulo.titulo}"
-    
+#Beneficio
 class Beneficio(models.Model):
     titulo = models.CharField(max_length=255)
     descripcion = models.TextField()
@@ -271,7 +262,8 @@ class Beneficio(models.Model):
 
     def __str__(self):
         return self.titulo
-    
+
+#Denuncia
 class Denuncia(models.Model):
     ESTADOS_DENUNCIA = [
         ('pendiente', 'Pendiente'),
@@ -298,7 +290,8 @@ class Denuncia(models.Model):
 
     def __str__(self):
         return f"Denuncia de {self.denunciante} contra {self.denunciado}"
-    
+
+#Notas en Denuncias
 class NotaDenuncia(models.Model):
     denuncia = models.ForeignKey(Denuncia, on_delete=models.CASCADE, related_name='notas')
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -308,16 +301,11 @@ class NotaDenuncia(models.Model):
     def __str__(self):
         return f"Nota de {self.usuario.username} - {self.denuncia.id}"
     
-class HistorialDenuncia(models.Model):
-    denuncia = models.ForeignKey(Denuncia, on_delete=models.CASCADE, related_name='historial')
-    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    accion = models.CharField(max_length=255)  # Ej: "Estado actualizado a resuelta"
-    fecha = models.DateTimeField(auto_now_add=True)
-
 class EvidenciaDenuncia(models.Model):
     denuncia = models.ForeignKey(Denuncia, on_delete=models.CASCADE, related_name='evidencia_set')
     archivo = models.FileField(upload_to='evidencias_denuncias/')
 
+#Novedades
 class Publicacion(models.Model):
     titulo = models.CharField(max_length=255)
     contenido = models.TextField()
@@ -327,7 +315,8 @@ class Publicacion(models.Model):
 
     def __str__(self):
         return self.titulo
-    
+
+#Documentos
 class DocumentoEmpresa(models.Model):
     titulo = models.CharField(max_length=255)
     descripcion = models.TextField(blank=True, null=True)
@@ -338,6 +327,7 @@ class DocumentoEmpresa(models.Model):
     def __str__(self):
         return self.titulo
     
+#Descarga de Documentos
 class DescargaDocumento(models.Model):
     documento = models.ForeignKey(DocumentoEmpresa, on_delete=models.CASCADE)
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

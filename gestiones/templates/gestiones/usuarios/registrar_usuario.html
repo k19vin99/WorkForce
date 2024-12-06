@@ -44,16 +44,17 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-group mb-3">
-                                {{ form.last_name.label_tag }}
-                                {{ form.last_name }}
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group mb-3">
                                 {{ form.segundo_nombre.label_tag }}
                                 {{ form.segundo_nombre }}
                             </div>
                         </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.last_name.label_tag }}
+                                {{ form.last_name }}
+                            </div>
+                        </div>
+                        
                         <div class="col-md-6">
                             <div class="form-group mb-3">
                                 {{ form.segundo_apellido.label_tag }}
@@ -85,12 +86,18 @@
                                 {% endif %}
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-group mb-3">
-                                {{ form.telefono.label_tag }}
-                                {{ form.telefono }}
-                            </div>
+                        <div class="form-group mb-3">
+                            <label for="{{ form.telefono.id_for_label }}" class="form-label">{{ form.telefono.label }}</label>
+                            {{ form.telefono }}
+                            {% if form.telefono.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.telefono.errors %}
+                                        <p>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
                         </div>
+                        
                         <div class="col-md-12">
                             <div class="form-group mb-3">
                                 {{ form.direccion.label_tag }}
@@ -100,10 +107,17 @@
                         <div class="col-md-6">
                             <div class="form-group mb-3">
                                 {{ form.genero.label_tag }}
-                                {{ form.genero }}
+                                <div class="form-check">
+                                    {% for radio in form.genero %}
+                                        <div class="form-check">
+                                            {{ radio.tag }}
+                                            {{ radio.choice_label }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
                                 {% if form.genero.errors %}
                                     <div class="text-danger">
-                                        {{ form.genero.errors }}
+                                        {{ form.genero.errors|striptags }}
                                     </div>
                                 {% endif %}
                             </div>
@@ -133,6 +147,12 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-group mb-3">
+                                {{ form.horario_asignado.label_tag }}
+                                {{ form.horario_asignado }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
                                 {{ form.salud.label_tag }}
                                 {{ form.salud }}
                             </div>
@@ -154,6 +174,8 @@
                                 {{ form.afp }}
                             </div>
                         </div>
+                        
+                        
                         <div class="col-md-6">
                             <div class="form-group mb-3">
                                 {{ form.certificado_afp.label_tag }}
@@ -163,12 +185,6 @@
                                         {{ form.certificado_afp.errors }}
                                     </div>
                                 {% endif %}
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group mb-3">
-                                {{ form.horario_asignado.label_tag }}
-                                {{ form.horario_asignado }}
                             </div>
                         </div>
                     </div>
@@ -206,14 +222,7 @@
                         </div>
                     </div>
                 </div>
-                <!-- Documentos -->
-                <div class="card mb-4 p-4" style="border-radius: 15px; background-color: #f8f9fa;">
-                    <h5 class="mb-3"><i class="fas fa-file"></i> Documentos</h5>
-                    <div class="row">
-                        
-                        
-                    </div>
-                </div>
+                
                 <div class="d-flex justify-content-center mt-4">
                     <button type="submit" class="btn btn-primary px-4 d-flex align-items-center me-2" style="border-radius: 10px;">
                         <i class="fas fa-save me-1"></i> Guardar 
@@ -226,6 +235,7 @@
         </div>
     </div>
 </div>
+<br>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const today = new Date().toISOString().split("T")[0]; // Fecha actual en formato yyyy-MM-dd

@@ -7,18 +7,67 @@
             <h1 class="text-center mb-4">Crear Denuncia</h1>
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-                {{ form.as_p }}
+                <div class="row">
+                    <!-- Campo: Denunciado -->
+                    <div class="col-md-6 mb-4">
+                        <div class="form-group">
+                            <label for="id_denunciado" class="form-label">Quiero denunciar a</label>
+                            {{ form.denunciado }}
+                        </div>
+                    </div>
+                    <!-- Campo: Motivo -->
+                    <div class="col-md-6 mb-4">
+                        <div class="form-group">
+                            <label for="id_motivo" class="form-label">Motivo</label>
+                            {{ form.motivo }}
+                        </div>
+                    </div>
+                    <!-- Campo: Descripción -->
+                    <div class="col-md-12 mb-4">
+                        <div class="form-group">
+                            <label for="id_descripcion" class="form-label">Descripción</label>
+                            {{ form.descripcion }}
+                        </div>
+                    </div>
+                    <!-- Campo: Contacto de Urgencia -->
+                    <div class="form-group">
+                        <label for="id_contacto_urgencia" class="form-label">Contacto para urgencia</label>
+                        {{ form.contacto_urgencia }}
+                        {% if form.contacto_urgencia.errors %}
+                            <div class="text-danger">
+                                {% for error in form.contacto_urgencia.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                </div>
+
+                <!-- Evidencias -->
                 <h2 class="text-center mb-4">Cargar Evidencias</h2>
-                {{ formset.management_form }}
-                {% for evidencia_form in formset %}
-                    {{ evidencia_form.as_p }}
-                {% endfor %}
+                <div class="row">
+                    {{ formset.management_form }}
+                    {% for evidencia_form in formset %}
+                        <div class="col-md-12 mb-4">
+                            <div class="form-group">
+                                {{ evidencia_form.as_p }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Botón Crear Denuncia -->
                 <div class="d-flex justify-content-end">
-                    <button type="submit" class="btn btn-primary"><i class="fas fa-file-alt me-1"></i>Crear Denuncia</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-file-alt me-1"></i> Crear Denuncia</button>
                 </div>
             </form>
+
+            <!-- Botón Volver al Inicio -->
             <div class="d-flex justify-content-center mt-4">
-                <a href="{% url 'home' %}" class="btn btn-secondary px-4" style="border-radius: 10px;"><i class="fas fa-home"></i> Volver al Inicio</a>
+                <a href="{% url 'home' %}" class="btn btn-secondary px-4" style="border-radius: 10px;">
+                    <i class="fas fa-home"></i> Volver al Inicio
+                </a>
             </div>
         </div>
     </div>

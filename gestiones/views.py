@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
-from .forms import CustomUserCreationForm, EditarUsuarioForm, CargaFamiliarForm, SolicitudForm, ContactForm, EditProfilePhotoForm, PasswordChangeForm, CursoForm, ModuloForm, ComentarioForm, EditarParticipantesForm, BeneficioForm, DenunciaForm, EvidenciaFormset, NotaDenunciaForm, PublicacionForm, CustomUserChangeForm, DocumentoEmpresaForm, SolicitudVacacionesForm, CustomPasswordChangeForm
+from .forms import CustomUserCreationForm, EditarUsuarioForm, CargaFamiliarForm, SolicitudForm, ContactForm, EditProfilePhotoForm, PasswordChangeForm, CursoForm, EditarParticipantesForm, BeneficioForm, DenunciaForm, EvidenciaFormset, NotaDenunciaForm, PublicacionForm, CustomUserChangeForm, DocumentoEmpresaForm, SolicitudVacacionesForm, CustomPasswordChangeForm,ActualizarProgresoForm
 import os
 from django.conf import settings
-from .models import CustomUser, CargaFamiliar, Asistencia, Solicitud, Curso, Modulo, Comentario, Beneficio, Area, Denuncia, EvidenciaDenuncia, DocumentoEmpresa, SolicitudVacaciones, DescargaDocumento
+from .models import CustomUser, CargaFamiliar, Asistencia, Solicitud, Curso, Beneficio, Area, Denuncia, EvidenciaDenuncia, DocumentoEmpresa, SolicitudVacaciones, DescargaDocumento, ProgresoParticipante
 from django.http import HttpResponse
 from xhtml2pdf import pisa
 from django.template.loader import get_template
@@ -16,6 +16,8 @@ from django.contrib.auth.models import Group
 from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
 from openpyxl import Workbook
+from django.template.defaultfilters import register
+from django import template
 
 def is_hr_analyst(user):
     return user.area and user.area.nombre == 'Recursos Humanos' and user.cargo == 'Analista de Personas'
@@ -52,30 +54,29 @@ def buscar(request):
     return render(request, 'gestiones/buscar/busqueda.html', context)
 
 @login_required
-@user_passes_test(is_supervisor)
+@user_passes_test(lambda u: u.groups.filter(name='supervisores').exists())  # Solo supervisores pueden acceder
 def registrar_usuario(request):
     if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST, request.FILES)  # Maneja request.FILES aquí
+        form = CustomUserCreationForm(request.POST, request.FILES, user=request.user)
         if form.is_valid():
             new_user = form.save(commit=False)
-            # Asigna otros datos adicionales si es necesario
-            new_user.empresa = request.user.empresa
+            new_user.empresa = request.user.empresa  # Asigna la empresa del usuario que registra
+            new_user.set_password(form.cleaned_data['password1'])  # Asegúrate de configurar la contraseña
             new_user.save()
 
-            # Maneja los grupos
-            grupo = form.cleaned_data['grupo']
-            group = Group.objects.get(name=grupo)
-            new_user.groups.add(group)
+            # Asignar grupo al usuario
+            grupo = form.cleaned_data.get('grupo')
+            if grupo:
+                new_user.groups.add(grupo)
 
             messages.success(request, "Usuario registrado correctamente.")
-            return redirect('lista_colaboradores')
+            return redirect('lista_colaboradores')  # Cambia esta URL según tu proyecto
         else:
-            messages.error(request, "Por favor, corrige los errores en el formulario.")
+            messages.error(request, "Corrige los errores en el formulario.")
     else:
-        form = CustomUserCreationForm()
+        form = CustomUserCreationForm(user=request.user)
 
     return render(request, 'gestiones/usuarios/registrar_usuario.html', {'form': form})
-
 
 from datetime import date
 
@@ -713,64 +714,28 @@ def cambiar_contrasena(request):
 @user_passes_test(lambda u: u.groups.filter(name='supervisores').exists())
 def crear_curso(request):
     if request.method == 'POST':
-        form = CursoForm(request.POST, supervisor=request.user)
+        form = CursoForm(request.POST)
         if form.is_valid():
             curso = form.save(commit=False)
             curso.supervisor = request.user
             curso.save()
-            form.save_m2m()  # Save the M2M relationships
-            return redirect('detalle_curso', curso.id)
+            return redirect('detalle_curso', curso.id)  # Redirigir al detalle del curso
     else:
-        form = CursoForm(supervisor=request.user)
+        form = CursoForm()
     return render(request, 'gestiones/cursos/crear_curso.html', {'form': form})
+
 
 @login_required
 def detalle_curso(request, curso_id):
     curso = get_object_or_404(Curso, id=curso_id)
-    modulos = curso.modulos.all()
-    participantes = curso.participantes.all()
+    progresos = curso.progresos.select_related('participante').all()  # Carga los progresos con los participantes
 
     return render(request, 'gestiones/cursos/detalle_curso.html', {
         'curso': curso,
-        'modulos': modulos,
-        'participantes': participantes,
+        'progresos': progresos,  # Pasa los progresos al contexto
     })
 
-@login_required
-@user_passes_test(lambda u: u.groups.filter(name='supervisores').exists())
-def agregar_modulo(request, curso_id):
-    curso = get_object_or_404(Curso, id=curso_id)
-    if request.method == 'POST':
-        form = ModuloForm(request.POST, request.FILES)
-        if form.is_valid():
-            modulo = form.save(commit=False)
-            modulo.curso = curso
-            modulo.save()
-            return redirect('detalle_curso', curso.id)
-    else:
-        form = ModuloForm()
-    return render(request, 'gestiones/cursos/agregar_modulo.html', {'form': form, 'curso': curso})
 
-@login_required
-def agregar_comentario(request, modulo_id):
-    modulo = get_object_or_404(Modulo, id=modulo_id)
-    if request.method == 'POST':
-        form = ComentarioForm(request.POST)
-        if form.is_valid():
-            comentario = form.save(commit=False)
-            comentario.usuario = request.user
-            comentario.modulo = modulo
-            comentario.save()
-            return redirect('detalle_modulo', modulo.id)
-    else:
-        form = ComentarioForm()
-    return render(request, 'gestiones/modulos/agregar_comentario.html', {'form': form, 'modulo': modulo})
-
-@login_required
-def detalle_modulo(request, modulo_id):
-    modulo = get_object_or_404(Modulo, id=modulo_id)
-    comentarios = modulo.comentarios.all()
-    return render(request, 'gestiones/modulos/detalle_modulo.html', {'modulo': modulo, 'comentarios': comentarios})
 
 @login_required
 def lista_cursos(request):
@@ -783,61 +748,36 @@ def lista_cursos(request):
 
     return render(request, 'gestiones/cursos/lista_cursos.html', {'cursos': cursos})
 
-@login_required
-def detalle_curso_colaborador(request, curso_id):
-    curso = get_object_or_404(Curso, id=curso_id, participantes=request.user)
-    modulos = curso.modulos.all()
 
-    if request.method == 'POST':
-        form = ComentarioForm(request.POST)
-        if form.is_valid():
-            comentario = form.save(commit=False)
-            comentario.usuario = request.user
-            comentario.save()
-            return redirect('detalle_curso_colaborador', curso_id=curso_id)
-    else:
-        form = ComentarioForm()
-
-    return render(request, 'gestiones/cursos/detalle_curso_colaborador.html', {
-        'curso': curso,
-        'modulos': modulos,
-        'form': form
-    })
 
 @login_required
-@user_passes_test(is_supervisor)
-def editar_modulo(request, modulo_id):
-    modulo = get_object_or_404(Modulo, id=modulo_id)
-    if request.method == 'POST':
-        form = ModuloForm(request.POST, request.FILES, instance=modulo)
-        if form.is_valid():
-            form.save()
-            return redirect('detalle_curso', curso_id=modulo.curso.id)
-    else:
-        form = ModuloForm(instance=modulo)
-    return render(request, 'gestiones/cursos/editar_modulo.html', {'form': form, 'modulo': modulo})
-
-@login_required
-def lista_cursos_colaborador(request):
-    cursos = request.user.cursos.all()  # Obtiene los cursos donde el usuario es participante
-    return render(request, 'gestiones/cursos/lista_cursos_colaborador.html', {'cursos': cursos})
-
-@login_required
-@user_passes_test(is_supervisor)
-def eliminar_modulo(request, modulo_id):
-    modulo = get_object_or_404(Modulo, id=modulo_id)
-    curso_id = modulo.curso.id
-    modulo.delete()
-    return redirect('detalle_curso', curso_id=curso_id)
-
-@login_required
+@user_passes_test(lambda u: u.groups.filter(name='supervisores').exists())
 def editar_participantes(request, curso_id):
-    curso = get_object_or_404(Curso, id=curso_id)
+    curso = get_object_or_404(Curso, id=curso_id, supervisor=request.user)
 
     if request.method == 'POST':
         form = EditarParticipantesForm(request.POST, instance=curso)
         if form.is_valid():
+            # Obtener participantes actuales antes de guardar
+            participantes_anteriores = set(curso.participantes.all())
+
+            # Guardar nuevos participantes
             form.save()
+
+            # Obtener participantes actuales después de guardar
+            participantes_actuales = set(curso.participantes.all())
+
+            # Detectar participantes nuevos
+            participantes_nuevos = participantes_actuales - participantes_anteriores
+
+            # Crear progreso para los nuevos participantes
+            for nuevo_participante in participantes_nuevos:
+                ProgresoParticipante.objects.create(curso=curso, participante=nuevo_participante, progreso=0)
+
+            # Eliminar progresos de los participantes eliminados
+            participantes_eliminados = participantes_anteriores - participantes_actuales
+            ProgresoParticipante.objects.filter(curso=curso, participante__in=participantes_eliminados).delete()
+
             return redirect('detalle_curso', curso_id=curso.id)
     else:
         form = EditarParticipantesForm(instance=curso)
@@ -846,6 +786,39 @@ def editar_participantes(request, curso_id):
         'curso': curso,
         'form': form,
     })
+
+@login_required
+@user_passes_test(lambda u: u.groups.filter(name='supervisores').exists())
+def eliminar_curso(request, curso_id):
+    curso = get_object_or_404(Curso, id=curso_id, supervisor=request.user)
+
+    if request.method == 'POST':
+        curso.delete()
+        messages.success(request, 'El curso ha sido eliminado correctamente.')
+        return redirect('lista_cursos')  # Redirigir a la lista de cursos
+
+    return render(request, 'gestiones/cursos/eliminar_curso.html', {'curso': curso})
+
+@login_required
+@user_passes_test(lambda u: u.groups.filter(name='supervisores').exists())
+def actualizar_progreso(request, curso_id):
+    curso = get_object_or_404(Curso, id=curso_id, supervisor=request.user)
+    progresos = curso.progresos.select_related('participante').all()
+
+    if request.method == 'POST':
+        for progreso in progresos:
+            nuevo_progreso = request.POST.get(f'progreso_{progreso.id}', None)
+            if nuevo_progreso is not None:
+                progreso.progreso = int(nuevo_progreso)
+                progreso.save()
+        return redirect('detalle_curso', curso_id=curso.id)
+
+    return render(request, 'gestiones/cursos/actualizar_progreso.html', {
+        'curso': curso,
+        'progresos': progresos,
+    })
+
+
 
 #Vistas Beneficios
 def lista_beneficios(request):
@@ -1040,3 +1013,17 @@ def ver_descargas_documento(request, documento_id):
     documento = get_object_or_404(DocumentoEmpresa, id=documento_id)
     descargas = DescargaDocumento.objects.filter(documento=documento)
     return render(request, 'gestiones/documentos/ver_descargas.html', {'documento': documento, 'descargas': descargas})
+
+@login_required
+@user_passes_test(lambda u: u.groups.filter(name='supervisores').exists() and u.area.nombre == "Recursos Humanos")
+def eliminar_documento_empresa(request, documento_id):
+    documento = get_object_or_404(DocumentoEmpresa, id=documento_id)
+
+    if request.method == 'POST':
+        # Elimina el documento si se confirma
+        documento.delete()
+        messages.success(request, "El documento ha sido eliminado correctamente.")
+        return redirect('lista_documentos_empresa')
+
+    # Redirige a la página de confirmación
+    return render(request, 'gestiones/documentos/eliminar_documento_confirmacion.html', {'documento': documento})

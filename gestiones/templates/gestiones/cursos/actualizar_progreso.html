@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block content %}
+{% load custom_filters %}
+
+<div class="container">
+    <h1 class="text-center my-4">Actualizar Progreso: {{ curso.nombre }}</h1>
+    <p class="text-muted">{{ curso.descripcion }}</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="row">
+            {% for progreso in progresos %}
+            <div class="col-md-6 mb-4">
+                <div class="card p-3">
+                    <h5 class="card-title">{{ progreso.participante.username }}</h5>
+                    <div class="form-group">
+                        <label for="progreso_{{ progreso.id }}">Progreso (%)</label>
+                        <!-- Barra deslizante -->
+                        <input
+                            type="range"
+                            id="progreso_{{ progreso.id }}"
+                            name="progreso_{{ progreso.id }}"
+                            class="form-range"
+                            value="{{ progreso.progreso }}"
+                            min="0"
+                            max="100"
+                            step="5"
+                            oninput="actualizarBarra(this, 'barra_{{ progreso.id }}', 'label_{{ progreso.id }}')">
+
+                        <!-- Barra visual -->
+                        <div class="progress mt-2" style="height: 20px;">
+                            <div id="barra_{{ progreso.id }}" class="progress-bar" role="progressbar"
+                                style="width: {{ progreso.progreso }}%; background-color: {{ progreso.progreso|get_bar_color }};"
+                                aria-valuenow="{{ progreso.progreso }}" aria-valuemin="0" aria-valuemax="100">
+                                {{ progreso.progreso }}%
+                            </div>
+                        </div>
+                        <!-- Etiqueta del porcentaje -->
+                        <p class="text-center mt-2" id="label_{{ progreso.id }}">{{ progreso.progreso }}%</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <!-- Botón para guardar cambios -->
+        <div class="d-flex justify-content-center mt-4">
+            <button type="submit" class="btn btn-primary btn-lg">Guardar Cambios</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Actualización de barra y color dinámico
+    function actualizarBarra(slider, barraId, labelId) {
+        const value = slider.value;
+        const barra = document.getElementById(barraId);
+        const label = document.getElementById(labelId);
+
+        barra.style.width = value + "%";
+        barra.innerHTML = value + "%";
+        label.innerHTML = value + "%";
+
+        if (value < 25) {
+            barra.style.backgroundColor = "#dc3545";
+        } else if (value < 50) {
+            barra.style.backgroundColor = "#ffc107";
+        } else if (value < 75) {
+            barra.style.backgroundColor = "#0d6efd";
+        } else {
+            barra.style.backgroundColor = "#28a745";
+        }
+    }
+</script>
+
+{% endblock %}
