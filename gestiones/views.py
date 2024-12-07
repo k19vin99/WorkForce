@@ -26,6 +26,47 @@ def is_hr_analyst(user):
 def is_supervisor(user):
     return user.groups.filter(name='supervisores').exists()
 
+@login_required
+def estadisticas_rrhh(request):
+    # Cantidad de usuarios excluyendo los que comienzan con "admin"
+    cantidad_usuarios = CustomUser.objects.exclude(username__startswith='admin').count()
+
+    # Cantidad de solicitudes por tipo y estado
+    solicitudes_por_tipo_estado = (
+        Solicitud.objects.values('tipo', 'estado')
+        .annotate(cantidad=Count('id'))
+        .order_by('tipo', 'estado')
+    )
+
+    # Cantidad de solicitudes de vacaciones por estado
+    solicitudes_vacaciones_por_estado = (
+        SolicitudVacaciones.objects.values('estado')
+        .annotate(cantidad=Count('id'))
+    )
+
+    # Cantidad de denuncias por estado
+    denuncias_por_estado = (
+        Denuncia.objects.values('estado')
+        .annotate(cantidad=Count('id'))
+    )
+
+    # Cantidad de cursos
+    cantidad_cursos = Curso.objects.count()
+
+    # Total de denuncias
+    cantidad_denuncias = Denuncia.objects.count()
+
+    context = {
+        'cantidad_usuarios': cantidad_usuarios,
+        'solicitudes_por_tipo_estado': solicitudes_por_tipo_estado,
+        'solicitudes_vacaciones_por_estado': solicitudes_vacaciones_por_estado,
+        'denuncias_por_estado': denuncias_por_estado,
+        'cantidad_cursos': cantidad_cursos,
+        'cantidad_denuncias': cantidad_denuncias,
+    }
+
+    return render(request, 'home.html', context)
+
 #Vista para buscar
 @login_required
 def buscar(request):

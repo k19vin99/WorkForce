@@ -2,6 +2,7 @@
 {% load custom_tags %}
 {% load static %}
 {% block content %}
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -49,95 +50,85 @@
         <br>
         <!-- Bloque Estadisticas -->
         {% if user|is_supervisor %}
-        <h1 style="text-align: center">Estadísticas RRHH</h1>
-        <div class="container mt-5">
-            <div class="row justify-content-center">
-                <div class="col-md-2 d-flex justify-content-center">
-                    <div class="card shadow-sm mb-4 card-usuarios" style="width: 100%;">
-                        <div class="card-body text-center">
-                            <h6 class="card-title">A día de hoy somos:</h6>
-                            <p class="card-text h3">{{ cantidad_usuarios }}</p>
-                            <h6 class="card-title">Usuarios</h6>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-2 d-flex justify-content-center">
-                    <div class="card shadow-sm mb-4 card-cargas" style="width: 100%;">
-                        <div class="card-body text-center">
-                            <h6 class="card-title">Cargas Familiares</h6>
-                            <p class="card-text h3">{{ cantidad_cargas_familiares }}</p>
-                        </div>
-                    </div>
-                </div>
+        <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+            <div class="col-lg-10 col-md-12">
+                <div class="card p-5" style="border-radius: 20px; background-color: #ffffff; box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);">
+                    <h1 class="text-center mb-4">Estadísticas Generales</h1>
 
-            </div>            
-        </div>
-        <h1 style="text-align: center">Estadísticas Solicitudes</h1>
-        <div class="container mt-5">
-            <div class="row justify-content-center">
-                
-                <div class="col-md-2 d-flex justify-content-center">
-                    <div class="card shadow-sm mb-4 card-solicitudes-creadas" style="width: 100%;">
-                        <div class="card-body text-center">
-                            <h6 class="card-title">Solicitudes Creadas</h6>
-                            <p class="card-text h3">{{ cantidad_solicitudes }}</p>
+                    <!-- Usuarios por Área -->
+                    <h2 class="mb-4">Usuarios por Área</h2>
+                    <div class="row">
+                        {% for area, cantidad in usuarios_por_area.items %}
+                        <div class="col-md-4">
+                            <div class="card shadow-sm mb-3" style="background-color: #81ecec; color: #130f40;">
+                                <div class="card-body text-center">
+                                    <h5>{{ area }}</h5>
+                                    <h2>{{ cantidad }}</h2>
+                                    <p>Usuarios</p>
+                                </div>
+                            </div>
                         </div>
+                        {% endfor %}
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+                            <div class="card shadow-sm" style="background-color: #74b9ff; color: #fff;">
+                                <div class="card-body text-center">
+                                    <h5>Total de Usuarios</h5>
+                                    <h2>{{ total_usuarios }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sección de Solicitudes -->
+                    <h2 class="mt-5 mb-4">Solicitudes</h2>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card shadow-sm mb-3" style="background-color: #f9ca24; color: #000;">
+                                <div class="card-body text-center">
+                                    <h5>Pendientes</h5>
+                                    <h2>{{ total_pendientes }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card shadow-sm mb-3" style="background-color: #6ab04c; color: #fff;">
+                                <div class="card-body text-center">
+                                    <h5>Aprobadas</h5>
+                                    <h2>{{ total_aprobadas }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card shadow-sm mb-3" style="background-color: #eb4d4b; color: #fff;">
+                                <div class="card-body text-center">
+                                    <h5>Rechazadas</h5>
+                                    <h2>{{ total_rechazadas }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detalles de tipos de solicitudes -->
+                    <h3 class="mt-4">Detalles por Tipo</h3>
+                    <div class="row">
+                        {% for solicitud in solicitudes_por_tipo %}
+                        <div class="col-md-4">
+                            <div class="card shadow-sm mb-3" style="background-color: #dff9fb; color: #130f40;">
+                                <div class="card-body text-center">
+                                    <h5>{{ solicitud.tipo|title }}</h5>
+                                    <p>Total: <b>{{ solicitud.total }}</b></p>
+                                    <p>Pendientes: <b>{{ solicitud.pendientes }}</b></p>
+                                    <p>Aprobadas: <b>{{ solicitud.aprobadas }}</b></p>
+                                    <p>Rechazadas: <b>{{ solicitud.rechazadas }}</b></p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
                     </div>
                 </div>
-                <div class="col-md-2 d-flex justify-content-center">
-                    <div class="card shadow-sm mb-4 card-solicitudes-pendientes" style="width: 100%;">
-                        <div class="card-body text-center">
-                            <h6 class="card-title">Solicitudes Pendientes</h6>
-                            <p class="card-text h3">{{ solicitudes_pendientes }}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-2 d-flex justify-content-center">
-                    <div class="card shadow-sm mb-4 card-solicitudes-aprobadas" style="width: 100%;">
-                        <div class="card-body text-center">
-                            <h6 class="card-title">Solicitudes Aprobadas</h6>
-                            <p class="card-text h3">{{ solicitudes_aprobadas }}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-2 d-flex justify-content-center">
-                    <div class="card shadow-sm mb-4 card-solicitudes-rechazadas" style="width: 100%;">
-                        <div class="card-body text-center">
-                            <h6 class="card-title">Solicitudes Rechazadas</h6>
-                            <p class="card-text h3">{{ solicitudes_rechazadas }}</p>
-                        </div>
-                    </div>
-                </div>                
             </div>
-        </div>
-        <h1 style="text-align: center">Estadísticas Denuncias</h1>
-        <div class="container mt-5">
-            <div class="row justify-content-center">
-                <div class="col-md-2 d-flex justify-content-center">
-                    <div class="card shadow-sm mb-4 card-denuncias-pendientes" style="width: 100%;">
-                        <div class="card-body text-center">
-                            <h6 class="card-title">Denuncias Pendientes</h6>
-                            <p class="card-text h3">{{ denuncias_pendientes }}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-2 d-flex justify-content-center">
-                    <div class="card shadow-sm mb-4 card-denuncias-revision" style="width: 100%;">
-                        <div class="card-body text-center">
-                            <h6 class="card-title">Denuncias en Revisión</h6>
-                            <p class="card-text h3">{{ denuncias_revision }}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-2 d-flex justify-content-center">
-                    <div class="card shadow-sm mb-4 card-denuncias-resueltas" style="width: 100%;">
-                        <div class="card-body text-center">
-                            <h6 class="card-title">Denuncias Resueltas</h6>
-                            <p class="card-text h3">{{ denuncias_resueltas }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>            
         </div>
         {% endif %}
         <!-- Fin Bloque Estadisticas-->
