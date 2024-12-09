@@ -5,25 +5,77 @@
 <div class="container mt-5">
     <h1>Resultados de la búsqueda para "{{ request.GET.q }}"</h1>
     
-    <h2>Solicitudes</h2>
-    <ul>
-        {% for solicitud in resultados_solicitudes %}
-        <li><a href="{% url 'gestionar_solicitud' solicitud.id %}">{{ solicitud.tipo }} - {{ solicitud.estado }}</a></li>
-        {% empty %}
-        <li>No se encontraron solicitudes.</li>
-        {% endfor %}
-    </ul>
+    <div class="container mt-5">
+        
+        <h2>Solicitudes</h2>
+        <ul>
+            {% for solicitud in resultados_solicitudes %}
+            <li><a href="{% url 'gestionar_solicitud' solicitud.id %}">{{ solicitud.tipo }} - {{ solicitud.estado }}</a></li>
+            {% empty %}
+            <li>No se encontraron solicitudes.</li>
+            {% endfor %}
+        </ul>
+        
+        <h2>Cursos</h2>
+        <ul>
+            {% for curso in resultados_cursos %}
+            <li><a href="{% url 'detalle_curso' curso.id %}">{{ curso.nombre }}</a></li>
+            {% empty %}
+            <li>No se encontraron cursos.</li>
+            {% endfor %}
+        </ul>
     
-    <h2>Cursos</h2>
-    <ul>
-        {% for curso in resultados_cursos %}
-        <li><a href="{% url 'detalle_curso' curso.id %}">{{ curso.nombre }}</a></li>
-        {% empty %}
-        <li>No se encontraron cursos.</li>
-        {% endfor %}
-    </ul>
+        {% if resultados_usuarios %}
+        <h2>Usuarios</h2>
+        <ul>
+            {% for usuario in resultados_usuarios %}
+            <li>{{ usuario.nombre_completo }}</li>
+            {% empty %}
+            <li>No se encontraron usuarios.</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        
+        <h2>Solicitudes de Vacaciones</h2>
+        <ul>
+            {% for vacaciones in resultados_vacaciones %}
+            <li>{{ vacaciones.colaborador.username }} - {{ vacaciones.estado }}</li>
+            {% empty %}
+            <li>No se encontraron solicitudes de vacaciones.</li>
+            {% endfor %}
+        </ul>
+        
+        <h2>Beneficios</h2>
+        <ul>
+            {% for beneficio in resultados_beneficios %}
+            <li>{{ beneficio.titulo }}</li>
+            {% empty %}
+            <li>No se encontraron beneficios.</li>
+            {% endfor %}
+        </ul>
+        
+        {% if resultados_denuncias %}
+        <h2>Denuncias</h2>
+        <ul>
+            {% for denuncia in resultados_denuncias %}
+            <li>{{ denuncia.motivo }} - {{ denuncia.estado }}</li>
+            {% empty %}
+            <li>No se encontraron denuncias.</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        
+        <h2>Documentos</h2>
+        <ul>
+            {% for documento in resultados_documentos %}
+            <li>{{ documento.titulo }}</li>
+            {% empty %}
+            <li>No se encontraron documentos.</li>
+            {% endfor %}
+        </ul>
+        
+        <a href="{% url 'home' %}" class="btn btn-secondary mt-3">Home</a>
+    </div>
     
-    
-    <a href="{% url 'home' %}" class="btn btn-secondary mt-3">Home</a>
 </div>
 {% endblock %}

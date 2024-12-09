@@ -71,29 +71,75 @@ def estadisticas_rrhh(request):
 @login_required
 def buscar(request):
     query = request.GET.get('q')
-    
-    # Buscar en Solicitudes
-    resultados_solicitudes = Solicitud.objects.filter(
-        Q(tipo__icontains=query) | 
-        Q(descripcion__icontains=query) | 
-        Q(estado__icontains=query),
-        colaborador__empresa=request.user.empresa
-    )
-    
-    # Buscar en Cursos
-    resultados_cursos = Curso.objects.filter(
-        Q(nombre__icontains=query) |
-        Q(descripcion__icontains=query),
-        participantes__empresa=request.user.empresa
-    ).distinct()
-    
+
+    # Iniciar el contexto con los resultados vacíos
     context = {
-        'resultados_solicitudes': resultados_solicitudes,
-        'resultados_cursos': resultados_cursos,
+        'resultados_solicitudes': [],
+        'resultados_cursos': [],
+        'resultados_usuarios': [],
+        'resultados_vacaciones': [],
+        'resultados_beneficios': [],
+        'resultados_denuncias': [],
+        'resultados_documentos': [],
     }
 
-    return render(request, 'gestiones/buscar/busqueda.html', context)
+    if not query:
+        return render(request, 'gestiones/buscar/busqueda.html', context)
 
+    if request.user.groups.filter(name='supervisores').exists():
+        # Supervisores
+        context['resultados_solicitudes'] = Solicitud.objects.filter(
+            Q(tipo__icontains=query) | Q(descripcion__icontains=query) | Q(estado__icontains=query),
+            colaborador__empresa=request.user.empresa
+        )
+        context['resultados_cursos'] = Curso.objects.filter(
+            Q(nombre__icontains=query) | Q(descripcion__icontains=query),
+            supervisor__empresa=request.user.empresa
+        ).distinct()
+        context['resultados_usuarios'] = CustomUser.objects.filter(
+            Q(username__icontains=query) | Q(first_name__icontains=query) | Q(last_name__icontains=query),
+            empresa=request.user.empresa
+        )
+        context['resultados_vacaciones'] = SolicitudVacaciones.objects.filter(
+            Q(motivo__icontains=query) | Q(estado__icontains=query),
+            colaborador__empresa=request.user.empresa
+        )
+        context['resultados_beneficios'] = Beneficio.objects.filter(
+            Q(titulo__icontains=query) | Q(descripcion__icontains=query),
+            creado_por__empresa=request.user.empresa
+        )
+        context['resultados_denuncias'] = Denuncia.objects.filter(
+            Q(motivo__icontains=query) | Q(descripcion__icontains=query),
+            denunciante__empresa=request.user.empresa
+        )
+        context['resultados_documentos'] = DocumentoEmpresa.objects.filter(
+            Q(titulo__icontains=query) | Q(descripcion__icontains=query),
+            creado_por__empresa=request.user.empresa
+        )
+    else:
+        # Colaboradores
+        context['resultados_solicitudes'] = Solicitud.objects.filter(
+            Q(tipo__icontains=query) | Q(descripcion__icontains=query) | Q(estado__icontains=query),
+            colaborador=request.user
+        )
+        context['resultados_cursos'] = Curso.objects.filter(
+            Q(nombre__icontains=query) | Q(descripcion__icontains=query),
+            participantes=request.user
+        ).distinct()
+        context['resultados_vacaciones'] = SolicitudVacaciones.objects.filter(
+            Q(motivo__icontains=query) | Q(estado__icontains=query),
+            colaborador=request.user
+        )
+        context['resultados_beneficios'] = Beneficio.objects.filter(
+            Q(titulo__icontains=query) | Q(descripcion__icontains=query),
+            creado_por__empresa=request.user.empresa
+        )
+        context['resultados_documentos'] = DocumentoEmpresa.objects.filter(
+            Q(titulo__icontains=query) | Q(descripcion__icontains=query),
+            creado_por__empresa=request.user.empresa
+        )
+
+    return render(request, 'gestiones/buscar/busqueda.html', context)
 @login_required
 @user_passes_test(lambda u: u.groups.filter(name='supervisores').exists())  # Solo supervisores pueden acceder
 def registrar_usuario(request):
