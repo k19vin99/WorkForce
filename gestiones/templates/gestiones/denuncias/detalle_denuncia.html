@@ -57,36 +57,11 @@
             </form>
             <br>
             <br>
-            {% if es_analista_rrhh %}
-            <h3>Gestionar Denuncia</h3>
-            <form method="post" style="text-align: center;">
-                {% csrf_token %}
-                <button type="submit" name="revision" class="btn btn-warning">En Revisión</button>
-                <button type="submit" name="resuelta" class="btn btn-success">Resuelta</button>
-                <button type="submit" name="rechazar" class="btn btn-danger">Rechazar</button>
-            </form>
-            {% endif %}
+        </div>
+        <div class="d-flex justify-content-center mt-4">
+            <a href="{% url 'home' %}" class="btn btn-secondary px-4" style="border-radius: 10px;"><i class="fas fa-home"></i> Volver al Inicio</a>
         </div>
     </div>
+    
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<a href="{% url 'lista_denuncias' %}">Volver a la lista de denuncias</a>
-
 {% endblock %}

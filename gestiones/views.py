@@ -234,8 +234,13 @@ def ficha_usuario_pdf(request, pk):
 @login_required
 @user_passes_test(is_supervisor)
 def lista_colaboradores(request):
-    colaboradores = CustomUser.objects.filter(empresa=request.user.empresa).order_by('date_joined')  # Orden ascendente por fecha de registro
+    # Excluir usuarios cuyo username comienza con "admin"
+    colaboradores = CustomUser.objects.filter(
+        empresa=request.user.empresa
+    ).exclude(username__startswith='admin').order_by('date_joined')  # Orden ascendente por fecha de registro
+    
     return render(request, 'gestiones/usuarios/lista_colaboradores.html', {'colaboradores': colaboradores})
+
 
 
 @login_required

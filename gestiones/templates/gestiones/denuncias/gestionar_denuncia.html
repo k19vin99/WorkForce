@@ -1,29 +1,34 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Gestionar Denuncia</h2>
+<div class="container mt-5">
+    <div class="card p-4 shadow" style="border-radius: 15px;">
+        <h2>Gestionar Denuncia</h2>
 
-<div>
-    <p><strong>Denunciante:</strong> {{ denuncia.denunciante.username }}</p>
-    <p><strong>Denunciado:</strong> {{ denuncia.denunciado.username }}</p>
-    <p><strong>Motivo:</strong> {{ denuncia.motivo }}</p>
-    <p><strong>Descripción:</strong> {{ denuncia.descripcion }}</p>
-    <p><strong>Estado Actual:</strong> {{ denuncia.estado }}</p>
+        <div>
+            <p><strong>Denunciante:</strong> {{ denuncia.denunciante.username }}</p>
+            <p><strong>Denunciado:</strong> {{ denuncia.denunciado.username }}</p>
+            <p><strong>Motivo:</strong> {{ denuncia.motivo }}</p>
+            <p><strong>Descripción:</strong> {{ denuncia.descripcion }}</p>
+            <p><strong>Estado Actual:</strong> {{ denuncia.estado }}</p>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" name="revision" class="btn btn-warning">En Revisión</button>
+            <button type="submit" name="resuelta" class="btn btn-success">Resuelta</button>
+            <button type="submit" name="rechazar" class="btn btn-danger">Rechazar</button>
+        </form>
+
+        <div class="d-flex justify-content-center mt-4">
+            <a href="{% url 'lista_denuncias' %}" class="btn btn-light"><i class="fas fa-list"></i>Volver a la lista</a>
+        </div>
+
+
+        <div class="d-flex justify-content-center mt-4">
+            <a href="{% url 'home' %}" class="btn btn-secondary px-4" style="border-radius: 10px;"><i class="fas fa-home"></i> Volver al Inicio</a>
+        </div>
+    </div>
 </div>
 
-<form method="post">
-    {% csrf_token %}
-    <button type="submit" name="revision" class="btn btn-warning">En Revisión</button>
-    <button type="submit" name="resuelta" class="btn btn-success">Resuelta</button>
-    <button type="submit" name="rechazar" class="btn btn-danger">Rechazar</button>
-</form>
-
-<div class="d-flex justify-content-center mt-4">
-    <a href="{% url 'lista_denuncias' %}" class="btn btn-light"><i class="fas fa-list"></i>Volver a la lista</a>
-</div>
-
-
-<div class="d-flex justify-content-center mt-4">
-    <a href="{% url 'home' %}" class="btn btn-secondary px-4" style="border-radius: 10px;"><i class="fas fa-home"></i> Volver al Inicio</a>
-</div>
 {% endblock %}

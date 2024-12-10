@@ -2,12 +2,12 @@
 {% load static %}
 {% block title %}Editar Colaborador{% endblock %}
 {% block content %}
+{% load custom_filters %}
+
 <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
     <div class="col-lg-10 col-md-12">
         <div class="card p-5" style="border-radius: 20px; background-color: #ffffff; box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);">
-            <h2 class="text-center mb-4">Editar Colaborador</h2>
-            
-            <!-- Mostrar mensajes de éxito o error -->
+            <h1 class="text-center mb-4">Editar Colaborador</h1>
             {% if messages %}
                 <div class="container mb-3">
                     {% for message in messages %}
@@ -18,11 +18,10 @@
                     {% endfor %}
                 </div>
             {% endif %}
-
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-
-                <!-- Personal Information Section -->
+                
+                <!-- Información Personal -->
                 <div class="card mb-4 p-4" style="border-radius: 15px; background-color: #f8f9fa;">
                     <h5 class="mb-3"><i class="fas fa-user"></i> Información Personal</h5>
                     <div class="row">
@@ -33,40 +32,36 @@
                                 {{ form.username.errors }}
                             </div>
                         </div>
-                        <div class="col-md-6">
+                       <div class="col-md-6">
                             <div class="form-group mb-3">
                                 {{ form.rut.label_tag }}
                                 {{ form.rut }}
                                 {{ form.rut.errors }}
+
                             </div>
                         </div>
-                        
                         <div class="col-md-6">
                             <div class="form-group mb-3">
                                 {{ form.first_name.label_tag }}
                                 {{ form.first_name }}
-                                {{ form.first_name.errors }}
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group mb-3">
                                 {{ form.segundo_nombre.label_tag }}
                                 {{ form.segundo_nombre }}
-                                {{ form.segundo_nombre.errors }}
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group mb-3">
                                 {{ form.last_name.label_tag }}
                                 {{ form.last_name }}
-                                {{ form.last_name.errors }}
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group mb-3">
                                 {{ form.segundo_apellido.label_tag }}
                                 {{ form.segundo_apellido }}
-                                {{ form.segundo_apellido.errors }}
                             </div>
                         </div>
                         <div class="col-md-12">
@@ -101,13 +96,12 @@
                             <div class="form-group mb-3">
                                 {{ form.direccion.label_tag }}
                                 {{ form.direccion }}
-                                {{ form.direccion.errors }}
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Job Information Section -->
+                <!-- Información del Trabajo -->
                 <div class="card mb-4 p-4" style="border-radius: 15px; background-color: #f8f9fa;">
                     <h5 class="mb-3"><i class="fas fa-briefcase"></i> Información del Trabajo</h5>
                     <div class="row">
@@ -115,46 +109,45 @@
                             <div class="form-group mb-3">
                                 {{ form.cargo.label_tag }}
                                 {{ form.cargo }}
-                                {{ form.cargo.errors }}
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group mb-3">
                                 {{ form.fecha_contratacion.label_tag }}
                                 {{ form.fecha_contratacion }}
-                                {{ form.fecha_contratacion.errors }}
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-group mb-3">
-                                {{ form.grupo.label_tag }}
-                                {{ form.grupo }}
-                                {{ form.grupo.errors }}
-                            </div>
+                        <div class="form-group mb-3">
+                            <label class="form-label">{{ form.grupo.label }}</label>
+                            {% for checkbox in form.grupo %}
+                                <div class="form-check">
+                                    {{ checkbox.tag }} 
+                                    <label class="form-check-label">{{ checkbox.choice_label }}</label>
+                                </div>
+                            {% endfor %}
                         </div>
                         <div class="col-md-6">
                             <div class="form-group mb-3">
                                 {{ form.salud.label_tag }}
                                 {{ form.salud }}
-                                {{ form.salud.errors }}
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group mb-3">
                                 {{ form.afp.label_tag }}
                                 {{ form.afp }}
-                                {{ form.afp.errors }}
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group mb-3">
                                 {{ form.horario_asignado.label_tag }}
                                 {{ form.horario_asignado }}
-                                {{ form.horario_asignado.errors }}
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Documentos -->
                 <div class="card mb-4 p-4" style="border-radius: 15px; background-color: #f8f9fa;">
                     <h5 class="mb-3"><i class="fas fa-file"></i> Documentos</h5>
                     <div class="row">
@@ -162,11 +155,6 @@
                             <div class="form-group mb-3">
                                 {{ form.certificado_afp.label_tag }}
                                 {{ form.certificado_afp }}
-                                {% if form.certificado_afp.errors %}
-                                    <div class="text-danger">
-                                        {{ form.certificado_afp.errors }}
-                                    </div>
-                                {% endif %}
                                 {% if colaborador.certificado_afp %}
                                     <a href="{{ colaborador.certificado_afp.url }}" download class="btn btn-link">Descargar Certificado AFP</a>
                                 {% endif %}
@@ -176,11 +164,6 @@
                             <div class="form-group mb-3">
                                 {{ form.certificado_salud.label_tag }}
                                 {{ form.certificado_salud }}
-                                {% if form.certificado_salud.errors %}
-                                    <div class="text-danger">
-                                        {{ form.certificado_salud.errors }}
-                                    </div>
-                                {% endif %}
                                 {% if colaborador.certificado_salud %}
                                     <a href="{{ colaborador.certificado_salud.url }}" download class="btn btn-link">Descargar Certificado Salud</a>
                                 {% endif %}
@@ -188,12 +171,15 @@
                         </div>
                     </div>
                 </div>
-                
 
-                <!-- Buttons -->
-                <div class="d-flex justify-content-end">
-                    <button type="submit" class="btn btn-primary me-3"><i class="fas fa-save"></i> Guardar Cambios</button>
-                    <a href="{% url 'lista_colaboradores' %}" class="btn btn-outline-dark"><i class="fas fa-times"></i> Cancelar</a>
+                <!-- Botones -->
+                <div class="d-flex justify-content-center mt-4">
+                    <button type="submit" class="btn btn-primary px-4 d-flex align-items-center me-2" style="border-radius: 10px;">
+                        <i class="fas fa-save me-1"></i> Guardar Cambios
+                    </button>
+                    <a href="{% url 'lista_colaboradores' %}" class="btn btn-secondary px-4" style="border-radius: 10px;">
+                        <i class="fas fa-times"></i> Cancelar
+                    </a>
                 </div>
             </form>
         </div>

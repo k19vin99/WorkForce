@@ -201,31 +201,47 @@ class CustomUserCreationForm(UserCreationForm):
 
 class CustomUserChangeForm(forms.ModelForm):
     grupo = forms.ModelMultipleChoiceField(
-        queryset=Group.objects.all(),
-        required=False,
-        label="Grupo",
-        widget=forms.CheckboxSelectMultiple()
-    )
+    queryset=Group.objects.all(),
+    required=False,
+    label="Grupo",
+    widget=forms.CheckboxSelectMultiple(attrs={
+        'class': 'form-check-input'
+    }))
     certificado_afp = forms.FileField(
         required=False,
         label="Certificado AFP",
-        widget=forms.ClearableFileInput(attrs={'accept': '.pdf'}),
+        widget=forms.ClearableFileInput(attrs={
+            'accept': '.pdf',
+            'class': 'form-control'
+        }),
     )
     certificado_salud = forms.FileField(
         required=False,
         label="Certificado Salud",
-        widget=forms.ClearableFileInput(attrs={'accept': '.pdf'}),
+        widget=forms.ClearableFileInput(attrs={
+            'accept': '.pdf',
+            'class': 'form-control'
+        }),
     )
-
-
-    area = forms.ModelChoiceField(queryset=Area.objects.all(), required=True, label="Área")
+    area = forms.ModelChoiceField(
+        queryset=Area.objects.all(),
+        required=True,
+        label="Área",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
     fecha_nacimiento = forms.DateField(
-        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}, format='%Y-%m-%d'),
+        widget=forms.DateInput(attrs={
+            'type': 'date',
+            'class': 'form-control'
+        }),
         required=False,
         label="Fecha de Nacimiento"
     )
     fecha_contratacion = forms.DateField(
-        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}, format='%Y-%m-%d'),
+        widget=forms.DateInput(attrs={
+            'type': 'date',
+            'class': 'form-control'
+        }),
         required=False,
         label="Fecha de Contratación"
     )
@@ -238,11 +254,107 @@ class CustomUserChangeForm(forms.ModelForm):
             'class': 'form-control'
         })
     )
+    username = forms.CharField(
+        max_length=150,
+        required=True,
+        label="Nombre de Usuario",
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    first_name = forms.CharField(
+        max_length=30,
+        required=True,
+        label="Primer Nombre",
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    segundo_nombre = forms.CharField(
+        max_length=30,
+        required=False,
+        label="Segundo Nombre",
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    last_name = forms.CharField(
+        max_length=30,
+        required=True,
+        label="Primer Apellido",
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    segundo_apellido = forms.CharField(
+        max_length=30,
+        required=False,
+        label="Segundo Apellido",
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    email = forms.EmailField(
+        required=True,
+        label="Correo Electrónico",
+        widget=forms.EmailInput(attrs={'class': 'form-control'})
+    )
+    telefono = forms.CharField(
+        max_length=9,
+        required=True,
+        label="Número de Teléfono",
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Ej: 912345678'
+        })
+    )
+    direccion = forms.CharField(
+        max_length=255,
+        required=True,
+        label="Dirección",
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    cargo = forms.CharField(
+        max_length=255,
+        required=True,
+        label="Cargo",
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    salud = forms.ChoiceField(
+        choices=[
+            ('fonasa', 'Fonasa'),
+            ('banmedica', 'Banmédica'),
+            ('colmena', 'Colmena Golden Cross'),
+            ('consalud', 'Consalud'),
+            ('cruzblanca', 'CruzBlanca'),
+            ('esencial', 'Esencial'),
+            ('masvida', 'Nueva Masvida'),
+            ('vidatres', 'Vida Tres'),
+        ],
+        required=True,
+        label="Plan de Salud",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    afp = forms.ChoiceField(
+        choices=[
+            ('capital', 'AFP Capital'),
+            ('cuprum', 'AFP Cuprum'),
+            ('habitat', 'AFP Habitat'),
+            ('modelo', 'AFP Modelo'),
+            ('planvital', 'AFP Planvital'),
+            ('provida', 'AFP Provida'),
+            ('uno', 'AFP Uno'),
+        ],
+        required=True,
+        label="AFP",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    horario_asignado = forms.ChoiceField(
+        choices=[
+            ('8:00-17:30', '8:00 a 17:30'),
+            ('9:00-18:30', '9:00 a 18:30'),
+            ('21:00-8:00', '21:00 a 8:00'),
+            ('otro', 'Otro'),
+        ],
+        required=True,
+        label="Horario Asignado",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
 
     class Meta:
         model = CustomUser
         fields = [
-            'username', 'first_name', 'segundo_nombre', 'last_name', 'segundo_apellido','email', 'rut', 'area', 'cargo',
+            'username', 'first_name', 'segundo_nombre', 'last_name', 'segundo_apellido', 'email', 'rut', 'area', 'cargo',
             'telefono', 'fecha_nacimiento', 'direccion', 'salud', 'afp', 'horario_asignado',
             'fecha_contratacion', 'grupo', 'certificado_afp', 'certificado_salud'
         ]
@@ -252,6 +364,7 @@ class CustomUserChangeForm(forms.ModelForm):
         # Si el usuario tiene grupos asociados, seleccionarlos por defecto
         if self.instance.pk:
             self.fields['grupo'].initial = self.instance.groups.all()
+
 
 
 class EditarUsuarioForm(forms.ModelForm):
