@@ -64,49 +64,6 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return self.username
 
-class Liquidacion(models.Model):
-    MESES_CHOICES = [
-        (1, "Enero"),
-        (2, "Febrero"),
-        (3, "Marzo"),
-        (4, "Abril"),
-        (5, "Mayo"),
-        (6, "Junio"),
-        (7, "Julio"),
-        (8, "Agosto"),
-        (9, "Septiembre"),
-        (10, "Octubre"),
-        (11, "Noviembre"),
-        (12, "Diciembre"),
-    ]
-
-    empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE)
-    usuario = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    sueldo_base = models.DecimalField(max_digits=10, decimal_places=2)
-    gratificacion = models.DecimalField(max_digits=10, decimal_places=2)
-    colacion = models.DecimalField(max_digits=10, decimal_places=2)
-    movilizacion = models.DecimalField(max_digits=10, decimal_places=2)
-    afp = models.DecimalField(max_digits=10, decimal_places=2)
-    salud = models.DecimalField(max_digits=10, decimal_places=2)
-    seguro_mutual = models.DecimalField(max_digits=10, decimal_places=2)
-    sueldo_liquido = models.DecimalField(max_digits=10, decimal_places=2, editable=False)
-    fecha = models.DateField(auto_now_add=True)
-    
-    # Nuevos campos para el mes y año de la liquidación
-    mes = models.PositiveSmallIntegerField(choices=MESES_CHOICES)
-    año = models.PositiveIntegerField(validators=[
-        MinValueValidator(2000), 
-        MaxValueValidator(datetime.datetime.now().year + 1)
-    ])
-
-    def save(self, *args, **kwargs):
-        haberes = self.sueldo_base + self.gratificacion + self.colacion + self.movilizacion
-        descuentos = self.afp + self.salud + self.seguro_mutual
-        self.sueldo_liquido = haberes - descuentos
-        super(Liquidacion, self).save(*args, **kwargs)
-
-    def __str__(self):
-        return f"Liquidación de {self.usuario.username} - {self.get_mes_display()} {self.año}"
 
 
 class CargaFamiliar(models.Model):
@@ -245,11 +202,7 @@ class NotaDenuncia(models.Model):
     def __str__(self):
         return f"Nota de {self.usuario.username} - {self.denuncia.id}"
     
-class HistorialDenuncia(models.Model):
-    denuncia = models.ForeignKey(Denuncia, on_delete=models.CASCADE, related_name='historial')
-    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    accion = models.CharField(max_length=255)  # Ej: "Estado actualizado a resuelta"
-    fecha = models.DateTimeField(auto_now_add=True)
+
 
 class EvidenciaDenuncia(models.Model):
     denuncia = models.ForeignKey(Denuncia, on_delete=models.CASCADE, related_name='evidencia_set')
@@ -258,7 +211,7 @@ class EvidenciaDenuncia(models.Model):
 class Publicacion(models.Model):
     titulo = models.CharField(max_length=255)
     contenido = models.TextField()
-    imagen = models.ImageField(upload_to='publicaciones/', null=True, blank=True)  # Campo para la imagen
+    imagen = models.ImageField(upload_to='publicaciones/', null=True, blank=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     autor = models.ForeignKey(User, on_delete=models.CASCADE)
 
