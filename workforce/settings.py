@@ -73,7 +73,7 @@ WSGI_APPLICATION = 'workforce.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'db_workforce',
+        'NAME': 'workforce_database',
         'USER': 'postgres',
         'PASSWORD': 'Isidora2020',
         'HOST':'localhost',
