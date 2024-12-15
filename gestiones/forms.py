@@ -165,6 +165,29 @@ class CustomUserCreationForm(UserCreationForm):
         label="Confirmar Contraseña",
         widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirmar Contraseña'}),
     )
+    def clean_password1(self):
+        """
+        Validación personalizada de la contraseña en el formulario de registro.
+        """
+        password = self.cleaned_data.get('password1')
+
+        # Verificar longitud mínima
+        if len(password) < 8:
+            raise ValidationError("La contraseña debe tener al menos 8 caracteres.")
+
+        # Verificar al menos un carácter en mayúscula
+        if not any(char.isupper() for char in password):
+            raise ValidationError("La contraseña debe contener al menos una letra mayúscula.")
+
+        # Verificar al menos un número
+        if not any(char.isdigit() for char in password):
+            raise ValidationError("La contraseña debe contener al menos un número.")
+
+        # Verificar al menos un símbolo especial
+        if not any(char in "!@#$%^&*()-_+=<>?/.,:;" for char in password):
+            raise ValidationError("La contraseña debe contener al menos un símbolo especial (!@#$%^&*()-_+=<>?/.,:;).")
+
+        return password
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)  # Extraer el usuario si se pasa al formulario
         super().__init__(*args, **kwargs)  # Llamar al constructor base
